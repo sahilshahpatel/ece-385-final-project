@@ -38,6 +38,7 @@ module curr_frame_controller(
 	
 	logic [9:0] DrawX, DrawY;
 	VGA_controller vga_controller_instance(.Clk, .Reset(~KEY[0]), .VGA_HS, .VGA_VS, .VGA_CLK, .VGA_BLANK_N, .VGA_SYNC_N, .DrawX, .DrawY);
+	
 	palette palette_0 (
 		.colorIdx(row_buffer_out[DrawX[1:0]]), // 2 LSB specifcy pixel within word
 		.VGA_R, .VGA_G, .VGA_B
@@ -76,9 +77,15 @@ module curr_frame_controller(
 			state <= READ;
 			sram_address <= 0;
 		end
-		else begin
+		else if (EN) begin
+			// Enabled -- progress state machine
 			state <= next_state;
 			sram_address <= next_sram_address;
+		end
+		else begin
+			// Not enabled -- pause state machine
+			state <= state;
+			sram_address <= sram_address;
 		end
 	end
 	

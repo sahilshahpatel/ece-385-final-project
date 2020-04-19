@@ -39,11 +39,11 @@ module avalon_graphics_interface(
 
 	// Register map:
 	//		0: Which image are we drawing?
-	//		1: imgX
-	//		2: imgY
-	//		3: Start (LSB)
-	//		4: Done	(LSB)
-	logic [15:0] registers [5];
+	//		1: imgX	(9:0)
+	//		2: imgY	(9:0)
+	//		3: Start (0)
+	//		4: Done	(0)
+	logic [31:0] registers [5];
 	
 	always_comb begin
 		// Defaults

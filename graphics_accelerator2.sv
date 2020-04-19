@@ -41,8 +41,8 @@ module graphics_accelerator2
 	logic half_Clk;
 	halftime halftime_0 (.Clk, .half_Clk);
 	
-	logic ncf_en, cfc_en;
-	assign ncf_en = half_Clk;
+	logic nfc_en, cfc_en;
+	assign nfc_en = half_Clk;
 	assign cfc_en = ~half_Clk;
 	
 	logic nfc_sram_oe_n, cfc_sram_oe_n;
