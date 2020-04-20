@@ -47,7 +47,7 @@ module top_level(
                                 DRAM_CKE,     //SDRAM Clock Enable
                                 DRAM_WE_N,    //SDRAM Write Enable
                                 DRAM_CS_N,    //SDRAM Chip Select
-                                DRAM_CLK      //SDRAM Clock
+                                DRAM_CLK,      //SDRAM Clock
 
 				// SRAM interface for frame buffers
 				inout wire [15:0] SRAM_DQ,
@@ -112,7 +112,22 @@ module top_level(
                              .otg_hpi_cs_export(hpi_cs),
                              .otg_hpi_r_export(hpi_r),
                              .otg_hpi_w_export(hpi_w),
-                             .otg_hpi_reset_export(hpi_reset)
+                             .otg_hpi_reset_export(hpi_reset),
+									  .vga_data_vga_r(VGA_R),
+									  .vga_data_vga_g(VGA_G),
+									  .vga_data_vga_b(VGA_B),
+									  .vga_data_vga_clk(VGA_CLK),
+									  .vga_data_vga_sync_n(VGA_SYNC_N),
+									  .vga_data_vga_blank_n(VGA_BLANK_N),
+									  .vga_data_vga_hs(VGA_HS),
+									  .vga_data_vga_vs(VGA_VS),
+									  .sram_data_sram_dq(SRAM_DQ),
+									  .sram_data_sram_ub_n(SRAM_UB_N),
+									  .sram_data_sram_lb_n(SRAM_LB_N),
+									  .sram_data_sram_ce_n(SRAM_CE_N),
+									  .sram_data_sram_oe_n(SRAM_OE_N),
+									  .sram_data_sram_we_n(SRAM_WE_N),
+									  .sram_data_sram_address(SRAM_ADDRESS)
     );
 	 
     // Display keycode on hex display

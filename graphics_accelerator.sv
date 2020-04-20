@@ -1,9 +1,9 @@
 module graphics_accelerator
 (
-	input logic Clk, Reset
+	input logic Clk, Reset,
 	
 	input logic[2:0] img_id,
-	input logic [9:0] imgX, imgY
+	input logic [9:0] imgX, imgY,
 	input logic Start,
 	output logic Done,
 
@@ -34,12 +34,13 @@ module graphics_accelerator
 	logic frame_clk;
 	rising_edge_detector frame_clk_detector(.signal(VGA_VS), .Clk, .rising_edge(frame_clk));
 
+	logic even_frame;
 	always_ff @(posedge frame_clk) begin
 		even_frame <= ~even_frame; // Tells us about order of frame buffers
 	end
 	
 	logic [9:0] DrawX, DrawY;
-	VGA_controller vga_controller_instance(.Clk, .Reset(~KEY[0]), .VGA_HS, .VGA_VS, .VGA_CLK, .VGA_BLANK_N, .VGA_SYNC_N, .DrawX, .DrawY);
+	VGA_controller vga_controller_instance(.Clk, .Reset(Reset), .VGA_HS, .VGA_VS, .VGA_CLK, .VGA_BLANK_N, .VGA_SYNC_N, .DrawX, .DrawY);
 
 	//ball ball_instance(.Clk, .Reset(~KEY[0]), .frame_clk, .DrawX, .DrawY, .is_ball, .keycode(keycode[3:0]));
 
@@ -49,12 +50,12 @@ module graphics_accelerator
 	// rom_address[7:4] tells us which row we are on
 	logic [7:0] rom_address, next_rom_address;
 	logic [3:0] rom_data, main_character_data, tile_data;
-	imgROM #(FILE="main-character.txt") main_character_rom (
+	imgROM #(.FILE("main-character.txt")) main_character_rom (
 		.Clk,
 		.address(rom_address),
 		.data(main_character_data)
 	);
-	imgROM #(FILE="tile.txt") tile_rom(
+	imgROM #(.FILE("tile.txt")) tile_rom(
 		.Clk,
 		.address(rom_address),
 		.data(tile_data)
@@ -91,6 +92,7 @@ module graphics_accelerator
 
 	
 	// Synchronize memory outputs
+	logic OE_N_sync, WE_N_sync;
 	sync_r1 sync_OE(.Clk, .d(SRAM_OE_N), .q(OE_N_sync), .Reset(Reset)); // Reset to off
 	sync_r1 sync_WE(.Clk, .d(SRAM_WE_N), .q(WE_N_sync), .Reset(Reset)); // Reset to off
 	assign SRAM_CE_N = 0;
@@ -99,7 +101,7 @@ module graphics_accelerator
 	
 	// Connect to SRAM via tristate
 	logic [15:0] Data_to_SRAM, Data_from_SRAM;
-	tristate #(N = 16) tristate_0 (
+	tristate #(.N(16)) tristate_0 (
 		.Clk,
 		.tristate_output_enable(~WE_N_sync),
 		.Data_write(Data_to_SRAM),
@@ -148,7 +150,7 @@ module graphics_accelerator
 		SRAM_WE_N = 1;
 		SRAM_OE_N = 1;
 		
-		case(img_id) begin
+		case(img_id)
 			3'b000 : rom_data = main_character_data;
 			3'b001 : rom_data = tile_data;
 			default : rom_data = 4'h0;
@@ -186,18 +188,18 @@ module graphics_accelerator
 					end
 				end
 				
-				if(HSYNC == 1 && row_buffer_done == 2'b11) begin
+				if(VGA_HS == 1 && row_buffer_done == 2'b11) begin
 					next_state = WAIT;
 				end
 			end
 			WAIT: begin
 				// If vertical blanking clear currentFrame
-				if(VSYNC == 0) begin
+				if(VGA_VS == 0) begin
 					next_row_sram_address = {1'b0, even_frame, 0};
 				end
 				
 				// If horizontal blanking fetch currentFrame row for row_buffer
-				else if(HSYNC == 0) begin
+				else if(VGA_HS == 0) begin
 					next_state = FETCH_ROW;
 				end
 				
@@ -252,7 +254,7 @@ module graphics_accelerator
 				Data_to_SRAM = write_buffer;
 				next_rom_address = rom_address + 1;
 			end
-			WRITE_WAIT: begin
+			WAIT_WRITE: begin
 				SRAM_WE_N = 0;
 				Data_to_SRAM = write_buffer;
 				next_state = WAIT_READ;
@@ -266,25 +268,4 @@ module graphics_accelerator
 		endcase		
 	end
 	
-endmodule
-
-
-
-
-module rising_edge_detector(
-	input logic signal,
-	input logic Clk, 
-	output logic rising_edge
-);
-
-logic prev_signal;
-
-always_ff @ (posedge Clk) begin
-	prev_signal <= signal;
-end
-
-always_comb begin
-	rising_edge = signal & ~prev_signal;
-end
-
 endmodule

@@ -3,7 +3,7 @@ module palette(
 	
 	output logic [7:0]  VGA_R,        //VGA Red
 							  VGA_G,        //VGA Green
-							  VGA_B,        //VGA Blue
+							  VGA_B         //VGA Blue
 );
 
 	logic [23:0] color;
@@ -12,8 +12,8 @@ module palette(
 	assign VGA_B = color[7:0];
 
 	always_comb begin
-		case(colorIdx) begin
-			4'h0, default : color = 24'hFF0000; // Transparency color
+		case(colorIdx)
+			default : color = 24'hFF0000; // Transparency color
 			4'h1 : color = 24'h282246; // Background navy color
 			4'h2 : color = 24'h213822; // Stairs dark green
 			4'h3 : color = 24'h3E6B41; // Tile medium green
@@ -26,7 +26,7 @@ module palette(
 			4'ha : color = 24'hFFFFFF; // Candle white
 			4'hb : color = 24'h525468; // Wall dark purple-gray
 			4'hc : color = 24'h8780A8; // Wall light purple-gray
-		end
+		endcase
 	end
 
 endmodule

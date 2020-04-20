@@ -3,7 +3,7 @@ module next_frame_controller(
 	
 	// Software interface
 	input logic[2:0] img_id,
-	input logic [9:0] imgX, imgY
+	input logic [9:0] imgX, imgY,
 	input logic Start,
 	output logic Done,
 	
@@ -22,12 +22,12 @@ module next_frame_controller(
 	// rom_address[7:4] tells us which row we are on
 	logic [7:0] rom_address, next_rom_address;
 	logic [3:0] rom_data, main_character_data, tile_data;
-	imgROM #(FILE="main-character.txt") main_character_rom (
+	imgROM #(.FILE("main-character.txt")) main_character_rom (
 		.Clk,
 		.address(rom_address),
 		.data(main_character_data)
 	);
-	imgROM #(FILE="tile.txt") tile_rom(
+	imgROM #(.FILE("tile.txt")) tile_rom(
 		.Clk,
 		.address(rom_address),
 		.data(tile_data)
@@ -50,7 +50,7 @@ module next_frame_controller(
 			state <= WAIT;
 			rom_address <= 0;
 			write_buffer <= 0;
-			sram_address <= {1'b0, even_frame, 0};
+			sram_address <= {1'b0, even_frame, 18'b0};
 ;
 		end
 		else if(EN) begin
@@ -80,7 +80,10 @@ module next_frame_controller(
 		SRAM_WE_N = 1;
 		SRAM_OE_N = 1;
 		
-		case(img_id) begin
+		Done = 0;
+		Data_to_SRAM = 16'bZ;
+		
+		case(img_id)
 			3'b000 : rom_data = main_character_data;
 			3'b001 : rom_data = tile_data;
 			default : rom_data = 4'h0;
@@ -101,7 +104,7 @@ module next_frame_controller(
 					// Read next
 					next_state = WAIT_READ;
 					SRAM_OE_N = 0;
-					next_sram_address = {1'b0, ~even_frame, {imgY, imgX}}; // Frame stored row-major
+					next_sram_address = {1'b0, ~even_frame, {imgY, imgX[9:2]}}; // Frame stored row-major. 4 pix per word so ignore 2 LSB os x, y
 				end
 			end
 			WAIT_READ: begin
@@ -112,7 +115,7 @@ module next_frame_controller(
 				SRAM_OE_N = 0;
 				// Read current values into write buffer so
 				// 	that we can re-write them on transparency
-				write_buffer <= Data_from_SRAM;
+				next_write_buffer = Data_from_SRAM;
 				next_state = CALCULATE;
 			end
 			CALCULATE: begin
@@ -126,7 +129,7 @@ module next_frame_controller(
 						next_write_buffer[rom_address*4 +: 4] = rom_data;
 					end
 					
-					next_rom_address = rom_address + 1;
+					next_rom_address = rom_address + 8'h01;
 				end
 			end
 			WRITE: begin
@@ -142,11 +145,11 @@ module next_frame_controller(
 					next_state = WAIT_WRITE;
 				end
 				
-				next_sram_address = {1'b0, ~even_frame, {(imgY + rom_address[7:4]), (imgX + rom_address[3:2])}}; // Frame stored row-major
+				next_sram_address = {1'b0, ~even_frame, {(imgY + rom_address[7:4]), (imgX[9:2] + rom_address[3:2])}}; // Frame stored row-major
 				Data_to_SRAM = write_buffer;
-				next_rom_address = rom_address + 1;
+				next_rom_address = rom_address + 8'h01;
 			end
-			WRITE_WAIT: begin
+			WAIT_WRITE: begin
 				SRAM_WE_N = 0;
 				Data_to_SRAM = write_buffer;
 				next_state = WAIT_READ;

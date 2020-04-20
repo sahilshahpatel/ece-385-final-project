@@ -1,5 +1,5 @@
 module curr_frame_controller(
-	logic Clk, Reset, EN,
+	input logic Clk, Reset, EN,
 	
 	// VGA Interface 
 	output logic [7:0]  VGA_R,        //VGA Red
@@ -12,7 +12,7 @@ module curr_frame_controller(
 							VGA_HS,       //VGA horizontal sync signal
 	
 	// SRAM interface for frame buffers
-	output logic even_frame,
+	output logic even_frame, frame_clk,
 	output logic [15:0] Data_to_SRAM,
 	input logic [15:0] Data_from_SRAM,
 	output logic SRAM_WE_N,
@@ -24,7 +24,6 @@ module curr_frame_controller(
 	// You will have to generate it on your own in simulation.
 	vga_clk vga_clk_instance(.inclk0(Clk), .c0(VGA_CLK));
 
-	logic frame_clk;
 	rising_edge_detector frame_clk_detector(.signal(VGA_VS), .Clk, .rising_edge(frame_clk));
 
 	always_ff @(posedge frame_clk) begin
@@ -37,7 +36,7 @@ module curr_frame_controller(
 	end
 	
 	logic [9:0] DrawX, DrawY;
-	VGA_controller vga_controller_instance(.Clk, .Reset(~KEY[0]), .VGA_HS, .VGA_VS, .VGA_CLK, .VGA_BLANK_N, .VGA_SYNC_N, .DrawX, .DrawY);
+	VGA_controller vga_controller_instance(.Clk, .Reset(Reset), .VGA_HS, .VGA_VS, .VGA_CLK, .VGA_BLANK_N, .VGA_SYNC_N, .DrawX, .DrawY);
 	
 	palette palette_0 (
 		.colorIdx(row_buffer_out[DrawX[1:0]]), // 2 LSB specifcy pixel within word
@@ -93,6 +92,14 @@ module curr_frame_controller(
 		// Defaults
 		next_state = state;
 		next_sram_address = sram_address;
+		
+		SRAM_OE_N = 1;
+		SRAM_WE_N = 1;
+		SRAM_ADDRESS = 0;
+		
+		row_buffer_we = 0;
+		row_buffer_addr = 0;
+		row_buffer_in = 0;
 	
 		// State machine for updating row buffer
 		case (state)
@@ -128,7 +135,7 @@ module curr_frame_controller(
 				next_state = DONE;
 			end
 			DONE: begin
-				if(frame_Clk) begin
+				if(frame_clk) begin
 					next_state = CLEAR;
 				end
 			end

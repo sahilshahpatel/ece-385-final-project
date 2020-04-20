@@ -1,10 +1,10 @@
 module graphics_accelerator2
 (
-	input logic Clk, Reset
+	input logic Clk, Reset,
 	
 	// Software interface
 	input logic[2:0] img_id,
-	input logic [9:0] imgX, imgY
+	input logic [9:0] imgX, imgY,
 	input logic Start,
 	output logic Done,
 
@@ -27,13 +27,14 @@ module graphics_accelerator2
 	output logic SRAM_WE_N,
 	output logic [19:0] SRAM_ADDRESS
 );
-	
+
+	logic OE_N_sync, WE_N_sync;
 	sync_r1 sync_OE(.Clk, .d(SRAM_OE_N), .q(OE_N_sync), .Reset(Reset)); // Reset to off
 	sync_r1 sync_WE(.Clk, .d(SRAM_WE_N), .q(WE_N_sync), .Reset(Reset)); // Reset to off
 	assign SRAM_CE_N = 0;
 	assign SRAM_UB_N = 0;
 	assign SRAM_LB_N = 0;
-	assign SRAM_WE_n = nfc_en ? nfc_sram_we_n : cfc_sram_we_n;
+	assign SRAM_WE_N = nfc_en ? nfc_sram_we_n : cfc_sram_we_n;
 	assign SRAM_OE_N = nfc_en ? nfc_sram_oe_n : cfc_sram_oe_n;
 	assign SRAM_ADDRESS = nfc_en ? nfc_sram_addr : cfc_sram_addr;
 	
@@ -49,6 +50,8 @@ module graphics_accelerator2
 	logic nfc_sram_we_n, cfc_sram_we_n;
 	logic [19:0] nfc_sram_addr, cfc_sram_addr;
 	
+	logic nfc_data_to_sram, cfc_data_to_sram;
+	
 	logic even_frame;
 	
 	next_frame_controller next_frame_controller_0 (
@@ -59,7 +62,7 @@ module graphics_accelerator2
 		.SRAM_OE_N(nfc_sram_oe_n),
 		.SRAM_WE_N(nfc_sram_we_n),
 		.SRAM_ADDRESS(nfc_sram_addr),
-		.Data_to_SRAM,
+		.Data_to_SRAM(nfc_data_to_sram),
 		.Data_from_SRAM,
 		.* // Software interface
 	);
@@ -69,20 +72,23 @@ module graphics_accelerator2
 		.Reset,
 		.EN(cfc_en),
 		.even_frame,
+		.frame_clk,
 		.SRAM_OE_N(cfc_sram_oe_n),
 		.SRAM_WE_N(cfc_sram_we_n),
 		.SRAM_ADDRESS(cfc_sram_addr),
-		.Data_to_SRAM,
+		.Data_to_SRAM(cfc_data_to_sram),
 		.Data_from_SRAM,
 		.* // VGA interface
 	);
 
+	logic frame_clk;
 	logic new_frame; // Used with Reset for next_frame_controller
-	rising_edge_detector frame_clk_detector(.signal(frame_clk), .Clk, .rising_edge(new_frame));
+	rising_edge_detector new_frame_detector (.signal(frame_clk), .Clk, .rising_edge(new_frame));
 
 	// Connect to SRAM via tristate
 	logic [15:0] Data_to_SRAM, Data_from_SRAM;
-	tristate #(N = 16) tristate_0 (
+	assign Data_to_SRAM = nfc_en ? nfc_data_to_sram : cfc_data_to_sram;
+	tristate #(.N(16)) tristate_0 (
 		.Clk,
 		.tristate_output_enable(~WE_N_sync),
 		.Data_write(Data_to_SRAM),

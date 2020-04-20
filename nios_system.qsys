@@ -89,6 +89,14 @@
          type = "String";
       }
    }
+   element nios_system
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone IV E";
+         type = "String";
+      }
+   }
    element onchip_memory2_0
    {
       datum _sortIndex
@@ -252,9 +260,9 @@
 }
 ]]></parameter>
  <parameter name="clockCrossingAdapter" value="HANDSHAKE" />
- <parameter name="device" value="EP4CE115F29C7" />
+ <parameter name="device" value="EP4CE115F29C8" />
  <parameter name="deviceFamily" value="Cyclone IV E" />
- <parameter name="deviceSpeedGrade" value="7" />
+ <parameter name="deviceSpeedGrade" value="8" />
  <parameter name="fabricMode" value="QSYS" />
  <parameter name="generateLegacySim" value="false" />
  <parameter name="generationId" value="0" />
@@ -314,6 +322,19 @@
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
  <interface name="sdram_clk" internal="sdram_pll.c1" type="clock" dir="start" />
  <interface name="sdram_wire" internal="sdram.wire" type="conduit" dir="end" />
+ <interface
+   name="sram_data"
+   internal="avalon_graphics_interface_0.SRAM_DATA"
+   type="conduit"
+   dir="end" />
+ <interface name="vga_b" internal="avalon_graphics_interface_0.VGA_B" />
+ <interface
+   name="vga_data"
+   internal="avalon_graphics_interface_0.VGA_DATA"
+   type="conduit"
+   dir="end" />
+ <interface name="vga_g" internal="avalon_graphics_interface_0.VGA_G" />
+ <interface name="vga_r" internal="avalon_graphics_interface_0.VGA_R" />
  <module
    name="avalon_graphics_interface_0"
    kind="avalon_graphics_interface"
@@ -365,8 +386,8 @@
    enabled="1">
   <parameter name="AUTO_CLK_CLOCK_DOMAIN" value="1" />
   <parameter name="AUTO_CLK_RESET_DOMAIN" value="1" />
-  <parameter name="AUTO_DEVICE" value="EP4CE115F29C7" />
-  <parameter name="AUTO_DEVICE_SPEEDGRADE" value="7" />
+  <parameter name="AUTO_DEVICE" value="EP4CE115F29C8" />
+  <parameter name="AUTO_DEVICE_SPEEDGRADE" value="8" />
   <parameter name="bht_ramBlockType" value="Automatic" />
   <parameter name="breakOffset" value="32" />
   <parameter name="breakSlave" value="None" />

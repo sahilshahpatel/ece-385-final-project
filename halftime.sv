@@ -6,9 +6,9 @@ module halftime(
 logic [1:0] counter;
 
 always_ff @(posedge Clk) begin
-	counter <= counter + 1;
+	counter <= counter + 2'b01;
 end
 
-assign half_clk = counter[1];
+assign half_Clk = counter[1];
 
 endmodule

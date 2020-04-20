@@ -1,6 +1,6 @@
 module avalon_graphics_interface(
 	// Avalon Clock Input
-	input logic CLK,
+	input logic Clk,
 	
 	// Avalon Reset Input
 	input logic RESET,
@@ -15,7 +15,7 @@ module avalon_graphics_interface(
 	output logic [15:0] AVL_READDATA,	// Avalon-MM Read Data
 	
 	// Exported Conduit
-	output logic [15:0] EXPORT_DATA		// Exported Conduit Signal
+	output logic [15:0] EXPORT_DATA,		// Exported Conduit Signal
 
 	// VGA Interface 
 	output logic [7:0]  VGA_R,        //VGA Red
@@ -25,7 +25,7 @@ module avalon_graphics_interface(
 							VGA_SYNC_N,   //VGA Sync signal
 							VGA_BLANK_N,  //VGA Blank signal
 							VGA_VS,       //VGA virtical sync signal
-							VGA_HS       //VGA horizontal sync signal
+							VGA_HS,       //VGA horizontal sync signal
 							
 	// SRAM interface for frame buffers
 	inout wire [15:0] SRAM_DQ,
@@ -47,16 +47,16 @@ module avalon_graphics_interface(
 	
 	always_comb begin
 		// Defaults
-		AVL_READDATA = 32'bZ;
+		AVL_READDATA = 16'bZ;
 		if(AVL_CS) begin // if chip is selected
 			if(AVL_READ) begin
 				// Perform read
-				AVL_READDATA = registers[AVL_ADDR];
+				AVL_READDATA = registers[AVL_ADDR][15:0];
 			end
 		end
 	end
 
-	always_ff @(posedge CLK) begin
+	always_ff @(posedge Clk) begin
 		if(AVL_CS) begin // if chip is selected
 			if(AVL_WRITE) begin
 				// Perform write on enabled bits
@@ -67,7 +67,7 @@ module avalon_graphics_interface(
 			end
 		end
 		
-		registers[4] <= {15'b0, Done}; // Load in aes_done
+		registers[4][0] <= Done; // Load in done
 		
 		if(RESET) begin
 			registers[3] <= 0;
@@ -78,7 +78,7 @@ module avalon_graphics_interface(
 	assign EXPORT_DATA = 0; 
 
 	
-	
+	logic Done;
 	graphics_accelerator2 graphics (
 		.Clk,
 		.Reset(RESET),
@@ -86,7 +86,7 @@ module avalon_graphics_interface(
 		.imgX(registers[1][9:0]),
 		.imgY(registers[2][9:0]),
 		.Start(registers[3][0]),
-		.Done(registers[4][0]),
+		.Done(Done),
 		.* // VGA and SRAM signals
 	);
 
