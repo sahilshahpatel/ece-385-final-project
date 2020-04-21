@@ -1,7 +1,7 @@
 module testbench_nfc;
 
-timeunit 20ns;
-timeprecision 20ns;
+timeunit 1ns;
+timeprecision 1ns;
 
 logic Clk;
 logic Reset;
@@ -28,14 +28,14 @@ initial begin: TESTVECTORS
 	Clk = 0;
 	
 	for(int i = 0 ; i < 2; i++) begin
-		#1 Clk = 0;
-		#1 Clk = 1;
+		#10 Clk = 0;
+		#10 Clk = 1;
 	end
 	
 	Reset = 0;
 	for(int i = 0 ; i < 2; i++) begin
-		#1 Clk = 0;
-		#1 Clk = 1;
+		#10 Clk = 0;
+		#10 Clk = 1;
 	end
 	
 	img_id = 0;
@@ -44,8 +44,8 @@ initial begin: TESTVECTORS
 	Start = 1;
 	
 	for(int i = 0 ; i < 50; i++) begin
-		#1 Clk = 0;
-		#1 Clk = 1;
+		#10 Clk = 0;
+		#10 Clk = 1;
 	end
 end
 
