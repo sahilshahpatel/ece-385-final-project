@@ -1,7 +1,7 @@
 module testbench_nfc;
 
 timeunit 20ns;
-timprecision 20ns;
+timeprecision 20ns;
 
 logic Clk;
 logic Reset;
