@@ -12,3 +12,6 @@ simulation/
 *.smsg
 *.jdi
 *.bat
+*.done
+*.sopcinfo
+*.qsf
