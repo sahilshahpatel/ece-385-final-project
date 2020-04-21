@@ -71,7 +71,7 @@ module top_level(
     logic hpi_r, hpi_w, hpi_cs, hpi_reset;
     
     // Interface between NIOS II and EZ-OTG chip
-    hpi_io_intf hpi_io_inst(
+    hpi_io_intf hpi_io_intf_0 (
                             .Clk(Clk),
                             .Reset(Reset_h),
                             // signals connected to NIOS II
