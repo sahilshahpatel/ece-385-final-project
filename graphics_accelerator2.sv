@@ -90,6 +90,7 @@ module graphics_accelerator2
 	assign Data_to_SRAM = nfc_en ? nfc_data_to_sram : cfc_data_to_sram;
 	tristate #(.N(16)) tristate_0 (
 		.Clk,
+		.tristate_input_enable(~OE_N_sync),
 		.tristate_output_enable(~WE_N_sync),
 		.Data_write(Data_to_SRAM),
 		.Data_read(Data_from_SRAM),

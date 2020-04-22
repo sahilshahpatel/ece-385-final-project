@@ -43,7 +43,7 @@ initial begin: TESTVECTORS
 	imgY = 0;
 	Start = 1;
 	
-	for(int i = 0 ; i < 50; i++) begin
+	for(int i = 0 ; i < 1050; i++) begin
 		#10 Clk = 0;
 		#10 Clk = 1;
 	end
