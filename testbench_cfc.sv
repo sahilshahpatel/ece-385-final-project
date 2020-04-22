@@ -1,3 +1,3 @@
 module testbench_cfc;
-//comment
+//comment2
 endmodule
