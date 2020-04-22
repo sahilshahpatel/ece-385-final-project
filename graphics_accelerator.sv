@@ -103,6 +103,7 @@ module graphics_accelerator
 	logic [15:0] Data_to_SRAM, Data_from_SRAM;
 	tristate #(.N(16)) tristate_0 (
 		.Clk,
+		.tristate_input_enable(~OE_N_sync),
 		.tristate_output_enable(~WE_N_sync),
 		.Data_write(Data_to_SRAM),
 		.Data_read(Data_from_SRAM),

@@ -16,6 +16,7 @@
 module tristate #(N = 16) (
 	input logic Clk, 
 	input logic tristate_output_enable,
+	input logic tristate_input_enable,
 	input logic [N-1:0] Data_write, // Data from Mem2IO
 	output logic [N-1:0] Data_read, // Data to Mem2IO
 	inout wire [N-1:0] Data // inout bus to SRAM
@@ -35,6 +36,6 @@ end
 // Drive (write to) Data bus only when tristate_output_enable is active.
 assign Data = tristate_output_enable ? Data_write_buffer : {N{1'bZ}};
 
-assign Data_read = Data_read_buffer;
+assign Data_read = tristate_input_enable ? Data_read_buffer : {N{1'bZ}};
 
 endmodule
