@@ -18,7 +18,7 @@ task memory_contents(output logic[15:0] mem_array[0:size-1]);
    
    for (integer i = 0; i <= size - 1; i = i + 1)		// Assign the rest of the memory to 0
    begin
-       mem_array[i] = 16'h0;
+       mem_array[i] = 16'b0;
    end
 
 endtask

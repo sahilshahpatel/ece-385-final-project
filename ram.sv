@@ -24,7 +24,7 @@ module  imgROM
 
 	initial
 	begin
-		 $readmemh({"tools/png-to-hex/on-chip-memory/sprite_bytes/", FILE}, mem);
+		 $readmemh(FILE, mem);
 	end
 
 

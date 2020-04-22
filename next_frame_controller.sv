@@ -40,7 +40,7 @@ module next_frame_controller(
 
 	
 	// State machine to execute commands from software
-	enum logic [2:0] {WAIT, WAIT_READ, READ, CALCULATE, WRITE, WAIT_WRITE, DONE} state, next_state;
+	enum logic [3:0] {WAIT, WAIT_READ, WAIT_READ_2, READ, CALCULATE, WRITE, WAIT_WRITE, WAIT_WRITE_2, DONE} state, next_state;
 	logic [15:0] write_buffer, next_write_buffer;
 	logic [19:0] sram_address, next_sram_address;
 	
@@ -109,6 +109,10 @@ module next_frame_controller(
 			end
 			WAIT_READ: begin
 				SRAM_OE_N = 0;
+				next_state = WAIT_READ_2;
+			end
+			WAIT_READ_2: begin
+				SRAM_OE_N = 0;
 				next_state = READ;
 			end
 			READ: begin
@@ -119,40 +123,50 @@ module next_frame_controller(
 				next_state = CALCULATE;
 			end
 			CALCULATE: begin
+				// If current pixel is not transparent add to write_buffer
+				if(rom_data != 4'h0) begin
+					next_write_buffer[{rom_address, 2'b00} +: 4] = rom_data;
+				end
+			
+				// Check if done with row
 				if(rom_address[1:0] == 2'b11) begin
 					SRAM_WE_N = 0;
 					next_state = WRITE;
+					// rom_address is not incremented here because it will be in WRITE
 				end
-				else begin
-					// If current pixel is not transparent add to write_buffer
-					if(rom_data != 4'h0) begin
-						next_write_buffer[rom_address*4 +: 4] = rom_data;
-					end
-					
+				else begin				
 					next_rom_address = rom_address + 8'h01;
 				end
 			end
 			WRITE: begin
 				SRAM_WE_N = 0;
-				// Write write_buffer to SRAM
-				// Go to READ state if rom_address isn't all 1s
-				if(rom_address == 8'hFF) begin
+				
+				next_sram_address = {1'b0, ~even_frame, {(imgY + rom_address[7:4]), (imgX[9:2] + rom_address[3:2])}}; // Frame stored row-major
+				Data_to_SRAM = write_buffer;
+				
+				// Increment rom_address to next row
+				next_rom_address = rom_address + 8'h01;
+				
+				next_state = WAIT_WRITE;
+			end
+			WAIT_WRITE: begin
+				SRAM_WE_N = 0;
+				Data_to_SRAM = write_buffer;
+				next_state = WAIT_WRITE_2;
+			end
+			WAIT_WRITE_2: begin
+				SRAM_WE_N = 0;
+				Data_to_SRAM = write_buffer;
+				
+				if(rom_address - 1 == 8'hFF) begin // -1 because it was incremented in WRITE
 					// This is the last write of sprite
 					next_state = DONE;
 				end
 				else begin
 					// We have more pixels to write
-					next_state = WAIT_WRITE;
+					next_sram_address = {1'b0, ~even_frame, {(imgY + rom_address[7:4]), (imgX[9:2] + rom_address[3:2])}}; // Frame stored row-major
+					next_state = WAIT_READ;
 				end
-				
-				next_sram_address = {1'b0, ~even_frame, {(imgY + rom_address[7:4]), (imgX[9:2] + rom_address[3:2])}}; // Frame stored row-major
-				Data_to_SRAM = write_buffer;
-				next_rom_address = rom_address + 8'h01;
-			end
-			WAIT_WRITE: begin
-				SRAM_WE_N = 0;
-				Data_to_SRAM = write_buffer;
-				next_state = WAIT_READ;
 			end
 			DONE: begin
 				Done = 1;

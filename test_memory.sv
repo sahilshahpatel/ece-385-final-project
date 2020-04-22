@@ -39,7 +39,7 @@ module test_memory ( input          Clk,
     logic [15:0] mem_array [0:size-1];
     logic [15:0] mem_out;
     logic [15:0] I_O_wire;
-    logic [7:0] actual_address;
+    logic [18:0] actual_address;
     assign actual_address = A[18:0];
 	 
     // Requires memory_contents.sv
@@ -77,7 +77,7 @@ module test_memory ( input          Clk,
         // By default, do not drive the IO bus
         I_O_wire = 16'bZZZZZZZZZZZZZZZZ;
         
-        // Drvie the IO bus when chip select and read enable are active, and write enable is inactive
+        // Drive the IO bus when chip select and read enable are active, and write enable is inactive
         if (~CE && ~OE && WE) begin
             if (~UB)
                 I_O_wire[15:8] = mem_out[15:8]; // Read upper byte

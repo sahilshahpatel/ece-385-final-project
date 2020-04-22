@@ -26,6 +26,7 @@ module test_nfc_top_level(
 		.OE(OE_N_sync)
 	);
 
+	logic OE_N_sync, WE_N_sync;
 	sync_r1 sync_OE(.Clk, .d(SRAM_OE_N), .q(OE_N_sync), .Reset(Reset)); // Reset to off
 	sync_r1 sync_WE(.Clk, .d(SRAM_WE_N), .q(WE_N_sync), .Reset(Reset)); // Reset to off
 
