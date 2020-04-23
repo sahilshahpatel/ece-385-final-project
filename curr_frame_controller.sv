@@ -1,6 +1,8 @@
 module curr_frame_controller(
 	input logic Clk, Reset, EN,
 	
+	output logic step_done, // Tells graphics_accelerator when it can switch controllers
+	
 	// VGA Interface 
 	output logic [7:0]  VGA_R,        //VGA Red
 							  VGA_G,        //VGA Green
@@ -19,6 +21,8 @@ module curr_frame_controller(
 	output logic SRAM_OE_N,
 	output logic [19:0] SRAM_ADDRESS
 );
+
+	logic next_step_done;
 
 	// Use PLL to generate the 25MHZ VGA_CLK.
 	// You will have to generate it on your own in simulation.
@@ -74,22 +78,27 @@ module curr_frame_controller(
 	always_ff @(posedge Clk) begin
 		if(Reset) begin
 			state <= DONE;
-			sram_address <= {1'b0, even_frame, 18'b0}; 
+			sram_address <= {1'b0, even_frame, 18'b0};
+			step_done <= 1'b0;
 		end
 		else if (EN) begin
 			// Enabled -- progress state machine
 			state <= next_state;
 			sram_address <= next_sram_address;
+			step_done <= next_step_done;
 		end
 		else begin
 			// Not enabled -- pause state machine
 			state <= state;
 			sram_address <= sram_address;
+			step_done <= 1'b0;
 		end
 	end
 	
 	always_comb begin
 		// Defaults
+		next_step_done = 0;
+		
 		next_state = state;
 		next_sram_address = sram_address;
 		
@@ -137,8 +146,11 @@ module curr_frame_controller(
 				row_buffer_in = Data_from_SRAM;
 				
 				next_state = DONE;
+				
+				next_step_done = 1; // We can pause here for NFC
 			end
 			DONE: begin
+				next_step_done = 1; // We can pause here for CFC
 				if(frame_clk) begin
 					next_state = CLEAR;
 				end
