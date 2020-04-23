@@ -61,7 +61,7 @@ module next_frame_controller(
 			sram_address <= next_sram_address;
 		end
 		else begin
-			// Not enabled -- change nothing
+			// Not enabled -- change nothings
 			state <= state;
 			rom_address <= rom_address;
 			write_buffer <= write_buffer;
