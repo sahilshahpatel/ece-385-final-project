@@ -15,6 +15,7 @@ module test_nfc_top_level(
 	output logic [19:0] SRAM_ADDRESS
 );
 
+	logic step_done;
 	logic sram_we_n, sram_oe_n;
 	next_frame_controller nfc (
 		.SRAM_WE_N(sram_we_n),

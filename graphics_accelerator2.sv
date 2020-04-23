@@ -29,13 +29,18 @@ module graphics_accelerator2
 );
 
 	logic OE_N_sync, WE_N_sync;
-	sync_r1 sync_OE(.Clk, .d(SRAM_OE_N), .q(OE_N_sync), .Reset(Reset)); // Reset to off
-	sync_r1 sync_WE(.Clk, .d(SRAM_WE_N), .q(WE_N_sync), .Reset(Reset)); // Reset to off
+	logic sram_oe_n, sram_we_n;
+	sync_r1 sync_OE(.Clk, .d(sram_oe_n), .q(OE_N_sync), .Reset(Reset)); // Reset to off
+	sync_r1 sync_WE(.Clk, .d(sram_we_n), .q(WE_N_sync), .Reset(Reset)); // Reset to off
+	
+	assign SRAM_WE_N = WE_N_sync;
+	assign SRAM_OE_N = OE_N_sync;
+	
 	assign SRAM_CE_N = 0;
 	assign SRAM_UB_N = 0;
 	assign SRAM_LB_N = 0;
-	assign SRAM_WE_N = nfc_en ? nfc_sram_we_n : cfc_sram_we_n;
-	assign SRAM_OE_N = nfc_en ? nfc_sram_oe_n : cfc_sram_oe_n;
+	assign sram_we_n = nfc_en ? nfc_sram_we_n : cfc_sram_we_n;
+	assign sram_oe_n = nfc_en ? nfc_sram_oe_n : cfc_sram_oe_n;
 	assign SRAM_ADDRESS = nfc_en ? nfc_sram_addr : cfc_sram_addr;
 	
 	

@@ -42,11 +42,6 @@ module curr_frame_controller(
 	logic [9:0] DrawX, DrawY;
 	VGA_controller vga_controller_instance(.Clk, .Reset(Reset), .VGA_HS, .VGA_VS, .VGA_CLK, .VGA_BLANK_N, .VGA_SYNC_N, .DrawX, .DrawY);
 	
-	palette palette_0 (
-		.colorIdx(row_buffer_out[DrawX[1:0]]), // 2 LSB specifcy pixel within word
-		.VGA_R, .VGA_G, .VGA_B
-	); // Outputs VGA RGB based on color palette
-	
 	// Frame buffers in SRAM (SRAM_ADDRESS[19] == 0)
 	// currentFrame = SRAM_ADDRESS[18] = even_frame
 	// nextFrame = SRAM_ADDRESS[18] = ~even_frame
@@ -67,17 +62,22 @@ module curr_frame_controller(
 	logic [7:0] col_counter;
 	logic [9:0] row_counter;
 	
+	palette palette_0 (
+		.colorIdx(row_buffer_out[DrawX[1:0]]), // 2 LSB specifcy pixel within word
+		.VGA_R, .VGA_G, .VGA_B
+	); // Outputs VGA RGB based on color palette
+	
 	// sram_address[7:0] is col counter (256 16-bit/4-pixel words in each row of SRAM)
 	// sram_address[17:8] is row counter (1024 rows of SRAM)
 	logic [19:0] sram_address, next_sram_address;
 	assign col_counter = sram_address[7:0];
 	assign row_counter = sram_address[9:0];
 	
-	enum logic [2:0] {DONE, READ_SYNC, READ, READ_WAIT, CLEAR} state, next_state;
+	enum logic [2:0] {DONE, READ_SYNC, READ, READ_WAIT, CLEAR_SYNC, CLEAR, CLEAR_WAIT} state, next_state;
 	
 	always_ff @(posedge Clk) begin
 		if(Reset) begin
-			state <= DONE;
+			state <= DONE; // Should really be DONE. For testing change to CLEAR
 			sram_address <= {1'b0, even_frame, 18'b0};
 			step_done <= 1'b0;
 		end
@@ -105,12 +105,41 @@ module curr_frame_controller(
 		SRAM_OE_N = 1;
 		SRAM_WE_N = 1;
 		SRAM_ADDRESS = 0;
+		Data_to_SRAM = 16'b0;
 		
 		row_buffer_we = 0;
 		row_buffer_addr = 0;
 		row_buffer_in = 0;
 	
 		case (state)
+			DONE: begin
+				next_step_done = 1; // We can pause here for CFC
+				if(frame_clk) begin
+					next_state = CLEAR_SYNC;
+				end
+			end
+			CLEAR_SYNC: begin
+				SRAM_WE_N = 0;
+				next_sram_address = {1'b0, ~even_frame, 18'b0}; // Clear out what is now next_frame
+			end
+			CLEAR: begin			
+				SRAM_WE_N = 0;
+				SRAM_ADDRESS = sram_address;
+				
+				Data_to_SRAM = 16'h1111; // 4 pixels of background color
+				next_sram_address = sram_address + 1;
+				
+				// Keep clearing until done
+				if(sram_address[17:0] == {18{1'b1}}) begin
+					next_state = CLEAR_WAIT;
+				end
+			end
+			CLEAR_WAIT: begin
+				// SRAM_WE_N will be low b/c of synchronizer
+				
+				next_sram_address = {1'b0, even_frame, 18'b0}; // Reset sram_address to top of curr_frame buffer
+				next_state = READ_SYNC;
+			end
 			READ_SYNC: begin //accounts for sync delay
 				SRAM_OE_N = 0;
 				SRAM_WE_N = 1;
@@ -148,16 +177,6 @@ module curr_frame_controller(
 				next_state = DONE;
 				
 				next_step_done = 1; // We can pause here for NFC
-			end
-			DONE: begin
-				next_step_done = 1; // We can pause here for CFC
-				if(frame_clk) begin
-					next_state = CLEAR;
-				end
-			end
-			CLEAR: begin
-				next_state = READ_SYNC; // TODO: Remove this and replace with clearing nextFrame buffer back to neutral background
-				//TODO:at the end we will need to reset sram  based on even frame again.
 			end
 		endcase
 	end

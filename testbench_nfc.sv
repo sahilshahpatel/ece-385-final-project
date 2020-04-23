@@ -15,6 +15,7 @@ logic Done;
 
 // SRAM interface for frame buffers
 logic even_frame = 0;
+logic step_done;
 wire [15:0] SRAM_DQ;
 logic SRAM_WE_N;
 logic SRAM_OE_N;
