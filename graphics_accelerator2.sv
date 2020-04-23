@@ -38,18 +38,32 @@ module graphics_accelerator2
 	assign SRAM_OE_N = nfc_en ? nfc_sram_oe_n : cfc_sram_oe_n;
 	assign SRAM_ADDRESS = nfc_en ? nfc_sram_addr : cfc_sram_addr;
 	
-	// Split clock time between software interface and VGA output
-	logic half_Clk;
-	halftime halftime_0 (.Clk, .half_Clk);
 	
+	// Switch off between NFC and CFC
 	logic nfc_en, cfc_en;
-	assign nfc_en = half_Clk;
-	assign cfc_en = ~half_Clk;
+	logic nfc_step_done, cfc_step_done; // Tells us when we can switch enabled controllers
+	
+	// Begin with CFC
+	initial begin
+		nfc_en <= 1'b0;
+		cfc_en <= 1'b1;
+	end
+	
+	always_ff @(posedge Clk) begin
+		if(nfc_en && nfc_step_done) begin
+			nfc_en <= 1'b0;
+			cfc_en <= 1'b1;
+		end
+		else if(cfc_en && cfc_step_done) begin
+			nfc_en <= 1'b1;
+			cfc_en <= 1'b0;
+		end
+	end
+	
 	
 	logic nfc_sram_oe_n, cfc_sram_oe_n;
 	logic nfc_sram_we_n, cfc_sram_we_n;
 	logic [19:0] nfc_sram_addr, cfc_sram_addr;
-	
 	logic nfc_data_to_sram, cfc_data_to_sram;
 	
 	logic even_frame;
@@ -59,6 +73,7 @@ module graphics_accelerator2
 		.Reset(Reset || new_frame),
 		.EN(nfc_en),
 		.even_frame,
+		.step_done(nfc_step_done),
 		.SRAM_OE_N(nfc_sram_oe_n),
 		.SRAM_WE_N(nfc_sram_we_n),
 		.SRAM_ADDRESS(nfc_sram_addr),
@@ -73,6 +88,7 @@ module graphics_accelerator2
 		.EN(cfc_en),
 		.even_frame,
 		.frame_clk,
+		.step_done(cfc_step_done),
 		.SRAM_OE_N(cfc_sram_oe_n),
 		.SRAM_WE_N(cfc_sram_we_n),
 		.SRAM_ADDRESS(cfc_sram_addr),
