@@ -69,12 +69,12 @@ module curr_frame_controller(
 	assign col_counter = sram_address[7:0];
 	assign row_counter = sram_address[9:0];
 	
-	enum logic [1:0] {DONE, READ, READ_WAIT, CLEAR} state, next_state;
+	enum logic [2:0] {DONE, READ_SYNC, READ, READ_WAIT, CLEAR} state, next_state;
 	
 	always_ff @(posedge Clk) begin
 		if(Reset) begin
 			state <= DONE;
-			sram_address <= {1'b0, even_frame, 8'bO};//CHECK change to include even frame to have correct intitial value 
+			sram_address <= {1'b0, even_frame, 18'b0}; 
 		end
 		else if (EN) begin
 			// Enabled -- progress state machine
@@ -101,17 +101,20 @@ module curr_frame_controller(
 		row_buffer_addr = 0;
 		row_buffer_in = 0;
 	
-		// State machine for updating row buffer
-		// TODO: Need to account for sychronizer delay as well
 		case (state)
+			READ_SYNC: begin //accounts for sync delay
+				SRAM_OE_N = 0;
+				SRAM_WE_N = 1;
+				next_state = READ;
+			end 
 			READ: begin
 				SRAM_OE_N = 0;
 				SRAM_WE_N = 1;
 				SRAM_ADDRESS = sram_address;
 				
-				if(col_counter != 0 | col_counter != 1) begin // Don't write to row buffer on first or second cycle -- have to wait for memory and syncs
+				if(col_counter != 0) begin // Don't write to row buffer on first -- have to wait for memory.
 					row_buffer_we = 1;
-					row_buffer_addr = col_counter - 2; // Write to the two previous due to two cycle delay for correct info
+					row_buffer_addr = col_counter - 1; // Write to the previous 
 					row_buffer_in = Data_from_SRAM;
 				end
 				
@@ -124,7 +127,7 @@ module curr_frame_controller(
 					next_state = READ;
 				end
 			end
-			READ_WAIT: begin // Handles memory delay for last read  //TODO Fix? to account for sync delay inclusion
+			READ_WAIT: begin // Handles memory delay for last read  
 				SRAM_OE_N = 0;
 				SRAM_WE_N = 1;
 				SRAM_ADDRESS = sram_address - 1;
@@ -141,7 +144,7 @@ module curr_frame_controller(
 				end
 			end
 			CLEAR: begin
-				next_state = READ; // TODO: Remove this and replace with clearing nextFrame buffer back to neutral background
+				next_state = READ_SYNC; // TODO: Remove this and replace with clearing nextFrame buffer back to neutral background
 				//TODO:at the end we will need to reset sram  based on even frame again.
 			end
 		endcase
