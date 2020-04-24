@@ -1,14 +1,19 @@
 module halftime(
-	input logic Clk,
+	input logic Clk, Reset,
 	output logic half_Clk
 );
 
-logic [1:0] counter;
+logic counter;
 
 always_ff @(posedge Clk) begin
-	counter <= counter + 2'b01;
+	if(Reset) begin
+		counter <= 1'b0;
+	end
+	else begin
+		counter <= counter + 1'b1;
+	end
 end
 
-assign half_Clk = counter[1];
+assign half_Clk = counter;
 
 endmodule

@@ -26,18 +26,10 @@ module curr_frame_controller(
 
 	// Use PLL to generate the 25MHZ VGA_CLK.
 	// You will have to generate it on your own in simulation.
+	//halftime vga_clk_simulator (.Clk, .Reset, .half_Clk(VGA_CLK)); // For simulation only
 	vga_clk vga_clk_instance(.inclk0(Clk), .c0(VGA_CLK));
 
 	rising_edge_detector frame_clk_detector(.signal(VGA_VS), .Clk, .rising_edge(frame_clk));
-
-	always_ff @(posedge frame_clk) begin
-		if(Reset) begin
-			even_frame <= 0;
-		end
-		else begin
-			even_frame <= ~even_frame; // Tells us about order of frame buffers
-		end
-	end
 	
 	logic [9:0] DrawX, DrawY;
 	VGA_controller vga_controller_instance(.Clk, .Reset(Reset), .VGA_HS, .VGA_VS, .VGA_CLK, .VGA_BLANK_N, .VGA_SYNC_N, .DrawX, .DrawY);
@@ -63,7 +55,7 @@ module curr_frame_controller(
 	logic [9:0] row_counter;
 	
 	palette palette_0 (
-		.colorIdx(row_buffer_out[DrawX[1:0]]), // 2 LSB specifcy pixel within word
+		.colorIdx(row_buffer_out[{DrawX[1:0], 2'b00} +: 4]), // 2 LSB specifcy pixel within word
 		.VGA_R, .VGA_G, .VGA_B
 	); // Outputs VGA RGB based on color palette
 	
@@ -71,14 +63,16 @@ module curr_frame_controller(
 	// sram_address[17:8] is row counter (1024 rows of SRAM)
 	logic [19:0] sram_address, next_sram_address;
 	assign col_counter = sram_address[7:0];
-	assign row_counter = sram_address[9:0];
+	assign row_counter = sram_address[17:8];
 	
-	enum logic [2:0] {DONE, READ_SYNC, READ, READ_WAIT, CLEAR_SYNC, CLEAR, CLEAR_WAIT} state, next_state;
+	enum logic [2:0] {DONE, CLEAR_SYNC, CLEAR, CLEAR_WAIT, READ_SYNC, READ, READ_WAIT, ROW_DONE} state, next_state;
 	
 	always_ff @(posedge Clk) begin
 		if(Reset) begin
-			state <= DONE; // Should really be DONE. For testing change to CLEAR
-			sram_address <= {1'b0, even_frame, 18'b0};
+			even_frame <= 0;
+		
+			state <= DONE; // Should really be DONE. For testing change to CLEAR_SYNC or READ_SYNC
+			sram_address <= {1'b0, 1'b0, 18'b0};
 			step_done <= 1'b0;
 		end
 		else if (EN) begin
@@ -86,12 +80,20 @@ module curr_frame_controller(
 			state <= next_state;
 			sram_address <= next_sram_address;
 			step_done <= next_step_done;
+			
+			if(frame_clk) begin
+				even_frame <= ~even_frame;
+			end
 		end
 		else begin
 			// Not enabled -- pause state machine
 			state <= state;
 			sram_address <= sram_address;
 			step_done <= 1'b0;
+			
+			if(frame_clk) begin
+				even_frame <= ~even_frame;
+			end
 		end
 	end
 	
@@ -156,25 +158,36 @@ module curr_frame_controller(
 					row_buffer_in = Data_from_SRAM;
 				end
 				
-				next_sram_address = sram_address + 1; // Increments address (and col_counter)
 				
 				if(col_counter == 8'hff) begin
 					next_state = READ_WAIT;
 				end
 				else begin
+					next_sram_address = sram_address + 1; // Increments address (and col_counter)
 					next_state = READ;
 				end
 			end
 			READ_WAIT: begin // Handles memory delay for last read  
+				next_sram_address = sram_address + 1; // sram_address wasn't incremented on the last READ
+				
 				SRAM_OE_N = 0;
 				SRAM_WE_N = 1;
-				SRAM_ADDRESS = sram_address - 1;
+				SRAM_ADDRESS = sram_address;
 				
 				row_buffer_we = 1;
-				row_buffer_addr = col_counter - 1;
+				row_buffer_addr = col_counter;
 				row_buffer_in = Data_from_SRAM;
 				
-				next_state = DONE;
+				next_state = ROW_DONE;
+				next_step_done = 1; // We can pause here for NFC
+			end
+			ROW_DONE: begin
+				if(row_counter == 10'b0) begin // If last row is done, move to DONE
+					next_state = DONE;
+				end
+				else if(VGA_HS == 0) begin // During horizontal blanking is when we start fetching the next row
+					next_state = READ;
+				end
 				
 				next_step_done = 1; // We can pause here for NFC
 			end
