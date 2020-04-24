@@ -144,9 +144,9 @@ ELF := final-project.elf
 # Paths to C, C++, and assembly source files.
 C_SRCS :=
 CXX_SRCS += game.cpp
-CXX_SRCS += main.cpp
-CXX_SRCS += io_handler.cpp
 CXX_SRCS += graphics.cpp
+CXX_SRCS += io_handler.cpp
+CXX_SRCS += main.cpp
 CXX_SRCS += usb.cpp
 ASM_SRCS :=
 

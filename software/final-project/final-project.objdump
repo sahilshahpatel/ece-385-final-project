@@ -37,49 +37,49 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   9 .debug_aranges 00001480  00000000  00000000  00017ef8  2**3
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_info   0002f2b2  00000000  00000000  00019378  2**0
+ 10 .debug_info   0002f2ca  00000000  00000000  00019378  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_abbrev 0000cf91  00000000  00000000  0004862a  2**0
+ 11 .debug_abbrev 0000cf91  00000000  00000000  00048642  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_line   000100b8  00000000  00000000  000555bb  2**0
+ 12 .debug_line   000100b8  00000000  00000000  000555d3  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_frame  000031d4  00000000  00000000  00065674  2**2
+ 13 .debug_frame  000031d4  00000000  00000000  0006568c  2**2
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    000071e0  00000000  00000000  00068848  2**0
+ 14 .debug_str    000071f0  00000000  00000000  00068860  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_loc    0001ba80  00000000  00000000  0006fa28  2**0
+ 15 .debug_loc    0001ba80  00000000  00000000  0006fa50  2**0
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_alt_sim_info 00000040  00000000  00000000  0008b4a8  2**2
+ 16 .debug_alt_sim_info 00000040  00000000  00000000  0008b4d0  2**2
                   CONTENTS, READONLY, DEBUGGING
- 17 .debug_ranges 00002090  00000000  00000000  0008b4e8  2**3
+ 17 .debug_ranges 00002090  00000000  00000000  0008b510  2**3
                   CONTENTS, READONLY, DEBUGGING
- 18 .thread_model 00000003  00000000  00000000  000927d2  2**0
+ 18 .thread_model 00000003  00000000  00000000  000927fa  2**0
                   CONTENTS, READONLY
- 19 .cpu          0000000c  00000000  00000000  000927d5  2**0
+ 19 .cpu          0000000c  00000000  00000000  000927fd  2**0
                   CONTENTS, READONLY
- 20 .qsys         00000001  00000000  00000000  000927e1  2**0
+ 20 .qsys         00000001  00000000  00000000  00092809  2**0
                   CONTENTS, READONLY
- 21 .simulation_enabled 00000001  00000000  00000000  000927e2  2**0
+ 21 .simulation_enabled 00000001  00000000  00000000  0009280a  2**0
                   CONTENTS, READONLY
- 22 .sysid_hash   00000004  00000000  00000000  000927e3  2**0
+ 22 .sysid_hash   00000004  00000000  00000000  0009280b  2**0
                   CONTENTS, READONLY
- 23 .sysid_base   00000004  00000000  00000000  000927e7  2**0
+ 23 .sysid_base   00000004  00000000  00000000  0009280f  2**0
                   CONTENTS, READONLY
- 24 .sysid_time   00000004  00000000  00000000  000927eb  2**0
+ 24 .sysid_time   00000004  00000000  00000000  00092813  2**0
                   CONTENTS, READONLY
- 25 .stderr_dev   0000000b  00000000  00000000  000927ef  2**0
+ 25 .stderr_dev   0000000b  00000000  00000000  00092817  2**0
                   CONTENTS, READONLY
- 26 .stdin_dev    0000000b  00000000  00000000  000927fa  2**0
+ 26 .stdin_dev    0000000b  00000000  00000000  00092822  2**0
                   CONTENTS, READONLY
- 27 .stdout_dev   0000000b  00000000  00000000  00092805  2**0
+ 27 .stdout_dev   0000000b  00000000  00000000  0009282d  2**0
                   CONTENTS, READONLY
- 28 .sopc_system_name 0000000b  00000000  00000000  00092810  2**0
+ 28 .sopc_system_name 0000000b  00000000  00000000  00092838  2**0
                   CONTENTS, READONLY
- 29 .quartus_project_dir 0000002d  00000000  00000000  0009281b  2**0
+ 29 .quartus_project_dir 00000035  00000000  00000000  00092843  2**0
                   CONTENTS, READONLY
- 30 .jdi          000000e9  00000000  00000000  00092848  2**0
+ 30 .jdi          00005553  00000000  00000000  00092878  2**0
                   CONTENTS, READONLY
- 31 .sopcinfo     0007b999  00000000  00000000  00092931  2**0
+ 31 .sopcinfo     0007b987  00000000  00000000  00097dcb  2**0
                   CONTENTS, READONLY
 SYMBOL TABLE:
 10000000 l    d  .entry	00000000 .entry
@@ -1380,40 +1380,40 @@ void IO_init(void)
 100004cc:	df000015 	stw	fp,0(sp)
 100004d0:	d839883a 	mov	fp,sp
 	*otg_hpi_reset = 1;
-100004d4:	00804404 	movi	r2,272
+100004d4:	00802804 	movi	r2,160
 100004d8:	00c00044 	movi	r3,1
 100004dc:	10c00005 	stb	r3,0(r2)
 	*otg_hpi_cs = 1;
-100004e0:	00804804 	movi	r2,288
+100004e0:	00802c04 	movi	r2,176
 100004e4:	00c00044 	movi	r3,1
 100004e8:	10c00005 	stb	r3,0(r2)
 	*otg_hpi_r = 1;
-100004ec:	00805004 	movi	r2,320
+100004ec:	00803404 	movi	r2,208
 100004f0:	00c00044 	movi	r3,1
 100004f4:	10c00005 	stb	r3,0(r2)
 	*otg_hpi_w = 1;
-100004f8:	00804c04 	movi	r2,304
+100004f8:	00803004 	movi	r2,192
 100004fc:	00c00044 	movi	r3,1
 10000500:	10c00005 	stb	r3,0(r2)
 	*otg_hpi_address = 0;
-10000504:	00805804 	movi	r2,352
+10000504:	00803c04 	movi	r2,240
 10000508:	10000015 	stw	zero,0(r2)
 	*otg_hpi_data = 0;
-1000050c:	00805404 	movi	r2,336
+1000050c:	00803804 	movi	r2,224
 10000510:	10000015 	stw	zero,0(r2)
 	// Reset OTG chip
 	*otg_hpi_cs = 0;
-10000514:	00804804 	movi	r2,288
+10000514:	00802c04 	movi	r2,176
 10000518:	10000005 	stb	zero,0(r2)
 	*otg_hpi_reset = 0;
-1000051c:	00804404 	movi	r2,272
+1000051c:	00802804 	movi	r2,160
 10000520:	10000005 	stb	zero,0(r2)
 	*otg_hpi_reset = 1;
-10000524:	00804404 	movi	r2,272
+10000524:	00802804 	movi	r2,160
 10000528:	00c00044 	movi	r3,1
 1000052c:	10c00005 	stb	r3,0(r2)
 	*otg_hpi_cs = 1;
-10000530:	00804804 	movi	r2,288
+10000530:	00802c04 	movi	r2,176
 10000534:	00c00044 	movi	r3,1
 10000538:	10c00005 	stb	r3,0(r2)
 }
@@ -1440,26 +1440,26 @@ void IO_write(alt_u8 Address, alt_u16 Data)
 //							Write this function							   //
 //*************************************************************************//
 	*otg_hpi_address = Address; // Tell chip which address to write to
-1000056c:	00805804 	movi	r2,352
+1000056c:	00803c04 	movi	r2,240
 10000570:	e0fffe03 	ldbu	r3,-8(fp)
 10000574:	10c00015 	stw	r3,0(r2)
 	*otg_hpi_cs = 0; // Enable chip
-10000578:	00804804 	movi	r2,288
+10000578:	00802c04 	movi	r2,176
 1000057c:	10000005 	stb	zero,0(r2)
 	*otg_hpi_w = 0; // Go into write mode
-10000580:	00804c04 	movi	r2,304
+10000580:	00803004 	movi	r2,192
 10000584:	10000005 	stb	zero,0(r2)
 	*otg_hpi_data = Data; // Tell chip what data to write
-10000588:	00805404 	movi	r2,336
+10000588:	00803804 	movi	r2,224
 1000058c:	e0ffff0b 	ldhu	r3,-4(fp)
 10000590:	10c00015 	stw	r3,0(r2)
 
 	*otg_hpi_w = 1; // Leave write mode
-10000594:	00804c04 	movi	r2,304
+10000594:	00803004 	movi	r2,192
 10000598:	00c00044 	movi	r3,1
 1000059c:	10c00005 	stb	r3,0(r2)
 	*otg_hpi_cs = 1; // Disable chip
-100005a0:	00804804 	movi	r2,288
+100005a0:	00802c04 	movi	r2,176
 100005a4:	00c00044 	movi	r3,1
 100005a8:	10c00005 	stb	r3,0(r2)
 }
@@ -1484,26 +1484,26 @@ alt_u16 IO_read(alt_u8 Address)
 //							Write this function							   //
 //*************************************************************************//
 	*otg_hpi_address = Address; // Tell chip which address to read from
-100005d4:	00805804 	movi	r2,352
+100005d4:	00803c04 	movi	r2,240
 100005d8:	e0ffff03 	ldbu	r3,-4(fp)
 100005dc:	10c00015 	stw	r3,0(r2)
 	*otg_hpi_cs = 0; // Enable chip
-100005e0:	00804804 	movi	r2,288
+100005e0:	00802c04 	movi	r2,176
 100005e4:	10000005 	stb	zero,0(r2)
 	*otg_hpi_r = 0; // Go into read mode
-100005e8:	00805004 	movi	r2,320
+100005e8:	00803404 	movi	r2,208
 100005ec:	10000005 	stb	zero,0(r2)
 	data = *otg_hpi_data; // Read data
-100005f0:	00805404 	movi	r2,336
+100005f0:	00803804 	movi	r2,224
 100005f4:	10800017 	ldw	r2,0(r2)
 100005f8:	e0bffe0d 	sth	r2,-8(fp)
 
 	*otg_hpi_r = 1; // Leave read mode
-100005fc:	00805004 	movi	r2,320
+100005fc:	00803404 	movi	r2,208
 10000600:	00c00044 	movi	r3,1
 10000604:	10c00005 	stb	r3,0(r2)
 	*otg_hpi_cs = 1; // Disable chip
-10000608:	00804804 	movi	r2,288
+10000608:	00802c04 	movi	r2,176
 1000060c:	00c00044 	movi	r3,1
 10000610:	10c00005 	stb	r3,0(r2)
 
@@ -2947,7 +2947,7 @@ int main(void)
 		// We only need the first keycode, which is at the lower byte of keycode.
 		// Send the keycode to hardware via PIO.
 		*keycode_base = keycode & 0xff; 
-100012d0:	00805c04 	movi	r2,368
+100012d0:	00804004 	movi	r2,256
 100012d4:	e0fff817 	ldw	r3,-32(fp)
 100012d8:	10c00005 	stb	r3,0(r2)
 
@@ -25865,7 +25865,7 @@ alt_exception_cause_generated_bad_addr(alt_exception_cause cause)
 10014674:	003ffb06 	br	10014664 <__alt_data_end+0xf8014664>
 10014678:	010d0bff 	0x10d0bff
 1001467c:	7f010002 	0x7f010002
-10014680:	00000000 	call	10000000 <__alt_mem_sdram>
+10014680:	00000000 	call	10000000 <__reset>
 10014684:	10014e84 	addi	zero,r2,1338
 10014688:	883a0001 	jmpi	1883a000 <__alt_data_end+0x83a000>
 1001468c:	010d0bff 	0x10d0bff
@@ -25873,12 +25873,12 @@ alt_exception_cause_generated_bad_addr(alt_exception_cause cause)
 	...
 1001469c:	010d0bff 	0x10d0bff
 100146a0:	01010004 	movi	r4,1024
-100146a4:	00000100 	call	10000010 <__alt_mem_sdram+0x10>
-100146a8:	00000000 	call	10000000 <__alt_mem_sdram>
+100146a4:	00000100 	call	10000010 <__reset+0x10>
+100146a8:	00000000 	call	10000000 <__reset>
 100146ac:	01110bff 	0x1110bff
 100146b0:	01010004 	movi	r4,1024
 100146b4:	7f000105 	stb	fp,4(r15)
 100146b8:	007d0000 	call	1007d000 <_gp+0x5e1a0>
-100146bc:	00000000 	call	10000000 <__alt_mem_sdram>
+100146bc:	00000000 	call	10000000 <__reset>
 100146c0:	01883a00 	call	101883a0 <_gp+0x169540>
 100146c4:	10003dfc 	xorhi	zero,r2,247
