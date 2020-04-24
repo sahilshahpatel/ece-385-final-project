@@ -23,10 +23,10 @@ module curr_frame_controller(
 );
 
 	logic next_step_done;
-
+	//logic VGA_CLK_reset; // simulation only
 	// Use PLL to generate the 25MHZ VGA_CLK.
 	// You will have to generate it on your own in simulation.
-	//halftime vga_clk_simulator (.Clk, .Reset, .half_Clk(VGA_CLK)); // For simulation only
+	//halftime vga_clk_simulator (.Clk, .Reset(VGA_CLK_reset), .half_Clk(VGA_CLK)); // For simulation only
 	vga_clk vga_clk_instance(.inclk0(Clk), .c0(VGA_CLK));
 
 	rising_edge_detector frame_clk_detector(.signal(VGA_VS), .Clk, .rising_edge(frame_clk));
@@ -123,6 +123,7 @@ module curr_frame_controller(
 			CLEAR_SYNC: begin
 				SRAM_WE_N = 0;
 				next_sram_address = {1'b0, ~even_frame, 18'b0}; // Clear out what is now next_frame
+				next_state = CLEAR; 
 			end
 			CLEAR: begin			
 				SRAM_WE_N = 0;
