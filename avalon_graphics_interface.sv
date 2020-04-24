@@ -43,7 +43,9 @@ module avalon_graphics_interface(
 	//		2: imgY	(9:0)
 	//		3: Start (0)
 	//		4: Done	(0)
-	logic [31:0] registers [5];
+	//		5: New frame out (0)
+	//		6: New frame acknowledge (0)
+	logic [31:0] registers [7];
 	
 	always_comb begin
 		// Defaults
@@ -68,17 +70,31 @@ module avalon_graphics_interface(
 		end
 		
 		registers[4][0] <= Done; // Load in done
+		if(new_frame == 1) begin
+			registers[5][0] <= new_frame;
+		end
+		else begin
+			if(registers[5][0] && registers[6][0]) begin
+				// New frame was acknowledged, reset to 0
+				registers[5][0] <= 0;
+			end
+			else begin
+				registers[5][0] <= registers[5][0]; // Retain message if not acknowledged
+			end
+		end
 		
 		if(RESET) begin
 			registers[3] <= 0;
 			registers[4] <= 0;
+			registers[5] <= 0;
+			registers[6] <= 0;
 		end
 	end
 
 	assign EXPORT_DATA = 0; 
 
 	
-	logic Done;
+	logic Done, new_frame;
 	graphics_accelerator2 graphics (
 		.Clk,
 		.Reset(RESET),
@@ -87,6 +103,7 @@ module avalon_graphics_interface(
 		.imgY(registers[2][9:0]),
 		.Start(registers[3][0]),
 		.Done(Done),
+		.new_frame,
 		.* // VGA and SRAM signals
 	);
 

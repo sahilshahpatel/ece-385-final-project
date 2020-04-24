@@ -7,6 +7,8 @@ module graphics_accelerator2
 	input logic [9:0] imgX, imgY,
 	input logic Start,
 	output logic Done,
+	output logic new_frame, // Used with Reset for next_frame_controller
+
 
 	// VGA Interface 
 	output logic [7:0]  VGA_R,        //VGA Red
@@ -103,7 +105,6 @@ module graphics_accelerator2
 	);
 
 	logic frame_clk;
-	logic new_frame; // Used with Reset for next_frame_controller
 	rising_edge_detector new_frame_detector (.signal(frame_clk), .Clk, .rising_edge(new_frame));
 
 	// Connect to SRAM via tristate
