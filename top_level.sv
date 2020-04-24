@@ -13,39 +13,51 @@
 //-------------------------------------------------------------------------
 
 
-module top_level( input               CLOCK_50,
-             input        [3:0]  KEY,          //bit 0 is set up as Reset
-             output logic [6:0]  HEX0, HEX1,
-             // VGA Interface 
-             output logic [7:0]  VGA_R,        //VGA Red
-                                 VGA_G,        //VGA Green
-                                 VGA_B,        //VGA Blue
-             output logic        VGA_CLK,      //VGA Clock
-                                 VGA_SYNC_N,   //VGA Sync signal
-                                 VGA_BLANK_N,  //VGA Blank signal
-                                 VGA_VS,       //VGA virtical sync signal
-                                 VGA_HS,       //VGA horizontal sync signal
-             // CY7C67200 Interface
-             inout  wire  [15:0] OTG_DATA,     //CY7C67200 Data bus 16 Bits
-             output logic [1:0]  OTG_ADDR,     //CY7C67200 Address 2 Bits
-             output logic        OTG_CS_N,     //CY7C67200 Chip Select
-                                 OTG_RD_N,     //CY7C67200 Write
-                                 OTG_WR_N,     //CY7C67200 Read
-                                 OTG_RST_N,    //CY7C67200 Reset
-             input               OTG_INT,      //CY7C67200 Interrupt
-             // SDRAM Interface for Nios II Software
-             output logic [12:0] DRAM_ADDR,    //SDRAM Address 13 Bits
-             inout  wire  [31:0] DRAM_DQ,      //SDRAM Data 32 Bits
-             output logic [1:0]  DRAM_BA,      //SDRAM Bank Address 2 Bits
-             output logic [3:0]  DRAM_DQM,     //SDRAM Data Mast 4 Bits
-             output logic        DRAM_RAS_N,   //SDRAM Row Address Strobe
-                                 DRAM_CAS_N,   //SDRAM Column Address Strobe
-                                 DRAM_CKE,     //SDRAM Clock Enable
-                                 DRAM_WE_N,    //SDRAM Write Enable
-                                 DRAM_CS_N,    //SDRAM Chip Select
-                                 DRAM_CLK      //SDRAM Clock
-                    );
-    
+module top_level(
+				input               CLOCK_50,
+            input        [3:0]  KEY,          //bit 0 is set up as Reset
+            output logic [6:0]  HEX0, HEX1,
+            
+				// VGA Interface 
+            output logic [7:0]  VGA_R,        //VGA Red
+                                VGA_G,        //VGA Green
+                                VGA_B,        //VGA Blue
+            output logic        VGA_CLK,      //VGA Clock
+                                VGA_SYNC_N,   //VGA Sync signal
+                                VGA_BLANK_N,  //VGA Blank signal
+                                VGA_VS,       //VGA virtical sync signal
+                                VGA_HS,       //VGA horizontal sync signal
+            
+				// CY7C67200 Interface for USB Keyboard
+            inout  wire  [15:0] OTG_DATA,     //CY7C67200 Data bus 16 Bits
+            output logic [1:0]  OTG_ADDR,     //CY7C67200 Address 2 Bits
+            output logic        OTG_CS_N,     //CY7C67200 Chip Select
+                                OTG_RD_N,     //CY7C67200 Write
+                                OTG_WR_N,     //CY7C67200 Read
+                                OTG_RST_N,    //CY7C67200 Reset
+            input               OTG_INT,      //CY7C67200 Interrupt
+            
+				// SDRAM Interface for Nios II Software
+            output logic [12:0] DRAM_ADDR,    //SDRAM Address 13 Bits
+            inout  wire  [31:0] DRAM_DQ,      //SDRAM Data 32 Bits
+            output logic [1:0]  DRAM_BA,      //SDRAM Bank Address 2 Bits
+            output logic [3:0]  DRAM_DQM,     //SDRAM Data Mast 4 Bits
+            output logic        DRAM_RAS_N,   //SDRAM Row Address Strobe
+                                DRAM_CAS_N,   //SDRAM Column Address Strobe
+                                DRAM_CKE,     //SDRAM Clock Enable
+                                DRAM_WE_N,    //SDRAM Write Enable
+                                DRAM_CS_N,    //SDRAM Chip Select
+                                DRAM_CLK,      //SDRAM Clock
+
+				// SRAM interface for frame buffers
+				inout wire [15:0] SRAM_DQ,
+				output logic SRAM_UB_N,
+				output logic SRAM_LB_N,
+				output logic SRAM_CE_N,
+				output logic SRAM_OE_N,
+				output logic SRAM_WE_N,
+				output logic [19:0] SRAM_ADDRESS
+);
     logic Reset_h, Clk;
     logic [7:0] keycode;
     
@@ -59,7 +71,7 @@ module top_level( input               CLOCK_50,
     logic hpi_r, hpi_w, hpi_cs, hpi_reset;
     
     // Interface between NIOS II and EZ-OTG chip
-    hpi_io_intf hpi_io_inst(
+    hpi_io_intf hpi_io_intf_0 (
                             .Clk(Clk),
                             .Reset(Reset_h),
                             // signals connected to NIOS II
@@ -100,45 +112,26 @@ module top_level( input               CLOCK_50,
                              .otg_hpi_cs_export(hpi_cs),
                              .otg_hpi_r_export(hpi_r),
                              .otg_hpi_w_export(hpi_w),
-                             .otg_hpi_reset_export(hpi_reset)
+                             .otg_hpi_reset_export(hpi_reset),
+									  .vga_data_vga_r(VGA_R),
+									  .vga_data_vga_g(VGA_G),
+									  .vga_data_vga_b(VGA_B),
+									  .vga_data_vga_clk(VGA_CLK),
+									  .vga_data_vga_sync_n(VGA_SYNC_N),
+									  .vga_data_vga_blank_n(VGA_BLANK_N),
+									  .vga_data_vga_hs(VGA_HS),
+									  .vga_data_vga_vs(VGA_VS),
+									  .sram_data_sram_dq(SRAM_DQ),
+									  .sram_data_sram_ub_n(SRAM_UB_N),
+									  .sram_data_sram_lb_n(SRAM_LB_N),
+									  .sram_data_sram_ce_n(SRAM_CE_N),
+									  .sram_data_sram_oe_n(SRAM_OE_N),
+									  .sram_data_sram_we_n(SRAM_WE_N),
+									  .sram_data_sram_address(SRAM_ADDRESS)
     );
-    
-	 logic [9:0] DrawX, DrawY;
-	 logic is_ball;
 	 
-	 logic frame_clk;
-	 rising_edge_detector frame_clk_detector(.signal(VGA_VS), .Clk, .rising_edge(frame_clk));
-	 
-    // Use PLL to generate the 25MHZ VGA_CLK.
-    // You will have to generate it on your own in simulation.
-    vga_clk vga_clk_instance(.inclk0(Clk), .c0(VGA_CLK));
-    
-    VGA_controller vga_controller_instance(.Clk, .Reset(~KEY[0]), .VGA_HS, .VGA_VS, .VGA_CLK, .VGA_BLANK_N, .VGA_SYNC_N, .DrawX, .DrawY);
-    
-    ball ball_instance(.Clk, .Reset(~KEY[0]), .frame_clk, .DrawX, .DrawY, .is_ball, .keycode(keycode[3:0]));
-    
-    color_mapper color_instance(.is_ball, .DrawX, .DrawY, .VGA_R, .VGA_G, .VGA_B);
-    
     // Display keycode on hex display
     HexDriver hex_inst_0 (keycode[3:0], HEX0);
     HexDriver hex_inst_1 (keycode[7:4], HEX1);
     
-endmodule
-
-module rising_edge_detector(
-	input logic signal,
-	input logic Clk, 
-	output logic rising_edge
-);
-
-logic prev_signal;
-
-always_ff @ (posedge Clk) begin
-	prev_signal <= signal;
-end
-
-always_comb begin
-	rising_edge = signal & ~prev_signal;
-end
-
 endmodule
