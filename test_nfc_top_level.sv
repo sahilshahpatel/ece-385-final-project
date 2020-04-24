@@ -7,6 +7,8 @@ module test_nfc_top_level(
 	input logic Start,
 	output logic Done,
 	
+	output logic step_done,
+	
 	// SRAM interface for frame buffers
 	input logic even_frame,
 	inout wire [15:0] SRAM_DQ,
@@ -15,7 +17,6 @@ module test_nfc_top_level(
 	output logic [19:0] SRAM_ADDRESS
 );
 
-	logic step_done;
 	logic sram_we_n, sram_oe_n;
 	next_frame_controller nfc (
 		.SRAM_WE_N(sram_we_n),
