@@ -34,10 +34,25 @@ module testbench_cfc;
 	// 	simulated VGA_CLK in cfc before testing.
 	
 	initial begin: TESTVECTORS
+		test_cfc.cfc.VGA_CLK_reset = 1;
+		Clk = 0;
+		
+		for(int i = 0 ; i < 4; i++) begin
+			#10 Clk = 0;
+			#10 Clk = 1;
+		end
+		
+		test_cfc.cfc.VGA_CLK_reset = 0; 
+		
+			for(int i = 0 ; i < 4; i++) begin
+			#10 Clk = 0;
+			#10 Clk = 1;
+		end
+		
 		Reset = 1;
 		Clk = 0;
 		
-		for(int i = 0 ; i < 2; i++) begin
+		for(int i = 0 ; i < 4; i++) begin
 			#10 Clk = 0;
 			#10 Clk = 1;
 		end
