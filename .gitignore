@@ -13,6 +13,4 @@ simulation/
 *.jdi
 *.bat
 *.done
-*.sopcinfo
-*.qsf
 *.qws
