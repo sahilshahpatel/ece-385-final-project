@@ -1,3 +1,4 @@
+# Extra quartus files
 .metadata/
 .qsys_edit/
 db/
@@ -14,3 +15,21 @@ simulation/
 *.bat
 *.done
 *.qws
+*.pof
+*.sld
+*.sh
+*.tcl~
+*.ppf
+PLLJ_PLLSPE_INFO.txt
+
+# Tools files
+tools/
+
+# Software files
+software/final-project/obj/
+software/final-project/.settings/
+software/final-project_bsp/.settings
+software/final-project_bsp/drivers
+software/final-project_bsp/obj
+
+log.txt
