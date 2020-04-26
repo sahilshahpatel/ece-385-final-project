@@ -7,6 +7,7 @@
 #include "game.h"
 #include "system.h"
 #include "graphics.h"
+#include <iostream>
 
 // Game board is 64x64 tiles where each tile is 16x16 pixels
 #define SPRITE_SIZE 16
@@ -38,6 +39,8 @@ Game::Game(){
 
 // Game logic happens in update
 void Game::update(int keycodes){
+	std::cout << "updating game" << std::endl;
+
 	int key1 = keycodes & 0x0000ffff;
 	int key2 = (keycodes & 0xffff0000) >> 16;
 

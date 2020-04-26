@@ -29,7 +29,6 @@
 
 #include "game.h"
 
-
 //----------------------------------------------------------------------------------------//
 //
 //                                Main function
@@ -594,20 +593,20 @@ int main(void)
 			usleep(200);
 		}
 
+		/* Above is keyboard setup loop, below is game loop*/
+
+		// Pointer to registers inside of graphics interface
+		volatile unsigned int * GRAPHICS_PTR = (unsigned int *) AVALON_GRAPHICS_INTERFACE_0_BASE;
+
+		while(GRAPHICS_PTR[5] == 0){
+			printf("Waiting for frame flag\n");
+			// Wait for frame flag
+		}
+		GRAPHICS_PTR[6] = 1;
+
+		game.update(keycode);
+		game.draw();
 	}//end while
-
-	/* Above is keyboard setup loop, below is game loop*/
-
-	// Pointer to registers inside of graphics interface
-	volatile unsigned int * GRAPHICS_PTR = (unsigned int *) AVALON_GRAPHICS_INTERFACE_0_BASE;
-
-	while(GRAPHICS_PTR[5] == 0){
-		// Wait for frame flag
-	}
-	GRAPHICS_PTR[6] = 1;
-
-	game.update(keycode);
-	game.draw();
 
 	return 0;
 }

@@ -23,9 +23,10 @@ module curr_frame_controller(
 );
 
 	logic next_step_done;
-	//logic VGA_CLK_reset; // simulation only
+	
 	// Use PLL to generate the 25MHZ VGA_CLK.
 	// You will have to generate it on your own in simulation.
+	//logic VGA_CLK_reset; // For simulation only
 	//halftime vga_clk_simulator (.Clk, .Reset(VGA_CLK_reset), .half_Clk(VGA_CLK)); // For simulation only
 	vga_clk vga_clk_instance(.inclk0(Clk), .c0(VGA_CLK));
 
@@ -71,7 +72,7 @@ module curr_frame_controller(
 		if(Reset) begin
 			even_frame <= 0;
 		
-			state <= DONE; // Should really be DONE. For testing change to CLEAR_SYNC or READ_SYNC
+			state <= DONE;
 			sram_address <= {1'b0, 1'b0, 18'b0};
 			step_done <= 1'b0;
 		end
@@ -139,6 +140,8 @@ module curr_frame_controller(
 			end
 			CLEAR_WAIT: begin
 				// SRAM_WE_N will be low b/c of synchronizer
+				SRAM_ADDRESS = sram_address;
+				Data_to_SRAM = 16'h1111;
 				
 				next_sram_address = {1'b0, even_frame, 18'b0}; // Reset sram_address to top of curr_frame buffer
 				next_state = READ_SYNC;
@@ -165,7 +168,6 @@ module curr_frame_controller(
 				end
 				else begin
 					next_sram_address = sram_address + 1; // Increments address (and col_counter)
-					next_state = READ;
 				end
 			end
 			READ_WAIT: begin // Handles memory delay for last read  
@@ -187,7 +189,7 @@ module curr_frame_controller(
 					next_state = DONE;
 				end
 				else if(VGA_HS == 0) begin // During horizontal blanking is when we start fetching the next row
-					next_state = READ;
+					next_state = READ_SYNC;
 				end
 				
 				next_step_done = 1; // We can pause here for NFC

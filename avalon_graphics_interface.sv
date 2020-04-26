@@ -47,6 +47,19 @@ module avalon_graphics_interface(
 	//		6: New frame acknowledge (0)
 	logic [31:0] registers [7];
 	
+	logic Done, frame_clk;
+	graphics_accelerator2 graphics (
+		.Clk,
+		.Reset(RESET),
+		.img_id(registers[0][2:0]),
+		.imgX(registers[1][9:0]),
+		.imgY(registers[2][9:0]),
+		.Start(registers[3][0]),
+		.Done(Done),
+		.frame_clk,
+		.* // VGA and SRAM signals
+	);
+	
 	always_comb begin
 		// Defaults
 		AVL_READDATA = 16'bZ;
@@ -70,17 +83,15 @@ module avalon_graphics_interface(
 		end
 		
 		registers[4][0] <= Done; // Load in done
-		if(new_frame == 1) begin
-			registers[5][0] <= new_frame;
+		if(registers[5][0] == 0) begin // Load new frame if not waiting for acknowledgement
+			registers[5][0] <= frame_clk;
+		end
+		else if(registers[5][0] && registers[6][0]) begin
+			// New frame was acknowledged, reset to 0
+			registers[5][0] <= 0;
 		end
 		else begin
-			if(registers[5][0] && registers[6][0]) begin
-				// New frame was acknowledged, reset to 0
-				registers[5][0] <= 0;
-			end
-			else begin
-				registers[5][0] <= registers[5][0]; // Retain message if not acknowledged
-			end
+			registers[5][0] <= registers[5][0]; // Retain message if not acknowledged
 		end
 		
 		if(RESET) begin
@@ -92,19 +103,4 @@ module avalon_graphics_interface(
 	end
 
 	assign EXPORT_DATA = 0; 
-
-	
-	logic Done, new_frame;
-	graphics_accelerator2 graphics (
-		.Clk,
-		.Reset(RESET),
-		.img_id(registers[0][2:0]),
-		.imgX(registers[1][9:0]),
-		.imgY(registers[2][9:0]),
-		.Start(registers[3][0]),
-		.Done(Done),
-		.new_frame,
-		.* // VGA and SRAM signals
-	);
-
 endmodule
