@@ -51,13 +51,70 @@ Game::Game(){
 void Game::update(int keycodes){
 	std::cout << "updating game" << std::endl;
 
-	// FOR TESTING ONLY:
-	if(key == KEYCODE_W){
+
+	//Turning Light on and off
+	if(key == KEYCODE_SPACE && light){
+		light = 0;
+	}
+	else if(key == KEYCODE_SPACE && light == false){
+		light = 1;
+	}
+
+
+	// Movement
+	//light on
+	if(key == KEYCODE_W && player.facing_y != WALL && player.facing_y == player.y - 1 && light){
 		player.y--;
+		player.facing_y--;
 	}
-	else if(key == KEYCODE_S){
+	else if(key == KEYCODE_W && player.facing_y != player.y - 1 && light){
+		player.facing_y = player.y -1;
+		player.facing_x = player.x;
+	}
+	else if(key == KEYCODE_S && player.facing_y != WALL && player.facing_y == player.y + 1 && light){
 		player.y++;
+		player.facing_y++;
 	}
+	else if(key == KEYCODE_S && player.facing_y != player.y +1 && light){
+		player.facing_y = player.y +1;
+		player.facing_x = player.x;
+	}
+	else if(key == KEYCODE_A && play.facing_x != WALL && player.facing_x == player.x -1 && light){
+		player.x--;
+		player.facing_x--;
+	}
+	else if(key == KEYCODE_A && player.facing_x != player.x -1 && light){
+		player.facing_x = player.x -1;
+		player.facing_y = player.y;
+	}
+	else if(key == KEYCODE_D && player.facing_x != WALL && player.facing_x == player.x +1 && light){
+		player.x++;
+		player.facing_x++;
+	}
+	else if(key == KEYCODE_D && player.facing_x != player.x +1 && light){
+		player.facing_x = player.x +1;
+		player.facing_y = player.y;
+	}
+
+
+	//light off
+	else if(key == KEYCODE_W && player.y - 1 != WALL && light == false){
+		player.y--;
+		player.facing_y = player_y -1;
+	}
+	else if(key == KEYCODE_S && player.y + 1 != WALL && light == false){
+		player.y++;
+		player.facing_y = player_y +1;
+		}
+	else if(key == KEYCODE_A && player.x - 1 != WALL && light == false){
+		player.x--;
+		player.facing_x = player_x -1;
+	}
+	else if(key == KEYCODE_D && player.x  +1 != WALL && light == false){
+		player.x++;
+		player.facing_x = player_x +1;
+	}
+
 
 	// Wrap-around
 	if(player.y < 0){
@@ -66,6 +123,46 @@ void Game::update(int keycodes){
 	else if(player.y > COLS-1){
 		player.y = 0;
 	}
+	else if(player.x > ROWS-1){
+		player.x = 0;
+	}
+	else if (player.x < 0){
+		player.x = ROWS-1;
+	}
+
+	//if player on spikes = DEATH
+	if (board[player.x][player.y] == SPIKES){
+		//TODO: WHAT HAPPENS ON DEATH
+	}
+	//if player on EXIT = next level/win
+	if (board[player.x][player.y] == EXIT){
+		//TODO: WHAT HAPPENS ON WIN
+	}
+
+	//if player sees monster
+	if (board[player.facing_x][player.facing_y] == board[monster[0].x][monster[0].y]){
+		monster[0].active = 1;
+	}
+
+	//if player on same tile as monster = DEATH
+	if(board[player.x][player.y] == board[monster[0].x][monster[0].y]){
+		//What happens on DEATH
+	}
+
+	//Monster logic
+	if(monster[0].active && light){
+		monster[0].x = chasePlayer//TODO:fix when ready
+	}
+	if(monster[0].active == false || light == false){
+		monster[0].x;
+		monster[0].y;
+	}
+
+	//monster death
+	if(board[monster[0].x][monster[0].y] == SPIKES){
+		//TODO monster dies
+	}
+
 }
 
 // Image IDs

@@ -16,7 +16,7 @@ typedef struct {
 } Monster;
 
 enum Tile {
-	TILE, SPIKES, WALL
+	TILE, SPIKES, WALL, EXIT
 };
 
 typedef struct {
@@ -45,4 +45,3 @@ private:
 };
 
 #endif /* GAME_H_ */
-
