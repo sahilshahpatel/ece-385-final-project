@@ -602,7 +602,7 @@ int main(void)
 			printf("Waiting for frame flag\n");
 			// Wait for frame flag
 		}
-		GRAPHICS_PTR[6] = 1;
+		GRAPHICS_PTR[6] = 1; // Acknowledge frame flag
 
 		game.update(keycode);
 		game.draw();

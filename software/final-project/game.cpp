@@ -27,7 +27,12 @@ Game::Game(){
 	// Set initial player locations
 	player.x = ROWS/2;
 	player.y = COLS-1;
-	player.light = 1;
+	player.light = true;
+
+	// Set initial monster list
+	monsters = new Monster[1]; // TODO: decide how many monsters to have
+	monsters[0].x = 0;
+	monsters[0].y = 0;
 }
 
 // Keycodes
@@ -48,8 +53,16 @@ void Game::update(int keycodes){
 	if(key1 == KEYCODE_W){
 		player.y--;
 	}
+	else if(key1 == KEYCODE_S){
+		player.y++;
+	}
+
+	// Wrap-around
 	if(player.y < 0){
 		player.y = COLS-1;
+	}
+	else if(player.y > COLS-1){
+		player.y = 0;
 	}
 }
 
@@ -61,4 +74,14 @@ void Game::update(int keycodes){
 void Game::draw(){
 	// For testing, draw main character
 	drawImg(MAIN_CHARACTER_SPRITE, player.x*SPRITE_SIZE, player.y*SPRITE_SIZE);
+}
+
+// Pathfinding
+Monster Game::chasePlayer(Monster m, Player p){
+	Monster nextMonster;
+
+	// TODO: replace
+	nextMonster.x = 0;
+	nextMonster.y = 0;
+	return nextMonster;
 }

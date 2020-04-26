@@ -21,7 +21,7 @@ enum Tile {
 typedef struct {
 	int x;
 	int y;
-	int light;
+	bool light;
 } Player;
 
 class Game {
@@ -33,6 +33,8 @@ private:
 	Player player;
 	Monster* monsters;
 	Tile** board;
+
+	Monster chasePlayer(Monster m, Player p);
 };
 
 #endif /* GAME_H_ */
