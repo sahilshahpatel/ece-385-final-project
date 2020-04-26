@@ -12,6 +12,7 @@
 typedef struct {
 	int x;
 	int y;
+	bool active;
 } Monster;
 
 enum Tile {
@@ -22,6 +23,9 @@ typedef struct {
 	int x;
 	int y;
 	bool light;
+
+	int facing_x;
+	int facing_y;
 } Player;
 
 class Game {
@@ -34,7 +38,10 @@ private:
 	Monster* monsters;
 	Tile** board;
 
+	int key; // Is set only on initial press
+
 	Monster chasePlayer(Monster m, Player p);
+	void updateKey(int keycodes);
 };
 
 #endif /* GAME_H_ */

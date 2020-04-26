@@ -28,11 +28,16 @@ Game::Game(){
 	player.x = ROWS/2;
 	player.y = COLS-1;
 	player.light = true;
+	player.facing_x = player.x;
+	player.facing_y = player.y - 1; // Face forward to begin
 
 	// Set initial monster list
 	monsters = new Monster[1]; // TODO: decide how many monsters to have
 	monsters[0].x = 0;
 	monsters[0].y = 0;
+
+	// Set initial key press
+	key = 0;
 }
 
 // Keycodes
@@ -46,14 +51,11 @@ Game::Game(){
 void Game::update(int keycodes){
 	std::cout << "updating game" << std::endl;
 
-	int key1 = keycodes & 0x0000ffff;
-	int key2 = (keycodes & 0xffff0000) >> 16;
-
 	// FOR TESTING ONLY:
-	if(key1 == KEYCODE_W){
+	if(key == KEYCODE_W){
 		player.y--;
 	}
-	else if(key1 == KEYCODE_S){
+	else if(key == KEYCODE_S){
 		player.y++;
 	}
 
@@ -84,4 +86,19 @@ Monster Game::chasePlayer(Monster m, Player p){
 	nextMonster.x = 0;
 	nextMonster.y = 0;
 	return nextMonster;
+}
+
+// Key-down detector
+void Game::updateKey(int keycodes){
+	int key1 = keycodes & 0x0000ffff;
+	int key2 = (keycodes & 0xffff0000) >> 16;
+
+	// Ignore key2 -- we only allow one button at a time
+
+	if(key1 == key){
+		key = 0;
+	}
+	else {
+		key = key1;
+	}
 }
