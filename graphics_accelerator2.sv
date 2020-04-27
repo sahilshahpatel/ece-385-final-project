@@ -7,6 +7,8 @@ module graphics_accelerator2
 	input logic [9:0] imgX, imgY,
 	input logic Start,
 	output logic Done,
+	output logic frame_clk, // Used with Reset for next_frame_controller
+
 
 	// VGA Interface 
 	output logic [7:0]  VGA_R,        //VGA Red
@@ -28,8 +30,33 @@ module graphics_accelerator2
 	output logic [19:0] SRAM_ADDRESS
 );
 
+	// Switch off between NFC and CFC
+	logic nfc_en, cfc_en;
+	assign cfc_en = ~nfc_en;
+	logic nfc_step_done, cfc_step_done; // Tells us when we can switch enabled controllers
+	
+	always_ff @(posedge Clk) begin
+		if(Reset) begin
+			nfc_en <= 1'b0;
+		end
+		else if(nfc_en && nfc_step_done) begin
+			nfc_en <= 1'b0;
+		end
+		else if(cfc_en && cfc_step_done) begin
+			nfc_en <= 1'b1;
+		end
+	end
+
 	logic OE_N_sync, WE_N_sync;
 	logic sram_oe_n, sram_we_n;
+	
+	logic nfc_sram_oe_n, cfc_sram_oe_n;
+	logic nfc_sram_we_n, cfc_sram_we_n;
+	logic [19:0] nfc_sram_addr, cfc_sram_addr;
+	logic [15:0] nfc_data_to_sram, cfc_data_to_sram;
+	
+	logic even_frame;
+	
 	sync_r1 sync_OE(.Clk, .d(sram_oe_n), .q(OE_N_sync), .Reset(Reset)); // Reset to off
 	sync_r1 sync_WE(.Clk, .d(sram_we_n), .q(WE_N_sync), .Reset(Reset)); // Reset to off
 	
@@ -43,39 +70,21 @@ module graphics_accelerator2
 	assign sram_oe_n = nfc_en ? nfc_sram_oe_n : cfc_sram_oe_n;
 	assign SRAM_ADDRESS = nfc_en ? nfc_sram_addr : cfc_sram_addr;
 	
-	
-	// Switch off between NFC and CFC
-	logic nfc_en, cfc_en;
-	logic nfc_step_done, cfc_step_done; // Tells us when we can switch enabled controllers
-	
-	// Begin with CFC
-	initial begin
-		nfc_en <= 1'b0;
-		cfc_en <= 1'b1;
-	end
-	
-	always_ff @(posedge Clk) begin
-		if(nfc_en && nfc_step_done) begin
-			nfc_en <= 1'b0;
-			cfc_en <= 1'b1;
-		end
-		else if(cfc_en && cfc_step_done) begin
-			nfc_en <= 1'b1;
-			cfc_en <= 1'b0;
-		end
-	end
-	
-	
-	logic nfc_sram_oe_n, cfc_sram_oe_n;
-	logic nfc_sram_we_n, cfc_sram_we_n;
-	logic [19:0] nfc_sram_addr, cfc_sram_addr;
-	logic nfc_data_to_sram, cfc_data_to_sram;
-	
-	logic even_frame;
+	// Connect to SRAM via tristate
+	logic [15:0] Data_to_SRAM, Data_from_SRAM;
+	assign Data_to_SRAM = nfc_en ? nfc_data_to_sram : cfc_data_to_sram;
+	tristate #(.N(16)) tristate_0 (
+		.Clk,
+		.tristate_input_enable(~OE_N_sync),
+		.tristate_output_enable(~WE_N_sync),
+		.Data_write(Data_to_SRAM),
+		.Data_read(Data_from_SRAM),
+		.Data(SRAM_DQ)
+	);
 	
 	next_frame_controller next_frame_controller_0 (
 		.Clk,
-		.Reset(Reset || new_frame),
+		.Reset(Reset || frame_clk),
 		.EN(nfc_en),
 		.even_frame,
 		.step_done(nfc_step_done),
@@ -100,22 +109,6 @@ module graphics_accelerator2
 		.Data_to_SRAM(cfc_data_to_sram),
 		.Data_from_SRAM,
 		.* // VGA interface
-	);
-
-	logic frame_clk;
-	logic new_frame; // Used with Reset for next_frame_controller
-	rising_edge_detector new_frame_detector (.signal(frame_clk), .Clk, .rising_edge(new_frame));
-
-	// Connect to SRAM via tristate
-	logic [15:0] Data_to_SRAM, Data_from_SRAM;
-	assign Data_to_SRAM = nfc_en ? nfc_data_to_sram : cfc_data_to_sram;
-	tristate #(.N(16)) tristate_0 (
-		.Clk,
-		.tristate_input_enable(~OE_N_sync),
-		.tristate_output_enable(~WE_N_sync),
-		.Data_write(Data_to_SRAM),
-		.Data_read(Data_from_SRAM),
-		.Data(SRAM_DQ)
 	);
 	
 endmodule

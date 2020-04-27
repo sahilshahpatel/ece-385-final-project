@@ -58,6 +58,7 @@ module top_level(
 				output logic SRAM_WE_N,
 				output logic [19:0] SRAM_ADDRESS
 );
+
     logic Reset_h, Clk;
     logic [7:0] keycode;
     
@@ -94,7 +95,7 @@ module top_level(
      // You need to make sure that the port names here match the ports in Qsys-generated codes.
      nios_system nios_system(
                              .clk_clk(Clk),         
-                             .reset_reset_n(1'b1),    // Never reset NIOS
+                             .reset_reset_n(~Reset_h),    // Never reset NIOS
                              .sdram_wire_addr(DRAM_ADDR), 
                              .sdram_wire_ba(DRAM_BA),   
                              .sdram_wire_cas_n(DRAM_CAS_N),

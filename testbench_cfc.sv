@@ -28,10 +28,8 @@ module testbench_cfc;
 	
 	test_cfc_top_level test_cfc (.*);
 	
-	// NOTE: This test won't work with cfc as normal b/c frame_clk won't work so it
-	// 	will stay in DONE state. Change the reset state value to CLEAR_SYNC or READ_SYNC
-	//		to test. Also won't work without simulating the VGA_CLK. Please uncomment the 
-	// 	simulated VGA_CLK in cfc before testing.
+	// NOTE: This test won't work with cfc as without simulating the VGA_CLK. 
+	//		Please uncomment the simulated VGA_CLK in cfc before testing.
 	
 	initial begin: TESTVECTORS
 		test_cfc.cfc.VGA_CLK_reset = 1;
@@ -58,7 +56,7 @@ module testbench_cfc;
 		end
 		
 		Reset = 0;
-		for(int i = 0 ; i < 1050; i++) begin
+		for(int i = 0 ; i < 1048576; i++) begin
 			#10 Clk = 0;
 			#10 Clk = 1;
 		end
