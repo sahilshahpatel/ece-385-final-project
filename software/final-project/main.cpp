@@ -582,7 +582,6 @@ int main(void)
 
 		while (!(usb_ctl_val & no_device))
 		{
-			//printf("stuck in this loop\n");
 			usb_ctl_val = UsbRead(ctl_reg);
 			usleep(5*1000);
 			usb_ctl_val = UsbRead(ctl_reg);
@@ -605,7 +604,7 @@ int main(void)
 //			printf("Waiting for frame flag\n");
 			// Wait for frame flag
 //		}
-		GRAPHICS_PTR[6] = 1; // Acknowledge frame flag
+//		GRAPHICS_PTR[6] = 1; // Acknowledge frame flag
 
 //		game.update(keycode);
 //		game.draw();
