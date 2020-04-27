@@ -597,17 +597,18 @@ int main(void)
 
 		/* Above is keyboard setup loop, below is game loop*/
 
-		printf("test\n");
+		//printf("Graphics pointer: %p\n", GRAPHICS_PTR);
+		//printf("Graphics[5]: %x\n", GRAPHICS_PTR[5]);
 
-
-//		while(GRAPHICS_PTR[5] == 0){
-//			printf("Waiting for frame flag\n");
+		while(GRAPHICS_PTR[5] == 0){
+			printf("Waiting for frame flag\n");
 			// Wait for frame flag
-//		}
-//		GRAPHICS_PTR[6] = 1; // Acknowledge frame flag
+		}
+		GRAPHICS_PTR[6] = 1; // Acknowledge frame flag
+		GRAPHICS_PTR[6] = 0; // Lower acknowledgment
 
-//		game.update(keycode);
-//		game.draw();
+		game.update(keycode);
+		game.draw();
 
 	}//end while
 

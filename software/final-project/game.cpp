@@ -11,8 +11,8 @@
 
 // Game board is 64x64 tiles where each tile is 16x16 pixels
 #define SPRITE_SIZE 16
-#define ROWS 64
-#define COLS 64
+#define ROWS 40 // 640 pix / SPRITE_SIZE
+#define COLS 30 // 480 pix / SPRITE_SIZE
 
 Game::Game(){
 	// Setup board

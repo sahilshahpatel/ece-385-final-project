@@ -1153,7 +1153,6 @@ set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_STATE_BITS=11" -s
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_BUFFER_FULL_STOP=1" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_CURRENT_RESOURCE_WIDTH=1" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INCREMENTAL_ROUTING=1" -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[6] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_LEVEL=1" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_IN_ENABLED=0" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_PIPELINE=0" -section_id auto_signaltap_0
@@ -1214,11 +1213,8 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDRESS[18]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDRESS[19]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDRESS[2]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to SRAM_ADDRESS
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[7] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[9] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[5] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[24] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[31] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_SEGMENT_SIZE=16384" -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[21] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_SAMPLE_DEPTH=16384" -section_id auto_signaltap_0
@@ -1228,17 +1224,9 @@ set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[1] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[2] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[8] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[13] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[16] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[27] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[17] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[19] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[30] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[23] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[10] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[0] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[18] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[26] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -entity DE2_115_Default -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -entity DE2_115_Default -section_id Top
 set_global_assignment -name LL_ROOT_REGION ON -entity DE2_115_Default -section_id "Root Region"
@@ -1285,15 +1273,11 @@ set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_RO
 set_global_assignment -name PARTITION_COLOR 16764057 -entity lab8 -section_id Top
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -entity lab8 -section_id Top
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[3] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[14] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[15] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[25] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[12] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[22] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[28] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[29] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[11] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
-set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[20] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[4] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ADVANCED_TRIGGER_ENTITY=basic,1," -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ENABLE_ADVANCED_TRIGGER=0" -section_id auto_signaltap_0
@@ -1506,7 +1490,6 @@ set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[122
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[123] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|graphics_accelerator2:graphics|curr_frame_controller:curr_frame_controller_0|step_done" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[124] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|graphics_accelerator2:graphics|nfc_en" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[125] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][0]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[126] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[6][0]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[58] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|graphics_accelerator2:graphics|curr_frame_controller:curr_frame_controller_0|VGA_controller:vga_controller_instance|DrawX[0]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[59] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|graphics_accelerator2:graphics|curr_frame_controller:curr_frame_controller_0|VGA_controller:vga_controller_instance|DrawX[1]" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[60] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|graphics_accelerator2:graphics|curr_frame_controller:curr_frame_controller_0|VGA_controller:vga_controller_instance|DrawX[2]" -section_id auto_signaltap_0
@@ -1575,11 +1558,90 @@ set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[122] -
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[123] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|graphics_accelerator2:graphics|curr_frame_controller:curr_frame_controller_0|step_done" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[124] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|graphics_accelerator2:graphics|nfc_en" -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[125] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][0]" -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[126] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[6][0]" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_DATA_BITS=127" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_BITS=127" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_STORAGE_QUALIFIER_BITS=127" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK=0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK_LENGTH=409" -section_id auto_signaltap_0
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[126] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][10]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[127] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][11]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[128] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][12]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[129] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][13]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[130] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][14]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[131] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][15]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[132] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][16]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[133] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][17]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[134] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][18]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[135] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][19]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[136] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][1]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[137] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][20]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[138] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][21]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[139] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][22]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[140] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][23]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[141] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][24]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[142] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][25]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[143] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][26]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[144] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][27]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[145] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][28]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[146] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][29]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[147] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][2]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[148] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][30]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[149] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][31]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[150] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][3]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[151] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][4]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[152] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][5]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[153] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][6]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[154] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][7]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[155] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][8]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[156] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][9]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[157] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[6][0]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[126] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][10]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[127] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][11]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[128] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][12]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[129] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][13]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[130] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][14]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[131] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][15]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[132] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][16]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[133] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][17]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[134] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][18]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[135] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][19]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[136] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][1]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[137] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][20]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[138] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][21]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[139] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][22]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[140] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][23]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[141] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][24]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[142] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][25]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[143] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][26]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[144] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][27]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[145] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][28]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[146] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][29]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[147] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][2]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[148] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][30]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[149] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][31]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[150] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][3]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[151] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][4]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[152] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][5]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[153] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][6]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[154] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][7]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[155] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][8]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[156] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[5][9]" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[157] -to "nios_system:nios_system|avalon_graphics_interface:avalon_graphics_interface_0|registers[6][0]" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_DATA_BITS=158" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_BITS=158" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_STORAGE_QUALIFIER_BITS=158" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK=0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK_LENGTH=502" -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[0] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[5] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[6] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[7] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[10] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[11] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[13] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[14] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[16] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[18] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[20] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[22] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[23] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[26] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[27] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[31] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_global_assignment -name SLD_FILE db/stp1_auto_stripped.stp
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
