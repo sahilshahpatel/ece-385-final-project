@@ -62,7 +62,7 @@ module avalon_graphics_interface(
 	
 	always_comb begin
 		// Defaults
-		AVL_READDATA = 16'bZ;
+		AVL_READDATA = 16'b0;
 		if(AVL_CS) begin // if chip is selected
 			if(AVL_READ) begin
 				// Perform read

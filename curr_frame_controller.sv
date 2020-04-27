@@ -21,8 +21,6 @@ module curr_frame_controller(
 	output logic SRAM_OE_N,
 	output logic [19:0] SRAM_ADDRESS
 );
-
-	logic next_step_done;
 	
 	// Use PLL to generate the 25MHZ VGA_CLK.
 	// You will have to generate it on your own in simulation.
@@ -30,7 +28,8 @@ module curr_frame_controller(
 	//halftime vga_clk_simulator (.Clk, .Reset(VGA_CLK_reset), .half_Clk(VGA_CLK)); // For simulation only
 	vga_clk vga_clk_instance(.inclk0(Clk), .c0(VGA_CLK));
 
-	rising_edge_detector frame_clk_detector(.signal(VGA_VS), .Clk, .rising_edge(frame_clk));
+	logic new_frame; // Frame_clk but it stays until both controllers have recieved the message.
+	falling_edge_detector frame_clk_detector(.signal(VGA_VS), .Clk, .falling_edge(frame_clk));
 	
 	logic [9:0] DrawX, DrawY;
 	VGA_controller vga_controller_instance(.Clk, .Reset(Reset), .VGA_HS, .VGA_VS, .VGA_CLK, .VGA_BLANK_N, .VGA_SYNC_N, .DrawX, .DrawY);
@@ -74,13 +73,15 @@ module curr_frame_controller(
 		
 			state <= DONE;
 			sram_address <= {1'b0, 1'b0, 18'b0};
-			step_done <= 1'b0;
+			
+			new_frame <= frame_clk;
 		end
 		else if (EN) begin
 			// Enabled -- progress state machine
 			state <= next_state;
 			sram_address <= next_sram_address;
-			step_done <= next_step_done;
+			
+			new_frame <= frame_clk;
 			
 			if(frame_clk) begin
 				even_frame <= ~even_frame;
@@ -90,7 +91,13 @@ module curr_frame_controller(
 			// Not enabled -- pause state machine
 			state <= state;
 			sram_address <= sram_address;
-			step_done <= 1'b0;
+			
+			if(frame_clk == 1) begin
+				new_frame <= frame_clk;
+			end
+			else begin
+				new_frame <= new_frame;
+			end
 			
 			if(frame_clk) begin
 				even_frame <= ~even_frame;
@@ -100,7 +107,7 @@ module curr_frame_controller(
 	
 	always_comb begin
 		// Defaults
-		next_step_done = 0;
+		step_done = 0;
 		
 		next_state = state;
 		next_sram_address = sram_address;
@@ -116,10 +123,11 @@ module curr_frame_controller(
 	
 		case (state)
 			DONE: begin
-				next_step_done = 1; // We can pause here for CFC
-				if(frame_clk) begin
-					next_state = CLEAR_SYNC;
+				if(new_frame) begin
+					next_state = READ_SYNC;
 				end
+
+				step_done = 1; // We can pause here for NFC
 			end
 			CLEAR_SYNC: begin
 				SRAM_WE_N = 0;
@@ -131,7 +139,7 @@ module curr_frame_controller(
 				SRAM_ADDRESS = sram_address;
 				
 				Data_to_SRAM = 16'h1111; // 4 pixels of background color
-				next_sram_address = sram_address + 1;
+				next_sram_address = sram_address + 20'd1;
 				
 				// Keep clearing until done
 				if(sram_address[17:0] == {18{1'b1}}) begin
@@ -144,7 +152,7 @@ module curr_frame_controller(
 				Data_to_SRAM = 16'h1111;
 				
 				next_sram_address = {1'b0, even_frame, 18'b0}; // Reset sram_address to top of curr_frame buffer
-				next_state = READ_SYNC;
+				next_state = DONE;
 			end
 			READ_SYNC: begin //accounts for sync delay
 				SRAM_OE_N = 0;
@@ -158,7 +166,7 @@ module curr_frame_controller(
 				
 				if(col_counter != 0) begin // Don't write to row buffer on first -- have to wait for memory.
 					row_buffer_we = 1;
-					row_buffer_addr = col_counter - 1; // Write to the previous 
+					row_buffer_addr = col_counter - 8'd1; // Write to the previous 
 					row_buffer_in = Data_from_SRAM;
 				end
 				
@@ -167,11 +175,11 @@ module curr_frame_controller(
 					next_state = READ_WAIT;
 				end
 				else begin
-					next_sram_address = sram_address + 1; // Increments address (and col_counter)
+					next_sram_address = sram_address + 20'd1; // Increments address (and col_counter)
 				end
 			end
 			READ_WAIT: begin // Handles memory delay for last read  
-				next_sram_address = sram_address + 1; // sram_address wasn't incremented on the last READ
+				next_sram_address = sram_address + 20'd1; // sram_address wasn't incremented on the last READ
 				
 				SRAM_OE_N = 0;
 				SRAM_WE_N = 1;
@@ -182,17 +190,17 @@ module curr_frame_controller(
 				row_buffer_in = Data_from_SRAM;
 				
 				next_state = ROW_DONE;
-				next_step_done = 1; // We can pause here for NFC
+				step_done = 1; // We can pause here for NFC
 			end
 			ROW_DONE: begin
 				if(row_counter == 10'b0) begin // If last row is done, move to DONE
-					next_state = DONE;
+					next_state = CLEAR_SYNC;
 				end
 				else if(VGA_HS == 0) begin // During horizontal blanking is when we start fetching the next row
 					next_state = READ_SYNC;
 				end
 				
-				next_step_done = 1; // We can pause here for NFC
+				step_done = 1; // We can pause here for NFC
 			end
 		endcase
 	end

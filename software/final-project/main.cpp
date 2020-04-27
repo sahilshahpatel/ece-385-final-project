@@ -58,6 +58,9 @@ int main(void)
 	alt_u8 hot_plug_count;
 	alt_u16 code;
 
+	// Pointer to registers inside of graphics interface
+	volatile unsigned int * GRAPHICS_PTR = (unsigned int *) AVALON_GRAPHICS_INTERFACE_0_BASE;
+
 	Game game;
 
 	printf("USB keyboard setup...\n\n");
@@ -553,7 +556,7 @@ int main(void)
 		// The first two keycodes are stored in 0x051E. Other keycodes are in 
 		// subsequent addresses.
 		keycode = UsbRead(0x051e);
-		printf("\nfirst two keycode values are %04x\n",keycode);
+		printf("\nfirst two keycode values are %04x\n", keycode);
 		// We only need the first keycode, which is at the lower byte of keycode.
 		// Send the keycode to hardware via PIO.
 		*keycode_base = keycode & 0xff; 
@@ -579,7 +582,7 @@ int main(void)
 
 		while (!(usb_ctl_val & no_device))
 		{
-
+			//printf("stuck in this loop\n");
 			usb_ctl_val = UsbRead(ctl_reg);
 			usleep(5*1000);
 			usb_ctl_val = UsbRead(ctl_reg);
@@ -595,17 +598,18 @@ int main(void)
 
 		/* Above is keyboard setup loop, below is game loop*/
 
-		// Pointer to registers inside of graphics interface
-		volatile unsigned int * GRAPHICS_PTR = (unsigned int *) AVALON_GRAPHICS_INTERFACE_0_BASE;
+		printf("test\n");
 
-		while(GRAPHICS_PTR[5] == 0){
-			printf("Waiting for frame flag\n");
+
+//		while(GRAPHICS_PTR[5] == 0){
+//			printf("Waiting for frame flag\n");
 			// Wait for frame flag
-		}
+//		}
 		GRAPHICS_PTR[6] = 1; // Acknowledge frame flag
 
-		game.update(keycode);
-		game.draw();
+//		game.update(keycode);
+//		game.draw();
+
 	}//end while
 
 	return 0;
