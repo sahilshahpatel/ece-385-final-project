@@ -11,11 +11,8 @@ module avalon_graphics_interface(
 	input  logic AVL_CS,						// Avalon-MM Chip Select
 	input  logic [3:0] AVL_BYTE_EN,		// Avalon-MM Byte Enable
 	input  logic [2:0] AVL_ADDR,			// Avalon-MM Address
-	input  logic [15:0] AVL_WRITEDATA,	// Avalon-MM Write Data
-	output logic [15:0] AVL_READDATA,	// Avalon-MM Read Data
-	
-	// Exported Conduit
-	output logic [15:0] EXPORT_DATA,		// Exported Conduit Signal
+	input  logic [31:0] AVL_WRITEDATA,	// Avalon-MM Write Data
+	output logic [31:0] AVL_READDATA,	// Avalon-MM Read Data
 
 	// VGA Interface 
 	output logic [7:0]  VGA_R,        //VGA Red
@@ -62,45 +59,46 @@ module avalon_graphics_interface(
 	
 	always_comb begin
 		// Defaults
-		AVL_READDATA = 16'b0;
+		AVL_READDATA = 32'b0;
 		if(AVL_CS) begin // if chip is selected
 			if(AVL_READ) begin
 				// Perform read
-				AVL_READDATA = registers[AVL_ADDR][15:0];
+				AVL_READDATA = registers[AVL_ADDR];
 			end
 		end
 	end
 
 	always_ff @(posedge Clk) begin
-		if(AVL_CS) begin // if chip is selected
-			if(AVL_WRITE) begin
-				// Perform write on enabled bits
-				if(AVL_BYTE_EN[0])
-					registers[AVL_ADDR][7:0] <= AVL_WRITEDATA[7:0];
-				if(AVL_BYTE_EN[1])
-					registers[AVL_ADDR][15:8] <= AVL_WRITEDATA[15:8];
-			end
-		end
-		
-		registers[4][0] <= Done; // Load in done
-		if(registers[5][0] == 0) begin // Load new frame if not waiting for acknowledgement
-			registers[5][0] <= frame_clk;
-		end
-		else if(registers[5][0] && registers[6][0]) begin
-			// New frame was acknowledged, reset to 0
-			registers[5][0] <= 0;
+		if(RESET) begin
+			registers[3] <= 32'd0;
+			registers[4] <= 32'd0;
+			registers[5] <= 32'd0;
+			registers[6] <= 32'd0;
 		end
 		else begin
-			registers[5][0] <= registers[5][0]; // Retain message if not acknowledged
-		end
-		
-		if(RESET) begin
-			registers[3] <= 0;
-			registers[4] <= 0;
-			registers[5] <= 0;
-			registers[6] <= 0;
+			// Handle writes
+			if(AVL_CS && AVL_WRITE) begin
+				// Perform write on enabled bits
+				if(AVL_ADDR != 4 && AVL_ADDR != 5) begin // registers 4 and 5 are read only
+					if(AVL_BYTE_EN[0])
+						registers[AVL_ADDR][7:0] <= AVL_WRITEDATA[7:0];
+					if(AVL_BYTE_EN[1])
+						registers[AVL_ADDR][15:8] <= AVL_WRITEDATA[15:8];
+				end
+			end
+			
+			// Handle read-only registers
+			registers[4] <= {31'b0, Done}; // Load in done
+			if(registers[5] == 32'd0) begin // Load new frame if not waiting for acknowledgement
+				registers[5] <= {31'b0, frame_clk};
+			end
+			else if(registers[5][0] && registers[6][0]) begin
+				// New frame was acknowledged, reset to 0
+				registers[5] <= 0;
+			end
+			else begin
+				registers[5] <= registers[5]; // Retain message if not acknowledged
+			end
 		end
 	end
-
-	assign EXPORT_DATA = 0; 
 endmodule

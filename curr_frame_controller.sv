@@ -34,6 +34,9 @@ module curr_frame_controller(
 	logic [9:0] DrawX, DrawY;
 	VGA_controller vga_controller_instance(.Clk, .Reset(Reset), .VGA_HS, .VGA_VS, .VGA_CLK, .VGA_BLANK_N, .VGA_SYNC_N, .DrawX, .DrawY);
 	
+	logic [9:0] next_drawY; // For use in READ state to read upcoming row
+	assign next_drawY = DrawY + 1 < 10'd525 ? DrawY + 1 : 10'd0;
+	
 	// Frame buffers in SRAM (SRAM_ADDRESS[19] == 0)
 	// currentFrame = SRAM_ADDRESS[18] = even_frame
 	// nextFrame = SRAM_ADDRESS[18] = ~even_frame
@@ -65,7 +68,14 @@ module curr_frame_controller(
 	assign col_counter = sram_address[7:0];
 	assign row_counter = sram_address[17:8];
 	
-	enum logic [2:0] {DONE, CLEAR_SYNC, CLEAR, CLEAR_WAIT, READ_SYNC, READ, READ_WAIT, ROW_DONE} state, next_state;
+	
+	// State Machine:
+	// 	- Begins in DONE so that the read/clear cycles can start on a new frame
+	//		- During the Horizontal Blanking period, READs the upcoming row to the row buffer
+	//		- CLEARs the row in SRAM that was just read
+	//		- Waits in state ROW_DONE for the next row to begin. While here, the NFC is allowed to operate
+	
+	enum logic [2:0] {DONE, READ_SYNC, READ, READ_WAIT, CLEAR_SYNC, CLEAR, CLEAR_WAIT, ROW_DONE} state, next_state;
 	
 	always_ff @(posedge Clk) begin
 		if(Reset) begin
@@ -109,14 +119,17 @@ module curr_frame_controller(
 		// Defaults
 		step_done = 0;
 		
+		// State variables retain value by default
 		next_state = state;
 		next_sram_address = sram_address;
 		
+		// SRAM is totally inactive in default state
 		SRAM_OE_N = 1;
 		SRAM_WE_N = 1;
-		SRAM_ADDRESS = 0;
-		Data_to_SRAM = 16'b0;
+		SRAM_ADDRESS = 20'h00DEF;
+		Data_to_SRAM = 16'h0DEF;
 		
+		// Row buffer is not writing by default
 		row_buffer_we = 0;
 		row_buffer_addr = 0;
 		row_buffer_in = 0;
@@ -129,58 +142,31 @@ module curr_frame_controller(
 
 				step_done = 1; // We can pause here for NFC
 			end
-			CLEAR_SYNC: begin
-				SRAM_WE_N = 0;
-				next_sram_address = {1'b0, ~even_frame, 18'b0}; // Clear out what is now next_frame
-				next_state = CLEAR; 
-			end
-			CLEAR: begin			
-				SRAM_WE_N = 0;
-				SRAM_ADDRESS = sram_address;
-				
-				Data_to_SRAM = 16'h1111; // 4 pixels of background color
-				next_sram_address = sram_address + 20'd1;
-				
-				// Keep clearing until done
-				if(sram_address[17:0] == {18{1'b1}}) begin
-					next_state = CLEAR_WAIT;
-				end
-			end
-			CLEAR_WAIT: begin
-				// SRAM_WE_N will be low b/c of synchronizer
-				SRAM_ADDRESS = sram_address;
-				Data_to_SRAM = 16'h1111;
-				
-				next_sram_address = {1'b0, even_frame, 18'b0}; // Reset sram_address to top of curr_frame buffer
-				next_state = DONE;
-			end
 			READ_SYNC: begin //accounts for sync delay
 				SRAM_OE_N = 0;
 				SRAM_WE_N = 1;
 				next_state = READ;
+				next_sram_address = {1'b0, even_frame, next_drawY, 8'b0}; // Read for the upcoming row to be drawn
 			end 
 			READ: begin
 				SRAM_OE_N = 0;
 				SRAM_WE_N = 1;
 				SRAM_ADDRESS = sram_address;
 				
-				if(col_counter != 0) begin // Don't write to row buffer on first -- have to wait for memory.
+				if(col_counter != 8'd0) begin // Don't write to row buffer on first -- have to wait for memory.
 					row_buffer_we = 1;
 					row_buffer_addr = col_counter - 8'd1; // Write to the previous 
 					row_buffer_in = Data_from_SRAM;
 				end
 				
-				
 				if(col_counter == 8'hff) begin
 					next_state = READ_WAIT;
 				end
 				else begin
-					next_sram_address = sram_address + 20'd1; // Increments address (and col_counter)
+					next_sram_address = sram_address + 20'd1; // Increments address (and col_counter) but not for last one to preserve row_counter
 				end
 			end
-			READ_WAIT: begin // Handles memory delay for last read  
-				next_sram_address = sram_address + 20'd1; // sram_address wasn't incremented on the last READ
-				
+			READ_WAIT: begin // Handles memory delay for last read  				
 				SRAM_OE_N = 0;
 				SRAM_WE_N = 1;
 				SRAM_ADDRESS = sram_address;
@@ -189,14 +175,38 @@ module curr_frame_controller(
 				row_buffer_addr = col_counter;
 				row_buffer_in = Data_from_SRAM;
 				
-				next_state = ROW_DONE;
-				step_done = 1; // We can pause here for NFC
+				next_state = CLEAR_SYNC;
 			end
-			ROW_DONE: begin
-				if(row_counter == 10'b0) begin // If last row is done, move to DONE
-					next_state = CLEAR_SYNC;
+			CLEAR_SYNC: begin			
+				SRAM_WE_N = 0;
+				next_sram_address = {1'b0, even_frame, row_counter, 8'b0}; // Reset to beginning of the just-read row
+				next_state = CLEAR;
+			end
+			CLEAR: begin			
+				SRAM_WE_N = 0;
+				SRAM_ADDRESS = sram_address;
+				
+				Data_to_SRAM = 16'h1111; // 4 pixels of background color
+				
+				// Keep clearing until done with row
+				if(col_counter == 8'hFF) begin
+					next_state = CLEAR_WAIT;
 				end
-				else if(VGA_HS == 0) begin // During horizontal blanking is when we start fetching the next row
+				else begin
+					next_sram_address = sram_address + 20'd1;
+				end
+			end
+			CLEAR_WAIT: begin
+				// SRAM_WE_N will be low b/c of synchronizer
+				SRAM_ADDRESS = sram_address;
+				Data_to_SRAM = 16'h1111;
+				
+				//next_sram_address = sram_address + 20'd1; // sram_address wasn't incremented on last CLEAR
+				
+				next_state = ROW_DONE;		
+			end
+			ROW_DONE: begin				
+				if(VGA_HS == 0) begin // During horizontal blanking is when we start fetching the next row
 					next_state = READ_SYNC;
 				end
 				

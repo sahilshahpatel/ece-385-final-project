@@ -4,7 +4,7 @@
  * Machine generated for CPU 'nios2_gen2_0' in SOPC Builder design 'nios_system'
  * SOPC Builder design path: ../../nios_system.sopcinfo
  *
- * Generated: Sun Apr 26 15:52:49 CDT 2020
+ * Generated: Mon Apr 27 15:04:25 CDT 2020
  */
 
 /*
@@ -159,19 +159,19 @@
 #define ALT_NUM_INTERNAL_INTERRUPT_CONTROLLERS 1
 #define ALT_NUM_INTERRUPT_CONTROLLERS 1
 #define ALT_STDERR "/dev/jtag_uart_0"
-#define ALT_STDERR_BASE 0x140
+#define ALT_STDERR_BASE 0x160
 #define ALT_STDERR_DEV jtag_uart_0
 #define ALT_STDERR_IS_JTAG_UART
 #define ALT_STDERR_PRESENT
 #define ALT_STDERR_TYPE "altera_avalon_jtag_uart"
 #define ALT_STDIN "/dev/jtag_uart_0"
-#define ALT_STDIN_BASE 0x140
+#define ALT_STDIN_BASE 0x160
 #define ALT_STDIN_DEV jtag_uart_0
 #define ALT_STDIN_IS_JTAG_UART
 #define ALT_STDIN_PRESENT
 #define ALT_STDIN_TYPE "altera_avalon_jtag_uart"
 #define ALT_STDOUT "/dev/jtag_uart_0"
-#define ALT_STDOUT_BASE 0x140
+#define ALT_STDOUT_BASE 0x160
 #define ALT_STDOUT_DEV jtag_uart_0
 #define ALT_STDOUT_IS_JTAG_UART
 #define ALT_STDOUT_PRESENT
@@ -185,11 +185,11 @@
  */
 
 #define ALT_MODULE_CLASS_avalon_graphics_interface_0 avalon_graphics_interface
-#define AVALON_GRAPHICS_INTERFACE_0_BASE 0x120
+#define AVALON_GRAPHICS_INTERFACE_0_BASE 0x40
 #define AVALON_GRAPHICS_INTERFACE_0_IRQ -1
 #define AVALON_GRAPHICS_INTERFACE_0_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define AVALON_GRAPHICS_INTERFACE_0_NAME "/dev/avalon_graphics_interface_0"
-#define AVALON_GRAPHICS_INTERFACE_0_SPAN 16
+#define AVALON_GRAPHICS_INTERFACE_0_SPAN 32
 #define AVALON_GRAPHICS_INTERFACE_0_TYPE "avalon_graphics_interface"
 
 
@@ -210,7 +210,7 @@
  */
 
 #define ALT_MODULE_CLASS_jtag_uart_0 altera_avalon_jtag_uart
-#define JTAG_UART_0_BASE 0x140
+#define JTAG_UART_0_BASE 0x160
 #define JTAG_UART_0_IRQ 5
 #define JTAG_UART_0_IRQ_INTERRUPT_CONTROLLER_ID 0
 #define JTAG_UART_0_NAME "/dev/jtag_uart_0"
@@ -228,7 +228,7 @@
  */
 
 #define ALT_MODULE_CLASS_keycode altera_avalon_pio
-#define KEYCODE_BASE 0x100
+#define KEYCODE_BASE 0x130
 #define KEYCODE_BIT_CLEARING_EDGE_REGISTER 0
 #define KEYCODE_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define KEYCODE_CAPTURE 0
@@ -284,7 +284,7 @@
  */
 
 #define ALT_MODULE_CLASS_otg_hpi_address altera_avalon_pio
-#define OTG_HPI_ADDRESS_BASE 0xf0
+#define OTG_HPI_ADDRESS_BASE 0x120
 #define OTG_HPI_ADDRESS_BIT_CLEARING_EDGE_REGISTER 0
 #define OTG_HPI_ADDRESS_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define OTG_HPI_ADDRESS_CAPTURE 0
@@ -311,7 +311,7 @@
  */
 
 #define ALT_MODULE_CLASS_otg_hpi_cs altera_avalon_pio
-#define OTG_HPI_CS_BASE 0xb0
+#define OTG_HPI_CS_BASE 0xe0
 #define OTG_HPI_CS_BIT_CLEARING_EDGE_REGISTER 0
 #define OTG_HPI_CS_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define OTG_HPI_CS_CAPTURE 0
@@ -338,7 +338,7 @@
  */
 
 #define ALT_MODULE_CLASS_otg_hpi_data altera_avalon_pio
-#define OTG_HPI_DATA_BASE 0xe0
+#define OTG_HPI_DATA_BASE 0x110
 #define OTG_HPI_DATA_BIT_CLEARING_EDGE_REGISTER 0
 #define OTG_HPI_DATA_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define OTG_HPI_DATA_CAPTURE 0
@@ -365,7 +365,7 @@
  */
 
 #define ALT_MODULE_CLASS_otg_hpi_r altera_avalon_pio
-#define OTG_HPI_R_BASE 0xd0
+#define OTG_HPI_R_BASE 0x100
 #define OTG_HPI_R_BIT_CLEARING_EDGE_REGISTER 0
 #define OTG_HPI_R_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define OTG_HPI_R_CAPTURE 0
@@ -392,7 +392,7 @@
  */
 
 #define ALT_MODULE_CLASS_otg_hpi_reset altera_avalon_pio
-#define OTG_HPI_RESET_BASE 0xa0
+#define OTG_HPI_RESET_BASE 0xd0
 #define OTG_HPI_RESET_BIT_CLEARING_EDGE_REGISTER 0
 #define OTG_HPI_RESET_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define OTG_HPI_RESET_CAPTURE 0
@@ -419,7 +419,7 @@
  */
 
 #define ALT_MODULE_CLASS_otg_hpi_w altera_avalon_pio
-#define OTG_HPI_W_BASE 0xc0
+#define OTG_HPI_W_BASE 0xf0
 #define OTG_HPI_W_BIT_CLEARING_EDGE_REGISTER 0
 #define OTG_HPI_W_BIT_MODIFYING_OUTPUT_REGISTER 0
 #define OTG_HPI_W_CAPTURE 0
@@ -485,7 +485,7 @@
  */
 
 #define ALT_MODULE_CLASS_sdram_pll altpll
-#define SDRAM_PLL_BASE 0x110
+#define SDRAM_PLL_BASE 0x140
 #define SDRAM_PLL_IRQ -1
 #define SDRAM_PLL_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define SDRAM_PLL_NAME "/dev/sdram_pll"
@@ -499,13 +499,13 @@
  */
 
 #define ALT_MODULE_CLASS_sysid_qsys_0 altera_avalon_sysid_qsys
-#define SYSID_QSYS_0_BASE 0x138
+#define SYSID_QSYS_0_BASE 0x158
 #define SYSID_QSYS_0_ID 0
 #define SYSID_QSYS_0_IRQ -1
 #define SYSID_QSYS_0_IRQ_INTERRUPT_CONTROLLER_ID -1
 #define SYSID_QSYS_0_NAME "/dev/sysid_qsys_0"
 #define SYSID_QSYS_0_SPAN 8
-#define SYSID_QSYS_0_TIMESTAMP 1587932949
+#define SYSID_QSYS_0_TIMESTAMP 1588017660
 #define SYSID_QSYS_0_TYPE "altera_avalon_sysid_qsys"
 
 #endif /* __SYSTEM_H_ */
