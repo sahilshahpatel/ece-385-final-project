@@ -53,7 +53,7 @@ module graphics_accelerator2
 	logic nfc_sram_oe_n, cfc_sram_oe_n;
 	logic nfc_sram_we_n, cfc_sram_we_n;
 	logic [19:0] nfc_sram_addr, cfc_sram_addr;
-	logic nfc_data_to_sram, cfc_data_to_sram;
+	logic [15:0] nfc_data_to_sram, cfc_data_to_sram;
 	
 	logic even_frame;
 	
@@ -84,7 +84,7 @@ module graphics_accelerator2
 	
 	next_frame_controller next_frame_controller_0 (
 		.Clk,
-		.Reset(Reset || new_frame),
+		.Reset(Reset || frame_clk),
 		.EN(nfc_en),
 		.even_frame,
 		.step_done(nfc_step_done),

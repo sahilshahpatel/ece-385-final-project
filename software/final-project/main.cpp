@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <io.h>
 #include <fcntl.h>
+#include <time.h>
 
 #include "system.h"
 #include "alt_types.h"
@@ -28,6 +29,7 @@
 #include "lcp_data.h"
 
 #include "game.h"
+
 
 //----------------------------------------------------------------------------------------//
 //
@@ -57,6 +59,9 @@ int main(void)
 	alt_u8 data_size;
 	alt_u8 hot_plug_count;
 	alt_u16 code;
+
+	// Pointer to registers inside of graphics interface
+	volatile unsigned int * GRAPHICS_PTR = (unsigned int *) AVALON_GRAPHICS_INTERFACE_0_BASE;
 
 	Game game;
 
@@ -503,8 +508,10 @@ int main(void)
 
 	//-----------------------------------get keycode value------------------------------------------------//
 	usleep(10000);
+	//clock_t start, end;
 	while(1)
 	{
+		//start = clock();
 		toggle++;
 		IO_write(HPI_ADDR,0x0500); //the start address
 		//data phase IN-1
@@ -524,7 +531,7 @@ int main(void)
 		IO_write(HPI_DATA,0x0013);//8
 		IO_write(HPI_DATA,0x0000);//a
 		UsbWrite(HUSB_SIE1_pCurrentTDPtr,0x0500); //HUSB_SIE1_pCurrentTDPtr
-		
+
 		while (!(IO_read(HPI_STATUS) & HPI_STATUS_SIE1msg_FLAG) )  //read sie1 msg register
 		{
 			IO_write(HPI_ADDR,0x0500); //the start address
@@ -545,20 +552,21 @@ int main(void)
 			IO_write(HPI_DATA,0x0013);//8
 			IO_write(HPI_DATA,0x0000);//
 			UsbWrite(HUSB_SIE1_pCurrentTDPtr,0x0500); //HUSB_SIE1_pCurrentTDPtr
-			usleep(10*1000);
+			//usleep(10*1000);
 		}//end while
 
 		usb_ctl_val = UsbWaitTDListDone();
 
-		// The first two keycodes are stored in 0x051E. Other keycodes are in 
+		// The first two keycodes are stored in 0x051E. Other keycodes are in
 		// subsequent addresses.
 		keycode = UsbRead(0x051e);
-		printf("\nfirst two keycode values are %04x\n",keycode);
+		//printf("\nfirst two keycode values are %04x\n", keycode);
+
 		// We only need the first keycode, which is at the lower byte of keycode.
 		// Send the keycode to hardware via PIO.
-		*keycode_base = keycode & 0xff; 
+		*keycode_base = keycode & 0xff;
 
-		usleep(200);//usleep(5000);
+		//usleep(200);//usleep(5000);
 		usb_ctl_val = UsbRead(ctl_reg);
 
 		if(!(usb_ctl_val & no_device))
@@ -566,7 +574,7 @@ int main(void)
 			//USB hot plug routine
 			for(hot_plug_count = 0 ; hot_plug_count < 7 ; hot_plug_count++)
 			{
-				usleep(5*1000);
+				//usleep(5*1000);
 				usb_ctl_val = UsbRead(ctl_reg);
 				if(usb_ctl_val & no_device) break;
 			}
@@ -579,7 +587,6 @@ int main(void)
 
 		while (!(usb_ctl_val & no_device))
 		{
-
 			usb_ctl_val = UsbRead(ctl_reg);
 			usleep(5*1000);
 			usb_ctl_val = UsbRead(ctl_reg);
@@ -595,17 +602,17 @@ int main(void)
 
 		/* Above is keyboard setup loop, below is game loop*/
 
-		// Pointer to registers inside of graphics interface
-		volatile unsigned int * GRAPHICS_PTR = (unsigned int *) AVALON_GRAPHICS_INTERFACE_0_BASE;
-
 		while(GRAPHICS_PTR[5] == 0){
-			printf("Waiting for frame flag\n");
+			//printf("Waiting for frame flag\n");
 			// Wait for frame flag
 		}
-		GRAPHICS_PTR[6] = 1; // Acknowledge frame flag
+		GRAPHICS_PTR[6] = 1; // Acknowledge frame flag (will be lowered automatically)
 
 		game.update(keycode);
 		game.draw();
+
+		//end = clock();
+		//printf("Time passed: %f seconds\n", (float)(end-start)/CLOCKS_PER_SEC);
 	}//end while
 
 	return 0;

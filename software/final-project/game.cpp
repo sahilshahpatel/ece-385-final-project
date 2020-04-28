@@ -7,12 +7,11 @@
 #include "game.h"
 #include "system.h"
 #include "graphics.h"
-#include <iostream>
 
 // Game board is 64x64 tiles where each tile is 16x16 pixels
 #define SPRITE_SIZE 16
-#define ROWS 64
-#define COLS 64
+#define ROWS 40 // 640 pix / SPRITE_SIZE
+#define COLS 30 // 480 pix / SPRITE_SIZE
 
 Game::Game(){
 	// Setup board
@@ -49,7 +48,7 @@ Game::Game(){
 
 // Game logic happens in update
 void Game::update(int keycodes){
-	std::cout << "updating game" << std::endl;
+	//std::cout << "updating game" << std::endl;
 
 
 	//Turning Light on and off
