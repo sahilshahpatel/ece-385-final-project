@@ -34,9 +34,8 @@ class Game {
 	bool light;
 
 	// Variables to handle key presses
-	clock_t last_key_activation;
 	int prev_key;
-	int key; // Is set only on initial press and at intervals afterward
+	int key; // Is set only on initial press
 
 	void updateKey(int keycodes);
 	void handleInput(int key);
