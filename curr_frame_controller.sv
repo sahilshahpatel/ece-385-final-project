@@ -29,7 +29,7 @@ module curr_frame_controller(
 	vga_clk vga_clk_instance(.inclk0(Clk), .c0(VGA_CLK));
 
 	logic new_frame; // Frame_clk but it stays until both controllers have recieved the message.
-	falling_edge_detector frame_clk_detector(.signal(VGA_VS), .Clk, .falling_edge(frame_clk));
+	rising_edge_detector frame_clk_detector(.signal(VGA_VS), .Clk, .rising_edge(frame_clk));
 	
 	logic [9:0] DrawX, DrawY;
 	VGA_controller vga_controller_instance(.Clk, .Reset(Reset), .VGA_HS, .VGA_VS, .VGA_CLK, .VGA_BLANK_N, .VGA_SYNC_N, .DrawX, .DrawY);

@@ -18,8 +18,6 @@ module next_frame_controller(
 	output logic [19:0] SRAM_ADDRESS
 );
 
-	logic next_step_done;
-
 	// Srite ROMs in on-chip memory
 	// rom_address[1:0] tells us which of 4 pixels per SRAM word
 	// rom_address[3:2] tells us which column we are on
@@ -55,7 +53,6 @@ module next_frame_controller(
 			rom_address <= 0;
 			write_buffer <= 0;
 			sram_address <= {1'b0, even_frame, 18'b0};
-			step_done <= 0;
 		end
 		else if(EN) begin
 			// Enabled, change states
@@ -63,7 +60,6 @@ module next_frame_controller(
 			rom_address <= next_rom_address;
 			write_buffer <= next_write_buffer;
 			sram_address <= next_sram_address;
-			step_done <= next_step_done;
 		end
 		else begin
 			// Not enabled -- change nothing
@@ -71,13 +67,12 @@ module next_frame_controller(
 			rom_address <= rom_address;
 			write_buffer <= write_buffer;
 			sram_address <= sram_address;
-			step_done <= 0;
 		end
 	end
 	
 	always_comb begin
 		// Defaults
-		next_step_done = 0;
+		step_done = 0;
 		
 		next_state = state;
 		next_rom_address = rom_address;
@@ -101,11 +96,11 @@ module next_frame_controller(
 		// State machine for updating nextFrame
 		case (state)
 			WAIT: begin
-				next_step_done = 1; // We can pause here for CFC			
+				step_done = 1; // We can pause here for CFC			
 				
 				if(Start) begin
 					next_rom_address = 8'h00;
-					// Read next
+
 					next_state = WAIT_READ;
 					next_sram_address = {1'b0, ~even_frame, {imgY, imgX[9:2]}}; // Frame stored row-major. 4 pix per word so ignore 2 LSB of x
 				end
@@ -122,10 +117,9 @@ module next_frame_controller(
 				SRAM_OE_N = 0;
 				// Read current values into write buffer so
 				// 	that we can re-write them on transparency
+				
 				next_write_buffer = Data_from_SRAM;
 				next_state = WAIT_CALCULATE;
-				
-				next_step_done = 1; // We can pause here for CFC
 			end
 			WAIT_CALCULATE: begin
 				next_state = CALCULATE; // Waits for rom_data to be valid
@@ -139,11 +133,9 @@ module next_frame_controller(
 				// Check if done with row
 				if(rom_address[1:0] == 2'b11) begin
 					next_state = WRITE;
-					// rom_address is not incremented here because it will be in WRITE\
-					
-					next_step_done = 1; // We can pause here for CFC
+					// rom_address is not incremented here because it will be in WRITE
 				end
-				else begin				
+				else begin
 					next_rom_address = rom_address + 8'h01;
 					next_state = WAIT_CALCULATE;
 				end
@@ -176,12 +168,10 @@ module next_frame_controller(
 					// We have more pixels to write
 					next_sram_address = {1'b0, ~even_frame, {(imgY + rom_address[7:4]), (imgX[9:2] + rom_address[3:2])}}; // Frame stored row-major
 					next_state = WAIT_READ;
-					
-					next_step_done = 1; // We can pause here for CFC
 				end
 			end
 			DONE: begin
-				next_step_done = 1; // We can pause here for CFC
+				step_done = 1; // We can pause here for CFC
 				
 				Done = 1;
 				if(Start == 0) begin
