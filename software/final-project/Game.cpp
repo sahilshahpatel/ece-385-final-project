@@ -10,9 +10,9 @@
 #include <stdio.h>
 
 // Game board is 64x64 tiles where each tile is 16x16 pixels
-#define TILE_SIZE 16
-#define COLS 40 // 640 pix / TILE_SIZE
-#define ROWS 30 // 480 pix / TILE_SIZE
+#define TILE_SIZE 32
+#define COLS 20 // 640 pix / TILE_SIZE
+#define ROWS 15 // 480 pix / TILE_SIZE
 
 Game::Game() :
 player(COLS/2, ROWS-1), light(true), prev_key(0), key(0) // Initializations
@@ -94,8 +94,12 @@ void Game::update(int keycodes){
 }
 
 // Image IDs
-#define MAIN_CHARACTER_SPRITE 0
-#define TILE_SPRITE 1
+#define PLAYER_SPRITE 0
+#define MONSTER_SPRITE 4
+#define PLAYER_LIGHT_SPRITE 8
+#define SPIKES_SPRITE 12
+#define TILE_SPRITE 16
+#define WALL_SPRTIE 20
 
 // Draws all sprites where they should be
 void Game::draw(){
@@ -110,7 +114,7 @@ void Game::draw(){
 	}
 
 	// Draw player with or without light
-	drawImg(MAIN_CHARACTER_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
+	drawImg(PLAYER_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
 }
 
 /* Helper functions */
