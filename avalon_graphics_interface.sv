@@ -92,9 +92,10 @@ module avalon_graphics_interface(
 			if(registers[5] == 32'd0) begin // Load new frame if not waiting for acknowledgement
 				registers[5] <= {31'b0, frame_clk};
 			end
-			else if(registers[5][0] && registers[6][0]) begin
+			else if(registers[5] == 32'd1 && registers[6] == 32'd1) begin
 				// New frame was acknowledged, reset to 0
 				registers[5] <= 0;
+				registers[6] <= 0;
 			end
 			else begin
 				registers[5] <= registers[5]; // Retain message if not acknowledged
