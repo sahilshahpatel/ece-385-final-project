@@ -48,7 +48,7 @@ module avalon_graphics_interface(
 	graphics_accelerator2 graphics (
 		.Clk,
 		.Reset(RESET),
-		.img_id(registers[0][2:0]),
+		.img_id(registers[0][4:0]),
 		.imgX(registers[1][9:0]),
 		.imgY(registers[2][9:0]),
 		.Start(registers[3][0]),

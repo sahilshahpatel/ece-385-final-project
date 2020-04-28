@@ -3,7 +3,7 @@ module graphics_accelerator2
 	input logic Clk, Reset,
 	
 	// Software interface
-	input logic[2:0] img_id,
+	input logic[4:0] img_id,
 	input logic [9:0] imgX, imgY,
 	input logic Start,
 	output logic Done,

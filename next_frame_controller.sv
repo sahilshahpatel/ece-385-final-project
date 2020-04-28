@@ -2,7 +2,7 @@ module next_frame_controller(
 	input logic Clk, Reset, EN,
 	
 	// Software interface
-	input logic[2:0] img_id,
+	input logic[4:0] img_id,
 	input logic [9:0] imgX, imgY, // TODO: As is, this controller snaps imgX to the nearest SRAM word (i.e. only has accuracy of 4 pixels in X direction)
 	input logic Start,
 	output logic Done,
