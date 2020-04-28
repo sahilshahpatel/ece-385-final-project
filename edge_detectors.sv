@@ -8,9 +8,10 @@ module rising_edge_detector(
 
 	always_ff @ (posedge Clk) begin
 		prev_signal <= signal;
+		rising_edge <= signal & ~prev_signal;
 	end
 
-	assign rising_edge = signal & ~prev_signal;
+	// assign rising_edge = signal & ~prev_signal;
 
 endmodule
 
@@ -24,9 +25,9 @@ module falling_edge_detector(
 
 	always_ff @ (posedge Clk) begin
 		prev_signal <= signal;
-		//falling_edge <= ~signal & prev_signal;
+		falling_edge <= ~signal & prev_signal;
 	end
 
-	assign falling_edge = ~signal & prev_signal;
+	// assign falling_edge = ~signal & prev_signal;
 
 endmodule
