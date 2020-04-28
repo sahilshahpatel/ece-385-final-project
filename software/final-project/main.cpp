@@ -28,8 +28,7 @@
 #include "lcp_cmd.h"
 #include "lcp_data.h"
 
-#include "game.h"
-
+#include "Game.h"
 
 //----------------------------------------------------------------------------------------//
 //
@@ -62,7 +61,6 @@ int main(void)
 
 	// Pointer to registers inside of graphics interface
 	volatile unsigned int * GRAPHICS_PTR = (unsigned int *) AVALON_GRAPHICS_INTERFACE_0_BASE;
-
 	Game game;
 
 	printf("USB keyboard setup...\n\n");
@@ -508,6 +506,7 @@ int main(void)
 
 	//-----------------------------------get keycode value------------------------------------------------//
 	usleep(10000);
+
 	//clock_t start, end;
 	while(1)
 	{
