@@ -9,6 +9,7 @@
 #define GAME_H_
 
 #include <vector>
+#include <time.h>
 
 #include "Monster.h"
 #include "Player.h"
@@ -32,6 +33,7 @@ class Game {
 	Tile** board;
 	bool light;
 
+	// Variables to handle key presses
 	int prev_key;
 	int key; // Is set only on initial press
 

@@ -183,6 +183,11 @@ void Game::updateKey(int keycodes){
 	//int key2 = (keycodes & 0xffff0000) >> 16;
 	// Ignore key2 -- we only allow one button at a time
 
+	// TODO: When/if we do animations, it would be nice to allow
+	//	the user to hold down a key and have it activate every time
+	//	an animation finishes. To do this we can get rid of this
+	// "on-key-down" behavior and add a lockout time during animations!
+
 	if(key1 == prev_key) key = 0;
 	else key = key1;
 
