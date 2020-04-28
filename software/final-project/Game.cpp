@@ -174,13 +174,29 @@ bool Game::validPos(int x, int y){
 }
 
 // Key-down detector
+#define INPUT_DELAY 0.5*CLOCKS_PER_SEC
 void Game::updateKey(int keycodes){
 	int key1 = keycodes & 0x0000ffff;
 	//int key2 = (keycodes & 0xffff0000) >> 16;
 	// Ignore key2 -- we only allow one button at a time
 
-	if(key1 == prev_key) key = 0;
-	else key = key1;
+	clock_t time = clock();
+	if(time - last_key_activation < INPUT_DELAY){
+		// Still waiting some time before accepting next key
+		key = 0;
 
-	prev_key = key1;
+		// Record key1 in prev_key if not 0
+		if(key1 != 0) prev_key = key1;
+	}
+	else{
+		if(key1 == 0){
+			key = prev_key;
+			prev_key = 0;
+		}
+		else{
+			key = key1;
+		}
+
+		last_key_activation = time;
+	}
 }
