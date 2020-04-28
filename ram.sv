@@ -9,7 +9,7 @@ module  imgROM
 	parameter BIT_DEPTH = 4,
 	parameter PIXELS = 256,
 	parameter ADDRESS_DEPTH = 8,
-	parameter FILE = "main-character.txt"
+	parameter FILE = ""
 )
 
 (

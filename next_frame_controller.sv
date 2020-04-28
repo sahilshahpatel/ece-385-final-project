@@ -23,18 +23,156 @@ module next_frame_controller(
 	// rom_address[3:2] tells us which column we are on
 	// rom_address[7:4] tells us which row we are on
 	logic [7:0] rom_address, next_rom_address;
-	logic [3:0] rom_data, main_character_data, tile_data;
-	imgROM #(.FILE("main-character.txt")) main_character_rom (
+	logic [3:0] rom_data;
+	
+	logic [3:0] player32_0_data;
+	imgROM #(.FILE("sprites/player32_0.txt")) player32_0_rom(
 		.Clk,
 		.address(rom_address),
-		.data(main_character_data)
-	);
-	imgROM #(.FILE("tile.txt")) tile_rom(
-		.Clk,
-		.address(rom_address),
-		.data(tile_data)
+		.data(player32_0_data)
 	);
 	
+	logic [3:0] player32_1_data;
+	imgROM #(.FILE("sprites/player32_1.txt")) player32_1_rom(
+		.Clk,
+		.address(rom_address),
+		.data(player32_1_data)
+	);
+	
+	logic [3:0] player32_2_data;
+	imgROM #(.FILE("sprites/player32_2.txt")) player32_2_rom(
+		.Clk,
+		.address(rom_address),
+		.data(player32_2_data)
+	);
+	
+	logic [3:0] player32_3_data;
+	imgROM #(.FILE("sprites/player32_3.txt")) player32_3_rom(
+		.Clk,
+		.address(rom_address),
+		.data(player32_3_data)
+	);
+	
+	logic [3:0] monster32_0_data;
+	imgROM #(.FILE("sprites/monster32_0.txt")) monster32_0_rom(
+		.Clk,
+		.address(rom_address),
+		.data(monster32_0_data)
+	);
+	logic [3:0] monster32_1_data;
+	imgROM #(.FILE("sprites/monster32_1.txt")) monster32_1_rom(
+		.Clk,
+		.address(rom_address),
+		.data(monster32_1_data)
+	);
+	logic [3:0] monster32_2_data;
+	imgROM #(.FILE("sprites/monster32_2.txt")) monster32_2_rom(
+		.Clk,
+		.address(rom_address),
+		.data(monster32_2_data)
+	);
+	logic [3:0] monster32_3_data;
+	imgROM #(.FILE("sprites/monster32_3.txt")) monster32_3_rom(
+		.Clk,
+		.address(rom_address),
+		.data(monster32_3_data)
+	);
+	logic [3:0] player_light32_0_data;
+	imgROM #(.FILE("sprites/player-light32_0.txt")) player_light32_0_rom(
+		.Clk,
+		.address(rom_address),
+		.data(player_light32_0_data)
+	);
+	logic [3:0] player_light32_1_data;
+	imgROM #(.FILE("sprites/player-light32_1.txt")) player_light32_1_rom(
+		.Clk,
+		.address(rom_address),
+		.data(player_light32_1_data)
+	);
+	logic [3:0] player_light32_2_data;
+	imgROM #(.FILE("sprites/player-light32_2.txt")) player_light32_2_rom(
+		.Clk,
+		.address(rom_address),
+		.data(player_light32_2_data)
+	);
+	logic [3:0] player_light32_3_data;
+	imgROM #(.FILE("sprites/player-light32_3.txt")) player_light32_3_rom(
+		.Clk,
+		.address(rom_address),
+		.data(player_light32_3_data)
+	);
+	logic [3:0] spikes32_0_data;
+	imgROM #(.FILE("sprites/spikes32_0.txt")) spikes32_0_rom(
+		.Clk,
+		.address(rom_address),
+		.data(spikes32_0_data)
+	);
+	logic [3:0] spikes32_1_data;
+	imgROM #(.FILE("sprites/spikes32_1.txt")) spikes32_1_rom(
+		.Clk,
+		.address(rom_address),
+		.data(spikes32_1_data)
+	);
+	logic [3:0] spikes32_2_data;
+	imgROM #(.FILE("sprites/spikes32_2.txt")) spikes32_2_rom(
+		.Clk,
+		.address(rom_address),
+		.data(spikes32_2_data)
+	);
+	logic [3:0] spikes32_3_data;
+	imgROM #(.FILE("sprites/spikes32_3.txt")) spikes32_3_rom(
+		.Clk,
+		.address(rom_address),
+		.data(spikes32_3_data)
+	);
+	logic [3:0] tile32_0_data;
+	imgROM #(.FILE("sprites/tile32_0.txt")) tile32_0_rom(
+		.Clk,
+		.address(rom_address),
+		.data(tile32_0_data)
+	);
+	logic [3:0] tile32_1_data;
+	imgROM #(.FILE("sprites/tile32_1.txt")) tile32_1_rom(
+		.Clk,
+		.address(rom_address),
+		.data(tile32_1_data)
+	);
+	logic [3:0] tile32_2_data;
+	imgROM #(.FILE("sprites/tile32_2.txt")) tile32_2_rom(
+		.Clk,
+		.address(rom_address),
+		.data(tile32_2_data)
+	);
+	logic [3:0] tile32_3_data;
+	imgROM #(.FILE("sprites/tile32_3.txt")) tile32_3_rom(
+		.Clk,
+		.address(rom_address),
+		.data(tile32_3_data)
+	);
+	logic [3:0] wall32_0_data;
+	imgROM #(.FILE("sprites/wall32_0.txt")) wall32_0_rom(
+		.Clk,
+		.address(rom_address),
+		.data(wall32_0_data)
+	);
+	logic [3:0] wall32_1_data;
+	imgROM #(.FILE("sprites/wall32_1.txt")) wall32_1_rom(
+		.Clk,
+		.address(rom_address),
+		.data(wall32_1_data)
+	);
+	logic [3:0] wall32_2_data;
+	imgROM #(.FILE("sprites/wall32_2.txt")) wall32_2_rom(
+		.Clk,
+		.address(rom_address),
+		.data(wall32_2_data)
+	);
+	logic [3:0] wall32_3_data;
+	imgROM #(.FILE("sprites/wall32_3.txt")) wall32_3_rom(
+		.Clk,
+		.address(rom_address),
+		.data(wall32_3_data)
+	);
 	// Frame buffers in SRAM (SRAM_ADDRESS[19] == 0)
 	// currentFrame = SRAM_ADDRESS[18] = even_frame
 	// nextFrame = SRAM_ADDRESS[18] = ~even_frame
@@ -88,8 +226,31 @@ module next_frame_controller(
 		
 		// Choose which ROM to read based on img_id
 		case(img_id)
-			3'b000 : rom_data = main_character_data;
-			3'b001 : rom_data = tile_data;
+			5'd0  : rom_data = player32_0_data;
+			5'd1  : rom_data = player32_1_data;
+			5'd2  : rom_data = player32_2_data;
+			5'd3  : rom_data = player32_3_data; 
+			5'd4  : rom_data = monster32_0_data;
+			5'd5  : rom_data = monster32_1_data;
+			5'd6  : rom_data = monster32_2_data;
+			5'd7  : rom_data = monster32_3_data;
+			5'd8  : rom_data = player_light32_0_data;
+			5'd9  : rom_data = player_light32_1_data;
+			5'd10 : rom_data = player_light32_2_data;
+			5'd11 : rom_data = player_light32_3_data;
+			5'd12 : rom_data = spikes32_0_data;
+			5'd13 : rom_data = spikes32_1_data;
+			5'd14 : rom_data = spikes32_2_data;
+			5'd15 : rom_data = spikes32_3_data;
+			5'd16 : rom_data = tile32_0_data;
+			5'd17 : rom_data = tile32_1_data;
+			5'd18 : rom_data = tile32_2_data;
+			5'd19 : rom_data = tile32_3_data;
+			5'd20 : rom_data = wall32_0_data;
+			5'd21 : rom_data = wall32_1_data;
+			5'd22 : rom_data = wall32_2_data;
+			5'd23 : rom_data = wall32_3_data;
+			
 			default : rom_data = 4'h0;
 		endcase
 		
