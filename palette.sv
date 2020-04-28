@@ -14,8 +14,7 @@ module palette(
 	always_comb begin
 		case(colorIdx)
 			default : color = 24'hFF0000; // Transparency color
-			4'h1 : color = 24'hFFFFFF; // TEST - WHITE
-			//4'h1 : color = 24'h282246; // Background navy color
+			4'h1 : color = 24'h282246; // Background navy color
 			4'h2 : color = 24'h213822; // Stairs dark green
 			4'h3 : color = 24'h3E6B41; // Tile medium green
 			4'h4 : color = 24'h80BB84; // Tile light green
