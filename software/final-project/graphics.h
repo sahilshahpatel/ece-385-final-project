@@ -10,6 +10,6 @@
 
 
 void drawImg(int img_id, int imgX, int imgY);
-
+void drawSprite(int img_id, int imgX, int imgY);
 
 #endif /* GRAPHICS_H_ */
