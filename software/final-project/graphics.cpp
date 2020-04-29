@@ -32,6 +32,8 @@ void drawSprite(int img_id, int imgX, int imgY){
 		// Wait for Done flag
 	}
 
+	if(GRAPHICS_PTR[4] != 1) printf("Done flag: %d", GRAPHICS_PTR[4]);
+
 	// Lower start flag
 	GRAPHICS_PTR[3] = 0;
 }

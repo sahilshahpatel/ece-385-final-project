@@ -351,8 +351,13 @@ module next_frame_controller(
 			sram_address <= next_sram_address;
 		end
 		else begin
-			// Not enabled -- change nothing
-			state <= state;
+			// Not enabled -- change nothing (exception: leave done state if applicable)
+			if(state == DONE) begin
+				state <= next_state;
+			end
+			else begin
+				state <= state;
+			end
 			rom_address <= rom_address;
 			write_buffer <= write_buffer;
 			sram_address <= sram_address;
