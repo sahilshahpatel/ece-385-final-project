@@ -58,17 +58,13 @@ void Game::update(int keycodes){
 
 	// If player is on spikes, they die
 	if (board[player.x][player.y] == SPIKES){
-		dead = 1;
+		dead = true;
 	}
 
 	// If player is on EXIT, they win the level
-<<<<<<< HEAD
 	if (board[player.x][player.y] == STAIRS){
-		//TODO: WHAT HAPPENS ON WIN
-=======
-	if (board[player.x][player.y] == EXIT){
-		win = 1;
->>>>>>> 35016cdd88ea1d4b890ae871ca85942c7459138d
+		win = true;
+		// TODO: increment level once we have more levels
 	}
 
 	// Monster logic
@@ -83,7 +79,7 @@ void Game::update(int keycodes){
 
 		// If player is on the same tile as a monster, they die
 		if (player.x == monsters[i].x && player.y == monsters[i].y){
-			dead = 1;
+			dead = true;
 		}
 
 		// Active monsters chase player if light is on
@@ -101,7 +97,7 @@ void Game::update(int keycodes){
 
 // Draws all sprites where they should be
 void Game::draw(){
-	if(dead = false && win = false){
+	if(dead == false && win == false){
 		// Draw tiles only if light is on
 		if(light){
 			// Draw tile player is on
@@ -115,11 +111,6 @@ void Game::draw(){
 		// Draw player with or without light
 		drawImg(PLAYER_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
 
-<<<<<<< HEAD
-	// Test draw string
-	//drawString("test", 0, 0, COLS, ROWS);
-	drawString("test\nv 2", 1, 1, COLS, ROWS);
-=======
 		// Test draw string
 		//drawString("test", 0, 0, COLS, ROWS);
 		drawString("test\nv 2", 2, 2, COLS, ROWS);
@@ -134,7 +125,6 @@ void Game::draw(){
 		drawString("You Win CONGRATS ", 13, 12, COLS, ROWS);
 		drawString("Press SPACE to RESTART", 9, 17, COLS,ROWS);
 	}
->>>>>>> 35016cdd88ea1d4b890ae871ca85942c7459138d
 }
 
 /* Helper functions */
@@ -144,9 +134,9 @@ void Game::handleInput(int key){
 	case KEYCODE_SPACE: // Toggle light
 		if(dead == false && win == false){
 			light = !light;
-			}
-		else if(){
-			//TODO restart game
+		}
+		else{
+			setupLevel();
 		}
 		break;
 	case KEYCODE_W: // Move up
