@@ -15,7 +15,7 @@
 #define ROWS 15 // 480 pix / TILE_SIZE
 
 Game::Game() :
-player(COLS/2, ROWS-1), light(true), prev_key(0), key(0) // Initializations
+player(COLS/2, ROWS-1), light(true), prev_key(0), key(0), win(0), dead(0) // Initializations
 {
 	// Setup board
 	board = new Tile*[COLS];
@@ -58,12 +58,12 @@ void Game::update(int keycodes){
 
 	// If player is on spikes, they die
 	if (board[player.x][player.y] == SPIKES){
-		//TODO: WHAT HAPPENS ON DEATH
+		dead = 1;
 	}
 
 	// If player is on EXIT, they win the level
 	if (board[player.x][player.y] == EXIT){
-		//TODO: WHAT HAPPENS ON WIN
+		win = 1;
 	}
 
 	// Monster logic
@@ -78,7 +78,7 @@ void Game::update(int keycodes){
 
 		// If player is on the same tile as a monster, they die
 		if (player.x == monsters[i].x && player.y == monsters[i].y){
-			// TODO: WHAT HAPPENS ON DEATH
+			dead = 1;
 		}
 
 		// Active monsters chase player if light is on
@@ -89,6 +89,7 @@ void Game::update(int keycodes){
 		// If a monster is on spikes, it dies
 		if(board[monsters[i].x][monsters[i].y] == SPIKES){
 			//TODO monster dies
+			//increment score counter
 		}
 	}
 }
@@ -103,22 +104,34 @@ void Game::update(int keycodes){
 
 // Draws all sprites where they should be
 void Game::draw(){
-	// Draw tiles only if light is on
-	if(light){
-		// Draw tile player is on
-		drawImg(TILE_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
+	if(dead = false && win = false){
+		// Draw tiles only if light is on
+		if(light){
+			// Draw tile player is on
+			drawImg(TILE_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
 
-		// Draw tile player is facing
-		if(validPos(player.facing_x, player.facing_y))
-			drawImg(TILE_SPRITE, player.facing_x*TILE_SIZE, player.facing_y*TILE_SIZE);
+			// Draw tile player is facing
+			if(validPos(player.facing_x, player.facing_y))
+				drawImg(TILE_SPRITE, player.facing_x*TILE_SIZE, player.facing_y*TILE_SIZE);
+		}
+
+		// Draw player with or without light
+		drawImg(PLAYER_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
+
+		// Test draw string
+		//drawString("test", 0, 0, COLS, ROWS);
+		drawString("test\nv 2", 2, 2, COLS, ROWS);
 	}
-
-	// Draw player with or without light
-	drawImg(PLAYER_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
-
-	// Test draw string
-	//drawString("test", 0, 0, COLS, ROWS);
-	drawString("test\nv 2", 2, 2, COLS, ROWS);
+	//if player dies draw game over screen
+	else if(dead){
+		drawString("GAME OVER", 15, 12, COLS, ROWS);
+		drawString("Press SPACE to RESTART", 9, 17, COLS,ROWS);
+	}
+	//if player wins draw next level or win screen //40x30 //TODO add Score
+	else if(win){
+		drawString("You Win CONGRATS ", 13, 12, COLS, ROWS);
+		drawString("Press SPACE to RESTART", 9, 17, COLS,ROWS);
+	}
 }
 
 /* Helper functions */
@@ -126,7 +139,12 @@ void Game::draw(){
 void Game::handleInput(int key){
 	switch(key){
 	case KEYCODE_SPACE: // Toggle light
-		light = !light;
+		if(dead == false && win == false){
+			light = !light;
+			}
+		else if(){
+			//TODO restart game
+		}
 		break;
 	case KEYCODE_W: // Move up
 		if(canMove(player, player.x, player.y - 1)){
@@ -161,6 +179,8 @@ void Game::handleInput(int key){
 
 // Validate movements
 bool Game::canMove(Player p, int dest_x, int dest_y){
+	//if player won or died, deny
+	if(win || dead) return false;
 	// If moving out of bounds, deny
 	if(!validPos(dest_x, dest_y)) return false;
 
@@ -186,7 +206,6 @@ void Game::updateKey(int keycodes){
 	int key1 = keycodes & 0x0000ffff;
 	//int key2 = (keycodes & 0xffff0000) >> 16;
 	// Ignore key2 -- we only allow one button at a time
-
 	// TODO: When/if we do animations, it would be nice to allow
 	//	the user to hold down a key and have it activate every time
 	//	an animation finishes. To do this we can get rid of this

@@ -32,6 +32,8 @@ class Game {
 	vector<Monster> monsters;
 	Tile** board;
 	bool light;
+	bool win;
+	bool dead; 
 
 	// Variables to handle key presses
 	int prev_key;
