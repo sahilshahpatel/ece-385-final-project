@@ -20,7 +20,5 @@ Monster::~Monster() {
 // Pathfinding
 void Monster::chasePlayer(Player p){
 	// TODO: replace
-	x = 0;
-	y = 0;
 }
 

@@ -8,6 +8,9 @@
 #include "system.h"
 #include "stdio.h"
 
+#define SPRITE_COLS 40
+#define SPRITE_ROWS 30
+
 // Pointer to registers inside of graphics interface
 volatile unsigned int * GRAPHICS_PTR = (unsigned int *) AVALON_GRAPHICS_INTERFACE_0_BASE;
 
@@ -41,7 +44,7 @@ void drawSprite(int img_id, int imgX, int imgY){
 #define ALPHABET_SPRITE_START 50
 #define NUMERAL_SPRITE_START 76
 #define QUESTION_MARK_SPRITE 86
-void drawString(std::string s, int x0, int y0, int COLS, int ROWS){
+void drawString(std::string s, int x0, int y0){
 	// Ignore invalid x0, y0
 	if(x0 < 0 || y0 < 0) return;
 
@@ -63,7 +66,7 @@ void drawString(std::string s, int x0, int y0, int COLS, int ROWS){
 		}
 
 		// If x, y is out of bounds exit
-		if(x >= COLS || y >= ROWS) return;
+		if(x >= SPRITE_COLS || y >= SPRITE_ROWS) return;
 
 		char c = std::toupper(s[i]);
 		int ascii = (int)c;

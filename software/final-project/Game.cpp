@@ -17,7 +17,9 @@
 #define COLS 20 // 640 pix / TILE_SIZE
 #define ROWS 15 // 480 pix / TILE_SIZE
 
-Game::Game(){
+Game::Game() :
+level(0), prev_key(0), key(0), win(false), dead(false)
+{
 	// Allocate board
 	board = new Tile*[COLS];
 	for(int x = 0; x < COLS; x++){
@@ -101,29 +103,32 @@ void Game::draw(){
 		// Draw tiles only if light is on
 		if(light){
 			// Draw tile player is on
-			drawImg(TILE_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
+			drawImg(board[player.x][player.y], player.x*TILE_SIZE, player.y*TILE_SIZE);
 
 			// Draw tile player is facing
 			if(validPos(player.facing_x, player.facing_y))
-				drawImg(TILE_SPRITE, player.facing_x*TILE_SIZE, player.facing_y*TILE_SIZE);
+				drawImg(board[player.facing_x][player.facing_y], player.facing_x*TILE_SIZE, player.facing_y*TILE_SIZE);
+		}
+
+		// Draw monsters if applicable
+		for(uint i = 0; i < monsters.size(); i++){
+			if(monsters[i].x == player.facing_x && monsters[i].y == player.facing_y){
+				drawImg(MONSTER_SPRITE, monsters[i].x*TILE_SIZE, monsters[i].y*TILE_SIZE);
+			}
 		}
 
 		// Draw player with or without light
 		drawImg(PLAYER_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
-
-		// Test draw string
-		//drawString("test", 0, 0, COLS, ROWS);
-		drawString("test\nv 2", 2, 2, COLS, ROWS);
 	}
 	//if player dies draw game over screen
 	else if(dead){
-		drawString("GAME OVER", 15, 12, COLS, ROWS);
-		drawString("Press SPACE to RESTART", 9, 17, COLS,ROWS);
+		drawString("GAME OVER", 15, 12);
+		drawString("Press SPACE to RESTART", 9, 17);
 	}
 	//if player wins draw next level or win screen //40x30 //TODO add Score
 	else if(win){
-		drawString("You Win CONGRATS ", 13, 12, COLS, ROWS);
-		drawString("Press SPACE to RESTART", 9, 17, COLS,ROWS);
+		drawString("You Win CONGRATS ", 13, 12);
+		drawString("Press SPACE to RESTART", 9, 17);
 	}
 }
 
@@ -211,6 +216,9 @@ void Game::updateKey(int keycodes){
 }
 
 void Game::setupLevel(){
+	// Reset game state
+	dead = false;
+	win = false;
 	light = true;
 	monsters.clear();
 
@@ -224,28 +232,29 @@ void Game::setupLevel(){
 	// Switch case for level
 	switch(level){
 	case 0:
-		// Player is at 6, 18
-		board[6][18] = TILE;
-		player = Player(6, 18);
-
-		// Monster is at 6, 14
+		// Player is at 6, 14
 		board[6][14] = TILE;
-		monsters.push_back(Monster(6, 14));
+		player = Player(6, 14);
+
+		// Monster is at 6, 10
+		board[6][10] = TILE;
+		monsters.push_back(Monster(6, 10));
 
 		// Spikes at 6, 16
-		board[6][16] = SPIKES;
+		board[6][12] = SPIKES;
 
 		// Exit at 6, 12
-		board[6][12] = STAIRS;
+		board[6][8] = STAIRS;
 
 		// Create rest of tile path
-		board[6][17] = TILE;
-		board[7][17] = TILE;
-		board[8][17] = TILE;
-		board[8][16] = TILE;
-		board[8][15] = TILE;
-		board[7][15] = TILE;
-		board[6][15] = TILE;
 		board[6][13] = TILE;
+		board[7][13] = TILE;
+		board[8][13] = TILE;
+		board[8][12] = TILE;
+		board[8][11] = TILE;
+		board[7][11] = TILE;
+		board[6][11] = TILE;
+		board[6][9] = TILE;
+		break;
 	}
 }

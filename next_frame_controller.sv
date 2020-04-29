@@ -173,6 +173,56 @@ module next_frame_controller(
 		.address(rom_address),
 		.data(wall32_3_data)
 	);
+	logic [3:0] stairs_up32_0_data;
+	imgROM #(.FILE("sprites/stairs-up32_0.txt")) stairs_up32_0_rom(
+		.Clk,
+		.address(rom_address),
+		.data(stairs_up32_0_data)
+	);
+	logic [3:0] stairs_up32_1_data;
+	imgROM #(.FILE("sprites/stairs-up32_1.txt")) stairs_up32_1_rom(
+		.Clk,
+		.address(rom_address),
+		.data(stairs_up32_1_data)
+	);
+	logic [3:0] stairs_up32_2_data;
+	imgROM #(.FILE("sprites/stairs-up32_2.txt")) stairs_up32_2_rom(
+		.Clk,
+		.address(rom_address),
+		.data(stairs_up32_2_data)
+	);
+	logic [3:0] stairs_up32_3_data;
+	imgROM #(.FILE("sprites/stairs-up32_3.txt")) stairs_up32_3_rom(
+		.Clk,
+		.address(rom_address),
+		.data(stairs_up32_3_data)
+	);
+	logic [3:0] stairs_left32_0_data;
+	imgROM #(.FILE("sprites/stairs-left32_0.txt")) stairs_left32_0_rom(
+		.Clk,
+		.address(rom_address),
+		.data(stairs_left32_0_data)
+	);
+	logic [3:0] stairs_left32_1_data;
+	imgROM #(.FILE("sprites/stairs-left32_1.txt")) stairs_left32_1_rom(
+		.Clk,
+		.address(rom_address),
+		.data(stairs_left32_1_data)
+	);
+	logic [3:0] stairs_left32_2_data;
+	imgROM #(.FILE("sprites/stairs-left32_2.txt")) stairs_left32_2_rom(
+		.Clk,
+		.address(rom_address),
+		.data(stairs_left32_2_data)
+	);
+	logic [3:0] stairs_left32_3_data;
+	imgROM #(.FILE("sprites/stairs-left32_3.txt")) stairs_left32_3_rom(
+		.Clk,
+		.address(rom_address),
+		.data(stairs_left32_3_data)
+	);
+	
+	
 	
 	logic [3:0] alphanumerics_00_data;
 	imgROM #(.FILE("sprites/alphanumerics_00.txt")) alphanumerics_00_rom(
@@ -406,6 +456,15 @@ module next_frame_controller(
 			32'd21 : rom_data = wall32_1_data;
 			32'd22 : rom_data = wall32_2_data;
 			32'd23 : rom_data = wall32_3_data;
+			32'd24 : rom_data = stairs_up32_0_data;
+			32'd24 : rom_data = stairs_up32_1_data;
+			32'd24 : rom_data = stairs_up32_2_data;
+			32'd24 : rom_data = stairs_up32_3_data;
+			32'd24 : rom_data = stairs_left32_0_data;
+			32'd24 : rom_data = stairs_left32_1_data;
+			32'd24 : rom_data = stairs_left32_2_data;
+			32'd24 : rom_data = stairs_left32_3_data;
+			
 			
 			32'd50: rom_data = alphanumerics_00_data;
 			32'd51: rom_data = alphanumerics_01_data;

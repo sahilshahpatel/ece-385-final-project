@@ -12,6 +12,6 @@
 
 void drawImg(int img_id, int imgX, int imgY);
 void drawSprite(int img_id, int imgX, int imgY);
-void drawString(std::string s, int x, int y, int COLS, int ROWS);
+void drawString(std::string s, int x, int y);
 
 #endif /* GRAPHICS_H_ */
