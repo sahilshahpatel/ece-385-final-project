@@ -46,6 +46,8 @@ class Game {
 	Tile** board;
 	bool light;
 	int level;
+	bool win;
+	bool dead; 
 
 	// Variables to handle key presses
 	int prev_key;
