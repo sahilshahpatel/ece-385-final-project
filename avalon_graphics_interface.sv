@@ -45,10 +45,10 @@ module avalon_graphics_interface(
 	logic [31:0] registers [7];
 	
 	logic Done, frame_clk;
-	graphics_accelerator2 graphics (
+	graphics_accelerator graphics (
 		.Clk,
 		.Reset(RESET),
-		.img_id(registers[0][4:0]),
+		.img_id(registers[0]),
 		.imgX(registers[1][9:0]),
 		.imgY(registers[2][9:0]),
 		.Start(registers[3][0]),

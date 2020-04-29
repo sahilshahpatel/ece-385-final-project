@@ -115,6 +115,10 @@ void Game::draw(){
 
 	// Draw player with or without light
 	drawImg(PLAYER_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
+
+	// Test draw string
+	//drawString("test", 0, 0, COLS, ROWS);
+	drawString("test\nv 2", 2, 2, COLS, ROWS);
 }
 
 /* Helper functions */
