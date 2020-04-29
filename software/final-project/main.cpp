@@ -601,15 +601,11 @@ int main(void)
 
 		/* Above is keyboard setup loop, below is game loop*/
 
-		bool test = false;
 		while(GRAPHICS_PTR[5] == 0){
 			//printf("Waiting for frame flag\n");
 			// Wait for frame flag
-			test = true;
 		}
 		GRAPHICS_PTR[6] = 1; // Acknowledge frame flag (will be lowered automatically)
-
-		if(!test) printf("Late for frame\n");
 
 		game.update(keycode);
 		game.draw();

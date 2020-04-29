@@ -8,27 +8,27 @@
 
 #include "graphics.h"
 #include <stdio.h>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 
 // Game board is 64x64 tiles where each tile is 16x16 pixels
 #define TILE_SIZE 32
 #define COLS 20 // 640 pix / TILE_SIZE
 #define ROWS 15 // 480 pix / TILE_SIZE
 
-Game::Game() :
-player(COLS/2, ROWS-1), light(true), prev_key(0), key(0) // Initializations
-{
-	// Setup board
+Game::Game(){
+	// Allocate board
 	board = new Tile*[COLS];
 	for(int x = 0; x < COLS; x++){
 		board[x] = new Tile[ROWS];
 		for(int y = 0; y < ROWS; y++){
-			board[x][y] = TILE;
+			board[x][y] = WALL;
 		}
 	}
 
-	// Set initial monster list
-	monsters = vector<Monster>();
-	monsters.push_back(Monster(0, 0)); // TODO: decide how many monsters to have
+	// Setup for level 0
+	setupLevel();
 }
 
 Game::~Game(){
@@ -62,7 +62,7 @@ void Game::update(int keycodes){
 	}
 
 	// If player is on EXIT, they win the level
-	if (board[player.x][player.y] == EXIT){
+	if (board[player.x][player.y] == STAIRS){
 		//TODO: WHAT HAPPENS ON WIN
 	}
 
@@ -93,14 +93,6 @@ void Game::update(int keycodes){
 	}
 }
 
-// Image IDs
-#define PLAYER_SPRITE 0
-#define MONSTER_SPRITE 4
-#define PLAYER_LIGHT_SPRITE 8
-#define SPIKES_SPRITE 12
-#define TILE_SPRITE 16
-#define WALL_SPRTIE 20
-
 // Draws all sprites where they should be
 void Game::draw(){
 	// Draw tiles only if light is on
@@ -118,7 +110,7 @@ void Game::draw(){
 
 	// Test draw string
 	//drawString("test", 0, 0, COLS, ROWS);
-	drawString("test\nv 2", 2, 2, COLS, ROWS);
+	drawString("test\nv 2", 1, 1, COLS, ROWS);
 }
 
 /* Helper functions */
@@ -196,4 +188,44 @@ void Game::updateKey(int keycodes){
 	else key = key1;
 
 	prev_key = key1;
+}
+
+void Game::setupLevel(){
+	light = true;
+	monsters.clear();
+
+	// Set initial board to all walls
+	for(int x = 0; x < COLS; x++){
+		for(int y = 0; y < ROWS; y++){
+			board[x][y] = WALL;
+		}
+	}
+
+	// Switch case for level
+	switch(level){
+	case 0:
+		// Player is at 6, 18
+		board[6][18] = TILE;
+		player = Player(6, 18);
+
+		// Monster is at 6, 14
+		board[6][14] = TILE;
+		monsters.push_back(Monster(6, 14));
+
+		// Spikes at 6, 16
+		board[6][16] = SPIKES;
+
+		// Exit at 6, 12
+		board[6][12] = STAIRS;
+
+		// Create rest of tile path
+		board[6][17] = TILE;
+		board[7][17] = TILE;
+		board[8][17] = TILE;
+		board[8][16] = TILE;
+		board[8][15] = TILE;
+		board[7][15] = TILE;
+		board[6][15] = TILE;
+		board[6][13] = TILE;
+	}
 }

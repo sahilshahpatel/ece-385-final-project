@@ -42,6 +42,7 @@ void drawSprite(int img_id, int imgX, int imgY){
 #define NUMERAL_SPRITE_START 76
 #define QUESTION_MARK_SPRITE 86
 void drawString(std::string s, int x0, int y0, int COLS, int ROWS){
+	// Ignore invalid x0, y0
 	if(x0 < 0 || y0 < 0) return;
 
 	int x = x0;

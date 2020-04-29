@@ -606,7 +606,7 @@
 /* CPU FLAGS REGISTER [R]                                */
 /*********************************************************/
 #define CPU_FLAGS_REG                                        0xC000 /* CPU Flags Register [R] */
-#define flags                                                0xC000
+//#define flags                                                0xC000
 
 /* FIELDS */
 
