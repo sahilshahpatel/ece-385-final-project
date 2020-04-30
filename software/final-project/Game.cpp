@@ -11,7 +11,6 @@
 #include <queue>
 #include <map>
 
-using std::priority_queue;
 using std::pair;
 
 // Game board is 64x64 tiles where each tile is 16x16 pixels
@@ -141,6 +140,10 @@ void Game::draw(){
 		drawString("You Win CONGRATS ", 13, 12);
 		drawString("Press SPACE to RESTART", 9, 17);
 	}
+}
+
+void Game::clear(){
+	clearScreen(); // Call graphics function
 }
 
 /* Helper functions */

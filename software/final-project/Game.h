@@ -41,6 +41,7 @@ class Game {
 	~Game();
 	void update(int keycode);
 	void draw();
+	void clear();
   private:
 	Player player;
 	vector<Monster> monsters;

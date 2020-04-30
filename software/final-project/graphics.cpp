@@ -11,10 +11,11 @@
 #define SPRITE_COLS 40
 #define SPRITE_ROWS 30
 
+#define SPRITE_SIZE 16
+
 // Pointer to registers inside of graphics interface
 volatile unsigned int * GRAPHICS_PTR = (unsigned int *) AVALON_GRAPHICS_INTERFACE_0_BASE;
 
-#define SPRITE_SIZE 16
 void drawImg(int img_id, int imgX, int imgY){ //top left top right bottom left bottom right
 		drawSprite(img_id , imgX , imgY);
 		drawSprite(img_id +1, imgX + SPRITE_SIZE, imgY);
@@ -84,4 +85,13 @@ void drawString(std::string s, int x0, int y0){
 		drawSprite(img_id, x*SPRITE_SIZE, y*SPRITE_SIZE);
 		x++;
 	}
+}
+
+void clearScreen(){
+	// Raise start_clear flag
+	GRAPHICS_PTR[7] = 1;
+	while(GRAPHICS_PTR[8] == 0){
+		//wait for clear_done flag
+	}
+	GRAPHICS_PTR[7] = 0; // Lower start flag
 }
