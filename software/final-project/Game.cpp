@@ -163,7 +163,6 @@ void Game::handleInput(int key){
 		}
 		else if(next = true){
 			level++;
-			next = false;
 			setupLevel();
 		}
 		else if(win = true){
@@ -311,6 +310,7 @@ void Game::setupLevel(){
 	dead = false;
 	win = false;
 	light = true;
+	next = false;
 	monsters.clear();
 
 	// Set initial board to all walls
