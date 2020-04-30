@@ -11,6 +11,8 @@
 #include <queue>
 #include <map>
 
+#include <sstream>
+
 using std::priority_queue;
 using std::pair;
 
@@ -56,7 +58,9 @@ void Game::update(int keycodes){
 
 	updateKey(keycodes); // Update the current key (handles on-key-down behavior)
 
-	handleInput(key); // Toggles light or moves player
+	handleInput(key); // Toggles light, moves player, continues through menu
+
+	if(dead || next || win) return; // Don't update if in menu screen
 
 	if(!validPos(player.x, player.y))
 		printf("Invalid player pos: %d, %d\n", player.x, player.y);
@@ -143,7 +147,9 @@ void Game::draw(){
 	}
 	//if player draw next level //40x30 //TODO add Score
 	else if(next){
-		drawString("You beat level +std::to_string(level)+", 12, 12);
+		std::stringstream ss;
+		ss << "You beat level " << level;
+		drawString(ss.str(), 12, 12);
 		drawString("Press SPACE to go on", 9, 17);
 	}
 	else if(win){
@@ -161,11 +167,11 @@ void Game::handleInput(int key){
 		if(dead == false && win == false && next == false){
 			light = !light;
 		}
-		else if(next = true){
+		else if(next){
 			level++;
 			setupLevel();
 		}
-		else if(win = true){
+		else if(win){
 			level = 0;
 			setupLevel();
 		}
@@ -207,7 +213,7 @@ void Game::handleInput(int key){
 // Validate movements
 bool Game::canMove(Player p, int dest_x, int dest_y) const{
 	//if player won or died, deny
-	if(win || dead) return false;
+	if(win || dead || next) return false;
 	// If moving out of bounds, deny
 	if(!validPos(dest_x, dest_y)) return false;
 
@@ -393,7 +399,7 @@ void Game::setupLevel(){
  		board[11][4] = TILE;
 		board[12][3] = TILE;
 		board[13][3] = TILE;
-
+		break;
 	case 2:
 		// player starts at 9,9
 		board[9][9] = TILE;
@@ -425,5 +431,6 @@ void Game::setupLevel(){
 		board[13][3] = TILE;
 		board[14][3] = TILE;
 		board[14][2] = TILE;
+		break;
 	}
 }
