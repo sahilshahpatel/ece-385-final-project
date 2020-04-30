@@ -9,6 +9,7 @@
 #define MONSTER_H_
 
 #include "Player.h"
+#include <time.h>
 
 class Monster {
   public:
@@ -18,7 +19,8 @@ class Monster {
 	int x;
 	int y;
 	bool active;
-	void chasePlayer(Player player);
+	bool alive;
+	clock_t last_move_time;
 };
 
 #endif /* MONSTER_H_ */

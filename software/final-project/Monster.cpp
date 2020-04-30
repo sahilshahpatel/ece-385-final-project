@@ -7,18 +7,15 @@
 
 #include "Monster.h"
 
-Monster::Monster(int x0, int y0) {
-	x = x0;
-	y = y0;
-	active = false;
-}
+Monster::Monster(int x0, int y0) :
+	x(x0),
+	y(y0),
+	active(false),
+	alive(true),
+	last_move_time(clock())
+{}
 
 Monster::~Monster() {
 	// TODO Auto-generated destructor stub
-}
-
-// Pathfinding
-void Monster::chasePlayer(Player p){
-	// TODO: replace
 }
 

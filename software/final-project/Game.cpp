@@ -8,9 +8,11 @@
 
 #include "graphics.h"
 #include <stdio.h>
-#include <fstream>
-#include <iostream>
-#include <sstream>
+#include <queue>
+#include <map>
+
+using std::priority_queue;
+using std::pair;
 
 // Game board is 64x64 tiles where each tile is 16x16 pixels
 #define TILE_SIZE 32
@@ -18,7 +20,7 @@
 #define ROWS 15 // 480 pix / TILE_SIZE
 
 Game::Game() :
-level(0), prev_key(0), key(0), win(false), dead(false)
+level(0), win(false), dead(false), prev_key(0), key(0)
 {
 	// Allocate board
 	board = new Tile*[COLS];
@@ -50,6 +52,7 @@ Game::~Game(){
 
 // Game logic happens in update
 void Game::update(int keycodes){
+	clock_t time = clock();
 
 	updateKey(keycodes); // Update the current key (handles on-key-down behavior)
 
@@ -74,9 +77,13 @@ void Game::update(int keycodes){
 		if(!validPos(monsters[i].x, monsters[i].y))
 			printf("Invalid monster pos: %d, %d\n", monsters[i].x, monsters[i].y);
 
-		// If player sees a monster, it activates
-		if (player.facing_x == monsters[i].x && player.facing_y == monsters[i].y){
+		// Ignore dead monsters
+		if(monsters[i].alive == false) continue;
+
+		// If player sees a monster for the first time, it activates
+		if (monsters[i].active == false && player.facing_x == monsters[i].x && player.facing_y == monsters[i].y){
 			monsters[i].active = true;
+			monsters[i].last_move_time = time;
 		}
 
 		// If player is on the same tile as a monster, they die
@@ -85,14 +92,18 @@ void Game::update(int keycodes){
 		}
 
 		// Active monsters chase player if light is on
-		if(light && monsters[i].active){
-			monsters[i].chasePlayer(player);
+		if(time - monsters[i].last_move_time > CLOCKS_PER_SEC && light && monsters[i].active){
+			pair<int, int> next_coord = findPath(monsters[i], player);
+			monsters[i].x = next_coord.first;
+			monsters[i].y = next_coord.second;
+			monsters[i].last_move_time = time;
 		}
 
 		// If a monster is on spikes, it dies
 		if(board[monsters[i].x][monsters[i].y] == SPIKES){
-			//TODO monster dies
-			//increment score counter
+			monsters[i].alive = false;
+			monsters[i].active = false;
+			// TODO: increment score counter
 		}
 	}
 }
@@ -112,7 +123,7 @@ void Game::draw(){
 
 		// Draw monsters if applicable
 		for(uint i = 0; i < monsters.size(); i++){
-			if(monsters[i].x == player.facing_x && monsters[i].y == player.facing_y){
+			if(monsters[i].active || monsters[i].alive == false){
 				drawImg(MONSTER_SPRITE, monsters[i].x*TILE_SIZE, monsters[i].y*TILE_SIZE);
 			}
 		}
@@ -176,7 +187,7 @@ void Game::handleInput(int key){
 }
 
 // Validate movements
-bool Game::canMove(Player p, int dest_x, int dest_y){
+bool Game::canMove(Player p, int dest_x, int dest_y) const{
 	//if player won or died, deny
 	if(win || dead) return false;
 	// If moving out of bounds, deny
@@ -195,8 +206,69 @@ bool Game::canMove(Player p, int dest_x, int dest_y){
 	}
 }
 
-bool Game::validPos(int x, int y){
+bool Game::validPos(int x, int y) const{
 	return x < COLS && x >= 0 && y < ROWS && y >= 0;
+}
+
+bool Game::validPos(pair<int, int> p) const{
+	return validPos(p.first, p.second);
+}
+
+/* Use BFS to find path */
+pair<int, int> Game::findPath(Monster m, Player p) const{
+	return findPath(m.x, m.y, p.x, p.y);
+}
+
+pair<int, int> Game::findPath(int x0, int y0, int dest_x, int dest_y) const{
+	// Assume valid input for speed
+
+	pair<int, int> start(x0, y0);
+	pair<int, int> end(dest_x, dest_y);
+
+	if(start == end) return start;
+
+	std::queue<pair<int, int> > search;
+	std::map<pair<int, int>, pair<int, int> > parent;
+
+	search.push(start);
+	parent.insert(std::make_pair(start, start)); // Marks start as visited
+
+	//printf("Pathfinding from %d, %d to %d, %d\n", x0, y0, dest_x, dest_y);
+
+	while(!search.empty()){
+		pair<int, int> current = search.front();
+		search.pop();
+
+		//printf("Checking %d, %d\n", current.first, current.second);
+
+		// Check if we have reached end
+		if(current == end){
+			// Look through parents to find first element of path
+			while(parent.at(current) != start){
+				current = parent.at(current);
+			}
+			return current;
+		}
+
+		// Add valid neighbors to queue
+		vector<pair<int, int> > neighbors;
+		neighbors.push_back(pair<int, int>(current.first - 1, current.second));
+		neighbors.push_back(pair<int, int>(current.first + 1, current.second));
+		neighbors.push_back(pair<int, int>(current.first, current.second - 1));
+		neighbors.push_back(pair<int, int>(current.first, current.second + 1));
+
+		for(uint i = 0; i < neighbors.size(); i++){
+			pair<int, int> next = neighbors[i];
+			if(parent.find(next) == parent.end() && validPos(next) && board[next.first][next.second] != WALL){
+				//printf("Adding neighbor %d, %d\n", next.first, next.second);
+				search.push(next);
+				parent.insert(std::make_pair(next, current));
+			}
+		}
+	}
+
+	// If we reached here, a path doesn't exist. Return starting pos
+	return start;
 }
 
 // Key-down detector

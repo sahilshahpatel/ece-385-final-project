@@ -601,11 +601,17 @@ int main(void)
 
 		/* Above is keyboard setup loop, below is game loop*/
 
+		bool fast_enough = false;
 		while(GRAPHICS_PTR[5] == 0){
 			//printf("Waiting for frame flag\n");
 			// Wait for frame flag
+			fast_enough = true;
 		}
 		GRAPHICS_PTR[6] = 1; // Acknowledge frame flag (will be lowered automatically)
+
+		if(!fast_enough){
+			printf("Missed frame flag\n");
+		}
 
 		game.update(keycode);
 		game.draw();

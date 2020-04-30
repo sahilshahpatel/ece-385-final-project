@@ -16,6 +16,7 @@
 #include "Player.h"
 
 using std::vector;
+using std::pair;
 
 // Image IDs
 #define PLAYER_SPRITE 0
@@ -55,9 +56,12 @@ class Game {
 
 	void updateKey(int keycodes);
 	void handleInput(int key);
-	bool canMove(Player player, int dest_x, int dest_y);
-	bool validPos(int x, int y);
+	bool canMove(Player player, int dest_x, int dest_y) const;
+	bool validPos(int x, int y) const;
+	bool validPos(pair<int, int> p) const;
 	void setupLevel();
+	std::pair<int, int> findPath(int x0, int y0, int dest_x, int dest_y) const;
+	std::pair<int, int> findPath(Monster m, Player p) const;
 };
 
 #endif /* GAME_H_ */
