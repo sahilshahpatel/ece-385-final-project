@@ -210,7 +210,9 @@ module curr_frame_controller(
 					next_state = READ_SYNC;
 				end
 				
-				step_done = 1; // We can pause here for NFC
+				if(DrawX < 10'd150) begin // Don't let NFC start too late in the row
+					step_done = 1; // We can pause here for NFC
+				end
 			end
 		endcase
 	end

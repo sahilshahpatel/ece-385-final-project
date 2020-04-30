@@ -11,8 +11,16 @@ Player::Player(int x0, int y0) {
 	x = x0;
 	y = y0;
 
-	// Initialize facing up
+	// Initialize facing nowhere
 	facing_x = x;
-	facing_y = y - 1;
+	facing_y = y;
+}
+
+Player::Player(){
+	x = 0;
+	y = 0;
+
+	facing_x = 0;
+	facing_y = 0;
 }
 

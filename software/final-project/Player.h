@@ -11,6 +11,7 @@
 class Player {
 public:
 	Player(int x0, int y0);
+	Player();
 
 	int x, y;
 	int facing_x, facing_y;
