@@ -20,7 +20,7 @@ using std::pair;
 #define ROWS 15 // 480 pix / TILE_SIZE
 
 Game::Game() :
-level(0), win(false), dead(false), prev_key(0), key(0)
+level(0), win(false), dead(false), next(false), prev_key(0), key(0)
 {
 	// Allocate board
 	board = new Tile*[COLS];
@@ -68,9 +68,14 @@ void Game::update(int keycodes){
 
 	// If player is on EXIT, they win the level
 	if (board[player.x][player.y] == STAIRS){
-		win = true;
-		// TODO: increment level once we have more levels
+		if(level == 2){
+			win = true;
+		}
+		else{
+			next = true;
+		}
 	}
+
 
 	// Monster logic
 	for(uint i = 0; i < monsters.size(); i++){
@@ -110,7 +115,7 @@ void Game::update(int keycodes){
 
 // Draws all sprites where they should be
 void Game::draw(){
-	if(dead == false && win == false){
+	if(dead == false && win == false && next == false){
 		// Draw tiles only if light is on
 		if(light){
 			// Draw tile player is on
@@ -136,9 +141,14 @@ void Game::draw(){
 		drawString("GAME OVER", 15, 12);
 		drawString("Press SPACE to RESTART", 9, 17);
 	}
-	//if player wins draw next level or win screen //40x30 //TODO add Score
+	//if player draw next level //40x30 //TODO add Score
+	else if(next){
+		drawString("You beat level +std::to_string(level)+", 12, 12);
+		drawString("Press SPACE to go on", 9, 17);
+	}
 	else if(win){
-		drawString("You Win CONGRATS ", 13, 12);
+		drawString("YOU ARE SO COOL", 12, 12);
+		drawString("CONGRATS WINNER", 12, 13);
 		drawString("Press SPACE to RESTART", 9, 17);
 	}
 }
@@ -148,8 +158,17 @@ void Game::draw(){
 void Game::handleInput(int key){
 	switch(key){
 	case KEYCODE_SPACE: // Toggle light
-		if(dead == false && win == false){
+		if(dead == false && win == false && next == false){
 			light = !light;
+		}
+		else if(next = true){
+			level++;
+			next = false;
+			setupLevel();
+		}
+		else if(win = true){
+			level = 0;
+			setupLevel();
 		}
 		else{
 			setupLevel();
@@ -304,29 +323,107 @@ void Game::setupLevel(){
 	// Switch case for level
 	switch(level){
 	case 0:
-		// Player is at 6, 14
-		board[6][14] = TILE;
-		player = Player(6, 14);
+		// Player is at 6, 13
+		board[6][13] = TILE;
+		player = Player(6, 13);
 
-		// Monster is at 6, 10
-		board[6][10] = TILE;
-		monsters.push_back(Monster(6, 10));
+		// Monster is at 6, 9
+		board[6][9] = TILE;
+		monsters.push_back(Monster(6, 9));
 
-		// Spikes at 6, 16
-		board[6][12] = SPIKES;
+		// Spikes at 6, 11
+		board[6][11] = SPIKES;
 
-		// Exit at 6, 12
-		board[6][8] = STAIRS;
+		// Exit at 6, 7
+		board[6][7] = STAIRS;
 
 		// Create rest of tile path
-		board[6][13] = TILE;
-		board[7][13] = TILE;
-		board[8][13] = TILE;
+		board[6][12] = TILE;
+		board[7][12] = TILE;
 		board[8][12] = TILE;
 		board[8][11] = TILE;
-		board[7][11] = TILE;
-		board[6][11] = TILE;
-		board[6][9] = TILE;
+		board[8][10] = TILE;
+		board[7][10] = TILE;
+		board[6][10] = TILE;
+		board[6][8]  = TILE;
 		break;
+
+	case 1:
+		// player starts at 3,6
+		board[3][6] = TILE;
+		player = Player(3,6);
+
+		//Monsters at 8,8 and 11,3
+		board[8][8] = TILE;
+		board[11][3] = TILE;
+		monsters.push_back(Monster(8,8));
+		monsters.push_back(Monster(11,3));
+
+		//Spikes at 5,6 and 10,3
+		board[5][6] = SPIKES;
+		board[10][3] = SPIKES;
+		board[10][4] = SPIKES;
+
+		//EXIT at 13,2
+		board[13][2] = STAIRS;
+
+		//Create rest of tile path;
+		board[4][6] = TILE;
+		board[4][7] = TILE;
+		board[5][3] = TILE;
+		board[5][4] = TILE;
+		board[5][5] = TILE;
+		board[5][7] = TILE;
+		board[5][8] = TILE;
+		board[6][3] = TILE;
+		board[6][5] = TILE;
+		board[6][8] = TILE;
+		board[7][3] = TILE;
+		board[7][4] = TILE;
+		board[7][5] = TILE;
+		board[7][6] = TILE;
+		board[7][7] = TILE;
+		board[7][8] = TILE;
+		board[8][4] = TILE;
+		board[9][3] = TILE;
+		board[9][4] = TILE;
+		board[9][5] = TILE;
+		board[10][5] = TILE;
+		board[11][5] = TILE;
+ 		board[11][4] = TILE;
+		board[12][3] = TILE;
+		board[13][3] = TILE;
+
+	case 2:
+		// player starts at 9,9
+		board[9][9] = TILE;
+		player = Player(9,9);
+
+		//Monsters at 9,5 12,2 13,6 and 15,3
+		board[9][5] = TILE;
+		board[12][2] = TILE;
+		board[13][6] = TILE;
+		board[15][3] = TILE;
+ 		monsters.push_back(Monster(9,5));
+		monsters.push_back(Monster(12,2));
+		monsters.push_back(Monster(13,6));
+		monsters.push_back(Monster(15,3));
+
+		//EXIT at 14,1
+		board[14][1] = STAIRS;
+
+		//Create rest of tile path;
+		board[9][8] = TILE;
+		board[9][7] = TILE;
+		board[9][6] = TILE;
+		board[10][6] = TILE;
+		board[11][6] = TILE;
+		board[12][6] = TILE;
+		board[12][5] = TILE;
+		board[12][4] = TILE;
+		board[12][3] = TILE;
+		board[13][3] = TILE;
+		board[14][3] = TILE;
+		board[14][2] = TILE;
 	}
 }
