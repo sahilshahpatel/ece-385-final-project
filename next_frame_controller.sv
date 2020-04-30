@@ -457,13 +457,13 @@ module next_frame_controller(
 			32'd22 : rom_data = wall32_2_data;
 			32'd23 : rom_data = wall32_3_data;
 			32'd24 : rom_data = stairs_up32_0_data;
-			32'd24 : rom_data = stairs_up32_1_data;
-			32'd24 : rom_data = stairs_up32_2_data;
-			32'd24 : rom_data = stairs_up32_3_data;
-			32'd24 : rom_data = stairs_left32_0_data;
-			32'd24 : rom_data = stairs_left32_1_data;
-			32'd24 : rom_data = stairs_left32_2_data;
-			32'd24 : rom_data = stairs_left32_3_data;
+			32'd25 : rom_data = stairs_up32_1_data;
+			32'd26 : rom_data = stairs_up32_2_data;
+			32'd27 : rom_data = stairs_up32_3_data;
+			32'd28 : rom_data = stairs_left32_0_data;
+			32'd29 : rom_data = stairs_left32_1_data;
+			32'd30 : rom_data = stairs_left32_2_data;
+			32'd31 : rom_data = stairs_left32_3_data;
 			
 			
 			32'd50: rom_data = alphanumerics_00_data;
