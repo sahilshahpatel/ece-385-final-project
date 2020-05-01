@@ -157,6 +157,8 @@ void Game::draw(){
 		drawString("CONGRATS WINNER", 12, 13);
 		drawString("Press SPACE to RESTART", 9, 17);
 	}
+
+	swapFrameBuffers(); // Graphics function
 }
 
 /* Helper functions */

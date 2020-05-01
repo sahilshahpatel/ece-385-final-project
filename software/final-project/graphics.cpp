@@ -31,11 +31,9 @@ void drawSprite(int img_id, int imgX, int imgY){
 	// Tell accelerator to start
 	GRAPHICS_PTR[3] = 1;
 
-	while(GRAPHICS_PTR[4] == 0){
+	while(GRAPHICS_PTR[5] == 0){
 		// Wait for Done flag
 	}
-
-	if(GRAPHICS_PTR[4] != 1) printf("Done flag: %d", GRAPHICS_PTR[4]);
 
 	// Lower start flag
 	GRAPHICS_PTR[3] = 0;
@@ -84,4 +82,17 @@ void drawString(std::string s, int x0, int y0){
 		drawSprite(img_id, x*SPRITE_SIZE, y*SPRITE_SIZE);
 		x++;
 	}
+}
+
+/*
+ * Tells GPU that the next frame is ready.
+ * GPU begins outputting the frame and clears a new
+ * frame buffer to be drawn to.
+ */
+void swapFrameBuffers(){
+	GRAPHICS_PTR[4] = 1; // Set clear_start flag high
+	while(GRAPHICS_PTR[5] == 0){
+		// Wait for done flag
+	}
+	GRAPHICS_PTR[4] = 0; // Lower clear_start
 }
