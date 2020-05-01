@@ -7,8 +7,6 @@ module next_frame_controller(
 	input logic draw_start, clear_start,
 	output logic done,
 	
-	input logic can_clear,
-	
 	output logic step_done, // Tells graphics_accelerator when it can switch controllers
 	
 	// SRAM interface for frame buffers
@@ -519,7 +517,7 @@ module next_frame_controller(
 			WAIT: begin
 				step_done = 1; // We can pause here for CFC			
 				
-				if(can_clear && clear_start) begin
+				if(clear_start) begin
 					next_even_frame = ~even_frame; // Switch CFB and NFB
 					next_sram_address = {1'b0, even_frame, 18'b0}; // Clear the new NFB
 					next_state = CLEAR_SYNC;

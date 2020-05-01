@@ -13,8 +13,6 @@ module curr_frame_controller(
 							VGA_VS,       //VGA virtical sync signal
 							VGA_HS,       //VGA horizontal sync signal
 	
-	output logic can_clear,
-	
 	// SRAM interface for frame buffers
 	input logic even_frame, 
 	output logic frame_clk,
@@ -36,8 +34,6 @@ module curr_frame_controller(
 	
 	logic [9:0] DrawX, DrawY;
 	VGA_controller vga_controller_instance(.Clk, .Reset(Reset), .VGA_HS, .VGA_VS, .VGA_CLK, .VGA_BLANK_N, .VGA_SYNC_N, .DrawX, .DrawY);
-	
-	assign can_clear = DrawY > 10'd480;
 	
 	logic [9:0] next_drawY; // For use in READ state to read upcoming row
 	assign next_drawY = DrawY + 1 < 10'd525 ? DrawY + 1 : 10'd0;
