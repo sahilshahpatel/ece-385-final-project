@@ -132,13 +132,25 @@ void Game::draw(){
 
 		// Draw monsters if applicable
 		for(uint i = 0; i < monsters.size(); i++){
-			if(monsters[i].active || monsters[i].alive == false){
-				drawImg(MONSTER_SPRITE, monsters[i].x*TILE_SIZE, monsters[i].y*TILE_SIZE);
+			Monster& m = monsters[i];
+			if(m.active){
+				// TODO: draw only monster eyes
+				drawImg(MONSTER_SPRITE, m.x*TILE_SIZE, m.y*TILE_SIZE);
+			}
+			else if(m.alive == false){
+				// If dead, draw both monster and tile below
+				drawImg(board[m.x][m.y], m.x*TILE_SIZE, m.y*TILE_SIZE);
+				drawImg(MONSTER_SPRITE, m.x*TILE_SIZE, m.y*TILE_SIZE);
 			}
 		}
 
-		// Draw player with or without light
-		drawImg(PLAYER_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
+		// Draw player with or without candle
+		if(light){
+			drawImg(PLAYER_LIGHT_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
+		}
+		else{
+			drawImg(PLAYER_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
+		}
 	}
 	//if player dies draw game over screen
 	else if(dead){
