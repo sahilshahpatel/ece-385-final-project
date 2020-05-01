@@ -48,7 +48,8 @@ class Game {
 	bool light;
 	int level;
 	bool win;
-	bool dead; 
+	bool dead;
+	bool next;
 
 	// Variables to handle key presses
 	int prev_key;
