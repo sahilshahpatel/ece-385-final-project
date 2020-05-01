@@ -87,7 +87,7 @@ void drawString(std::string s, int x0, int y0){
 	}
 }
 
-void clearNextFrame(){
+void clearScreen(){
 	// Raise start_clear flag
 	GRAPHICS_PTR[7] = 1;
 	while(GRAPHICS_PTR[8] == 0){

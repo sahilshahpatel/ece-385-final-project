@@ -15,6 +15,6 @@ void drawImg(int img_id, int imgX, int imgY);
 void drawSprite(int img_id, int imgX, int imgY);
 void drawString(std::string s, int x, int y);
 
-void clearNextFrame();
+void clearScreen();
 
 #endif /* GRAPHICS_H_ */
