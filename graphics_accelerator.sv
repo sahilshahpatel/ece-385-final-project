@@ -5,8 +5,8 @@ module graphics_accelerator
 	// Software interface
 	input logic[31:0] img_id,
 	input logic [9:0] imgX, imgY,
-	input logic Start,
-	output logic Done,
+	input logic draw_start, clear_start,
+	output logic done,
 	output logic frame_clk, // Used with Reset for next_frame_controller
 
 
@@ -56,6 +56,7 @@ module graphics_accelerator
 	logic [15:0] nfc_data_to_sram, cfc_data_to_sram;
 	
 	logic even_frame;
+	logic can_clear;
 	
 	sync_r1 sync_OE(.Clk, .d(sram_oe_n), .q(OE_N_sync), .Reset(Reset)); // Reset to off
 	sync_r1 sync_WE(.Clk, .d(sram_we_n), .q(WE_N_sync), .Reset(Reset)); // Reset to off
@@ -84,9 +85,13 @@ module graphics_accelerator
 	
 	next_frame_controller next_frame_controller_0 (
 		.Clk,
-		.Reset(Reset || frame_clk),
+		.Reset(Reset),
 		.EN(nfc_en),
 		.even_frame,
+		.draw_start,
+		.clear_start,
+		.can_clear,
+		.done,
 		.step_done(nfc_step_done),
 		.SRAM_OE_N(nfc_sram_oe_n),
 		.SRAM_WE_N(nfc_sram_we_n),
@@ -101,6 +106,7 @@ module graphics_accelerator
 		.Reset,
 		.EN(cfc_en),
 		.even_frame,
+		.can_clear,
 		.frame_clk,
 		.step_done(cfc_step_done),
 		.SRAM_OE_N(cfc_sram_oe_n),

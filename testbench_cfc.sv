@@ -18,6 +18,8 @@ module testbench_cfc;
 					 VGA_VS,       //VGA virtical sync signal
 					 VGA_HS;       //VGA horizontal sync signal
 	
+	logic can_clear;
+	
 	// SRAM interface for frame buffers
 	logic even_frame, frame_clk;
 	logic step_done;
