@@ -12,7 +12,6 @@ module test_cfc_top_level(
 							  VGA_HS,       //VGA horizontal sync signal
 	
 	output logic step_done,
-	output logic clear_done,
 	
 	// SRAM interface for frame buffers
 	output logic even_frame, frame_clk,
@@ -22,7 +21,6 @@ module test_cfc_top_level(
 	output logic [19:0] SRAM_ADDRESS
 );
 
-	logic clear_start;
 	logic sram_we_n, sram_oe_n;
 	curr_frame_controller cfc (.SRAM_WE_N(sram_we_n),.SRAM_OE_N(sram_oe_n), .*);
 	

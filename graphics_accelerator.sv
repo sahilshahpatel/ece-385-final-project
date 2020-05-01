@@ -8,8 +8,6 @@ module graphics_accelerator
 	input logic Start,
 	output logic Done,
 	output logic frame_clk, // Used with Reset for next_frame_controller
-	input logic clear_start,
-	output logic clear_done,
 
 
 	// VGA Interface 
@@ -103,8 +101,6 @@ module graphics_accelerator
 		.Reset,
 		.EN(cfc_en),
 		.even_frame,
-		.clear_start,
-		.clear_done,
 		.frame_clk,
 		.step_done(cfc_step_done),
 		.SRAM_OE_N(cfc_sram_oe_n),

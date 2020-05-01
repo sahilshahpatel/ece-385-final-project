@@ -21,7 +21,6 @@ module testbench_cfc;
 	// SRAM interface for frame buffers
 	logic even_frame, frame_clk;
 	logic step_done;
-	logic clear_start, clear_done;
 	wire [15:0] SRAM_DQ;
    logic SRAM_WE_N;
 	logic SRAM_OE_N;
