@@ -46,6 +46,10 @@ module curr_frame_controller(
 	
 	logic next_even_frame; // even_frame is changed on buffer clear
 	
+	logic next_clear_done;
+	logic new_clear_start, next_new_clear_start;
+	logic clearing, next_clearing;
+	
 	// Store next row of current frame buffer in row_buffer
 	logic [7:0] row_buffer_addr;
 	logic [15:0] row_buffer_out, row_buffer_in;
@@ -71,8 +75,7 @@ module curr_frame_controller(
 	logic [19:0] sram_address, next_sram_address;
 	assign col_counter = sram_address[7:0];
 	assign row_counter = sram_address[17:8];
-	
-	
+		
 	// State Machine:
 	// 	- Begins in DONE so that the read/clear cycles can start on a new frame
 	//		- During the Horizontal Blanking period, READs the upcoming row to the row buffer
@@ -89,6 +92,10 @@ module curr_frame_controller(
 			sram_address <= {1'b0, 1'b0, 18'b0};
 			
 			new_frame <= frame_clk;
+			
+			clear_done <= 0;
+			new_clear_start <= 1; // The next clear_start we recieve is legit
+			clearing <= 0;
 		end
 		else if (EN) begin
 			// Enabled -- progress state machine
@@ -98,6 +105,10 @@ module curr_frame_controller(
 			new_frame <= frame_clk;
 			
 			even_frame <= next_even_frame;
+			
+			clear_done <= next_clear_done;
+			new_clear_start <= next_new_clear_start;
+			clearing <= next_clearing;
 		end
 		else begin
 			// Not enabled -- pause state machine
@@ -111,7 +122,11 @@ module curr_frame_controller(
 				new_frame <= new_frame;
 			end
 			
-			even_frame <= next_even_frame;
+			even_frame <= even_frame;
+			
+			clear_done <= clear_done;
+			new_clear_start <= next_new_clear_start; // Exception: track falling edge on clear_start even if not enabled
+			clearing <= clearing;
 		end
 	end
 	
@@ -119,7 +134,15 @@ module curr_frame_controller(
 		// Defaults
 		step_done = 0;
 		
-		clear_done = 0;
+		next_clear_done = clear_done;
+		next_new_clear_start = new_clear_start;
+		next_clearing = clearing;
+		
+		// If clear_start has been lowered, we can be ready to accept another
+		if(new_clear_start == 0 && clear_start == 0) begin
+			next_new_clear_start = 1;
+			next_clear_done = 0; // Lower done flag
+		end
 		
 		next_even_frame = even_frame;
 		
@@ -179,70 +202,31 @@ module curr_frame_controller(
 				row_buffer_addr = col_counter;
 				row_buffer_in = Data_from_SRAM;
 				
-				next_state = ROW_DONE;
-			end
-//			CLEAR_SYNC: begin			
-//				SRAM_WE_N = 0;
-//				next_sram_address = {1'b0, even_frame, row_counter, 8'b0}; // Reset to beginning of the just-read row
-//				next_state = CLEAR;
-//			end
-//			CLEAR: begin			
-//				SRAM_WE_N = 0;
-//				SRAM_ADDRESS = sram_address;
-//				
-//				Data_to_SRAM = 16'h1111; // 4 pixels of background color
-//				
-//				// Keep clearing until done with row
-//				if(col_counter == 8'hFF) begin
-//					next_state = CLEAR_WAIT;
-//				end
-//				else begin
-//					next_sram_address = sram_address + 20'd1;
-//				end
-//			end
-//			CLEAR_WAIT: begin
-//				// SRAM_WE_N will be low b/c of synchronizer
-//				SRAM_ADDRESS = sram_address;
-//				Data_to_SRAM = 16'h1111;
-//				
-//				//next_sram_address = sram_address + 20'd1; // sram_address wasn't incremented on last CLEAR
-//				
-//				next_state = ROW_DONE;		
-//			end
-			ROW_DONE: begin				
-				// If in front porch of VS, clear the frame buffer (but don't let it start too late
-				if(DrawY > 10'd480 && DrawY < 10'd490) begin
-					if(clear_start) begin
-						next_state = CLEAR_SYNC;
-					end
+				// If we are supposed to be clearing, do so!
+				if(clearing) begin
+					next_state = CLEAR_SYNC;
 				end
 				else begin
-					// If in the middle of frame, continue to read
-					if(VGA_HS == 0) begin
-						next_state = READ_SYNC;
-					end
-					
-					// Don't let NFC start too late in the row
-					if(DrawX < 10'd150) begin
-						step_done = 1;
-					end
+					next_state = ROW_DONE;
 				end
 			end
-			CLEAR_SYNC: begin
+			CLEAR_SYNC: begin			
 				SRAM_WE_N = 0;
-				next_sram_address = {1'b0, even_frame, 18'b0}; // Clear out current frame
-				next_state = CLEAR; 
+				next_sram_address = {1'b0, ~even_frame, row_counter, 8'b0}; // Reset to beginning of corresponding row in NFB
+				next_state = CLEAR;
 			end
 			CLEAR: begin			
 				SRAM_WE_N = 0;
 				SRAM_ADDRESS = sram_address;
 				
 				Data_to_SRAM = 16'h1111; // 4 pixels of background color
-				next_sram_address = sram_address + 20'd1;
 				
-				// Keep clearing until done
-				if(sram_address[17:0] == {18{1'b1}}) begin
+				// Keep clearing until done with row
+				if(col_counter == 8'hFF) begin
 					next_state = CLEAR_WAIT;
+				end
+				else begin
+					next_sram_address = sram_address + 20'd1;
 				end
 			end
 			CLEAR_WAIT: begin
@@ -250,15 +234,29 @@ module curr_frame_controller(
 				SRAM_ADDRESS = sram_address;
 				Data_to_SRAM = 16'h1111;
 				
-				next_even_frame = ~even_frame; // Since we have cleared this frame, switch NFB and CFB
-				next_state = CLEAR_DONE;
-			end
-			CLEAR_DONE: begin
-				clear_done = 1'b1;
+				// If we just cleared the last row, we are done clearing
+				if(row_counter > 10'd480) begin
+					next_clearing = 0;
+					next_clear_done = 1; // Raise done flag
+				end
 				
-				// Move one when start flag lowered
-				if(clear_start == 1'b0) begin
-					next_state = DONE;
+				next_state = ROW_DONE;		
+			end
+			ROW_DONE: begin				
+				// If in front porch of VS, and clear_start, start clearing next frame
+				if(DrawY > 10'd480 && clear_start && new_clear_start) begin
+					next_new_clear_start = 0; // Ignore clear_start signals until clear_done acknowledged
+					next_even_frame  = ~even_frame; // Start reading from NFB which should be ready
+					next_clearing = 1; // Clear what just became the new NFB
+				end
+				// Don't let NFC start if we are clearing or if we are too late in the row
+				else if(~clearing && DrawX < 10'd150) begin
+					step_done = 1;
+				end
+				
+				// Read next row when this one is over
+				if(VGA_HS == 0) begin
+					next_state = READ_SYNC;
 				end
 			end
 		endcase

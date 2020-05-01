@@ -10,7 +10,7 @@ module avalon_graphics_interface(
 	input  logic AVL_WRITE,					// Avalon-MM Write
 	input  logic AVL_CS,						// Avalon-MM Chip Select
 	input  logic [3:0] AVL_BYTE_EN,		// Avalon-MM Byte Enable
-	input  logic [2:0] AVL_ADDR,			// Avalon-MM Address
+	input  logic [3:0] AVL_ADDR,			// Avalon-MM Address
 	input  logic [31:0] AVL_WRITEDATA,	// Avalon-MM Write Data
 	output logic [31:0] AVL_READDATA,	// Avalon-MM Read Data
 
@@ -100,6 +100,19 @@ module avalon_graphics_interface(
 			// Handle read-only registers
 			registers[4] <= {31'b0, Done}; // Load in done
 			registers[8] <= {31'b0, clear_done}; // Load in clear_done
+//			// If not clear_done, load in new value
+//			if(registers[8] == 32'd0) begin
+//				registers[8] <= [31'b0, clear_done};
+//			end
+//			// If clear_done has been acknowledged, lower it
+//			else if(registers[8] == 32'd1 && registers[7] == 32'd0) begin
+//				registers[8] <= 32'd0;
+//			end
+//			// Otherwise, retain message
+//			else begin
+//				registers[8] <= registers[8];
+//			end
+			
 			if(registers[5] == 32'd0) begin // Load new frame if not waiting for acknowledgement
 				registers[5] <= {31'b0, frame_clk};
 			end

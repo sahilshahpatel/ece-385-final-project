@@ -140,10 +140,8 @@ void Game::draw(){
 		drawString("You Win CONGRATS ", 13, 12);
 		drawString("Press SPACE to RESTART", 9, 17);
 	}
-}
 
-void Game::clear(){
-	clearScreen(); // Call graphics function
+	clearNextFrame();
 }
 
 /* Helper functions */
