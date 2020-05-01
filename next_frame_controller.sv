@@ -4,13 +4,13 @@ module next_frame_controller(
 	// Software interface
 	input logic[31:0] img_id,
 	input logic [9:0] imgX, imgY, // TODO: As is, this controller snaps imgX to the nearest SRAM word (i.e. only has accuracy of 4 pixels in X direction)
-	input logic draw_start, clear_start,
-	output logic done,
+	input logic Start,
+	output logic Done,
 	
 	output logic step_done, // Tells graphics_accelerator when it can switch controllers
 	
 	// SRAM interface for frame buffers
-	output logic even_frame,
+	input logic even_frame,
 	output logic [15:0] Data_to_SRAM,
 	input logic [15:0] Data_from_SRAM,
 	output logic SRAM_WE_N,
@@ -378,10 +378,10 @@ module next_frame_controller(
 	// currentFrame = SRAM_ADDRESS[18] = even_frame
 	// nextFrame = SRAM_ADDRESS[18] = ~even_frame
 	// each 16-bit word from SRAM is 4 pixels
-	logic next_even_frame;
+
 	
 	// State machine to execute commands from software
-	enum logic [3:0] {WAIT, WAIT_READ, WAIT_READ_2, READ, WAIT_CALCULATE, CALCULATE, WRITE, WAIT_WRITE, WAIT_WRITE_2, CLEAR_SYNC, CLEAR, CLEAR_WAIT, ROW_DONE, DONE} state, next_state;
+	enum logic [3:0] {WAIT, WAIT_READ, WAIT_READ_2, READ, WAIT_CALCULATE, CALCULATE, WRITE, WAIT_WRITE, WAIT_WRITE_2, DONE} state, next_state;
 	logic [15:0] write_buffer, next_write_buffer;
 	logic [19:0] sram_address, next_sram_address;
 	
@@ -392,7 +392,6 @@ module next_frame_controller(
 			rom_address <= 0;
 			write_buffer <= 0;
 			sram_address <= {1'b0, even_frame, 18'b0};
-			even_frame <= 0;
 		end
 		else if(EN) begin
 			// Enabled, change states
@@ -400,7 +399,6 @@ module next_frame_controller(
 			rom_address <= next_rom_address;
 			write_buffer <= next_write_buffer;
 			sram_address <= next_sram_address;
-			even_frame <= next_even_frame;
 		end
 		else begin
 			// Not enabled -- change nothing (exception: leave done state if applicable)
@@ -413,15 +411,12 @@ module next_frame_controller(
 			rom_address <= rom_address;
 			write_buffer <= write_buffer;
 			sram_address <= sram_address;
-			even_frame <= even_frame;
 		end
 	end
 	
 	always_comb begin
 		// Defaults
 		step_done = 0;
-		
-		next_even_frame = even_frame;
 		
 		next_state = state;
 		next_rom_address = rom_address;
@@ -432,7 +427,7 @@ module next_frame_controller(
 		SRAM_WE_N = 1;
 		SRAM_OE_N = 1;
 		
-		done = 0;
+		Done = 0;
 		Data_to_SRAM = 16'bZ;
 		
 		// Choose which ROM to read based on img_id
@@ -517,12 +512,7 @@ module next_frame_controller(
 			WAIT: begin
 				step_done = 1; // We can pause here for CFC			
 				
-				if(clear_start) begin
-					next_even_frame = ~even_frame; // Switch CFB and NFB
-					next_sram_address = {1'b0, even_frame, 18'b0}; // Clear the new NFB
-					next_state = CLEAR_SYNC;
-				end
-				else if(draw_start) begin
+				if(Start) begin
 					next_rom_address = 8'h00;
 
 					next_state = WAIT_READ;
@@ -594,43 +584,11 @@ module next_frame_controller(
 					next_state = WAIT_READ;
 				end
 			end
-			CLEAR_SYNC: begin
-				SRAM_WE_N = 1'b0;
-				
-				next_state = CLEAR;
-			end
-			CLEAR: begin
-				SRAM_WE_N = 1'b0;
-				Data_to_SRAM = 16'h1111;
-				
-				next_sram_address[17:0] = sram_address[17:0] + 18'd1;
-				
-				// If we are done with the row, go to clear_wait
-				if(sram_address[7:0] == 8'hFF) begin
-					next_state = CLEAR_WAIT;
-				end
-			end
-			CLEAR_WAIT: begin
-				// WE_N will be low from synchronizer
-				Data_to_SRAM = 16'h1111;
-				
-				step_done = 1;
-				next_state = ROW_DONE;
-			end
-			ROW_DONE: begin				
-				// If we cleared the buffer, we are done
-				if(sram_address[17:0] == 18'b0) begin
-					next_state = DONE;
-				end
-				else begin
-					next_state = CLEAR_SYNC;
-				end
-			end
 			DONE: begin
 				step_done = 1; // We can pause here for CFC
 				
-				done = 1;
-				if(draw_start == 0 && clear_start == 0) begin
+				Done = 1;
+				if(Start == 0) begin
 					next_state = WAIT;
 				end
 			end

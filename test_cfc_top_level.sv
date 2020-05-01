@@ -13,8 +13,6 @@ module test_cfc_top_level(
 	
 	output logic step_done,
 	
-	output logic can_clear,
-	
 	// SRAM interface for frame buffers
 	output logic even_frame, frame_clk,
 	inout wire [15:0] SRAM_DQ,

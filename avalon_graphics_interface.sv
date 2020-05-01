@@ -33,27 +33,26 @@ module avalon_graphics_interface(
 	output logic SRAM_WE_N,
 	output logic [19:0] SRAM_ADDRESS
 );
-	
-	logic [31:0] registers [6];
 
 	// Register map:
-	//		0: img_id
+	//		0: Which image are we drawing?
 	//		1: imgX	(9:0)
 	//		2: imgY	(9:0)
-	//		3: Draw Start (0)
-	//		4: Clear Start (0)
-	//		5: Done	(0)
+	//		3: Start (0)
+	//		4: Done	(0)
+	//		5: New frame out (0)
+	//		6: New frame acknowledge (0)
+	logic [31:0] registers [7];
 	
-	logic done, frame_clk;
+	logic Done, frame_clk;
 	graphics_accelerator graphics (
 		.Clk,
 		.Reset(RESET),
 		.img_id(registers[0]),
 		.imgX(registers[1][9:0]),
 		.imgY(registers[2][9:0]),
-		.draw_start(registers[3][0]),
-		.clear_start(registers[4][0]),
-		.done(done),
+		.Start(registers[3][0]),
+		.Done(Done),
 		.frame_clk,
 		.* // VGA and SRAM signals
 	);
@@ -74,12 +73,13 @@ module avalon_graphics_interface(
 			registers[3] <= 32'd0;
 			registers[4] <= 32'd0;
 			registers[5] <= 32'd0;
+			registers[6] <= 32'd0;
 		end
 		else begin
 			// Handle writes
 			if(AVL_CS && AVL_WRITE) begin
 				// Perform write on enabled bits
-				if(AVL_ADDR != 5) begin // register 5 is read only
+				if(AVL_ADDR != 4 && AVL_ADDR != 5) begin // registers 4 and 5 are read only
 					if(AVL_BYTE_EN[0])
 						registers[AVL_ADDR][7:0] <= AVL_WRITEDATA[7:0];
 					if(AVL_BYTE_EN[1])
@@ -87,8 +87,19 @@ module avalon_graphics_interface(
 				end
 			end
 			
-			// Read-only registers
-			registers[5] <= {31'b0, done}; // Load in done
+			// Handle read-only registers
+			registers[4] <= {31'b0, Done}; // Load in done
+			if(registers[5] == 32'd0) begin // Load new frame if not waiting for acknowledgement
+				registers[5] <= {31'b0, frame_clk};
+			end
+			else if(registers[5] == 32'd1 && registers[6] == 32'd1) begin
+				// New frame was acknowledged, reset to 0
+				registers[5] <= 0;
+				registers[6] <= 0;
+			end
+			else begin
+				registers[5] <= registers[5]; // Retain message if not acknowledged
+			end
 		end
 	end
 endmodule

@@ -4,11 +4,8 @@ module test_nfc_top_level(
 	// Software interface
 	input logic[2:0] img_id,
 	input logic [9:0] imgX, imgY,
-	input logic draw_start,
-	input logic clear_start,
-	output logic done,
-	
-	input logic can_clear,
+	input logic Start,
+	output logic Done,
 	
 	output logic step_done,
 	
