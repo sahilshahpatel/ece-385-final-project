@@ -59,8 +59,6 @@ int main(void)
 	alt_u8 hot_plug_count;
 	alt_u16 code;
 
-	// Pointer to registers inside of graphics interface
-	volatile unsigned int * GRAPHICS_PTR = (unsigned int *) AVALON_GRAPHICS_INTERFACE_0_BASE;
 	Game game;
 
 	printf("USB keyboard setup...\n\n");
@@ -597,20 +595,6 @@ int main(void)
 				goto USB_HOT_PLUG;
 
 			usleep(200);
-		}
-
-		/* Above is keyboard setup loop, below is game loop*/
-
-		bool fast_enough = false;
-		while(GRAPHICS_PTR[5] == 0){
-			//printf("Waiting for frame flag\n");
-			// Wait for frame flag
-			fast_enough = true;
-		}
-		GRAPHICS_PTR[6] = 1; // Acknowledge frame flag (will be lowered automatically)
-
-		if(!fast_enough){
-			printf("Missed frame flag\n");
 		}
 
 		game.update(keycode);

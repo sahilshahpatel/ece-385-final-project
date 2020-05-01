@@ -10,8 +10,8 @@ logic EN = 1;
 // Software interface
 logic[2:0] img_id;
 logic [9:0] imgX, imgY;
-logic Start;
-logic Done;
+logic draw_start, clear_start;
+logic done;
 
 // SRAM interface for frame buffers
 logic even_frame = 0;
@@ -25,6 +25,9 @@ test_nfc_top_level test_top (.*);
 
 
 initial begin: TESTVECTORS
+	draw_start = 0;
+	clear_start = 0;
+	
 	Reset = 1;
 	Clk = 0;
 	
@@ -42,7 +45,7 @@ initial begin: TESTVECTORS
 	img_id = 0;
 	imgX = 0;
 	imgY = 0;
-	Start = 1;
+	draw_start = 1;
 	
 	for(int i = 0 ; i < 1050; i++) begin
 		#10 Clk = 0;
