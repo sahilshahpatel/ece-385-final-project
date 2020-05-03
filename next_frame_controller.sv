@@ -25,7 +25,7 @@ module next_frame_controller(
 	// rom_address[3:0] is which pixel within column
 	logic [14:0] rom_address, next_rom_address;
 	logic [3:0] rom_data;
-	spritesheetROM #(.FILE("sprites/spritesheet.txt")) spritesheet
+	spritesheetROM #(.FILE("spritesheet.txt")) spritesheet
 	(
 		.Clk,
 		.address(rom_address),

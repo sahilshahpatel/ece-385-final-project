@@ -22,7 +22,7 @@ using std::pair;
 const std::pair<int, int> TILE_SPRITE(4, 2);
 const std::pair<int, int> WALL_SPRITE(6, 2);
 const std::pair<int, int> SPIKES_SPRITE(8, 2);
-const std::pair<int, int> STAIRS_SPRITE(10, 2);
+const std::pair<int, int> STAIRS_SPRITE(6, 4); // Always chooses the upwards facing stairs
 const std::pair<int, int> PLAYER_LIGHT_SPRITE(12, 2);
 const std::pair<int, int> PLAYER_DARK_SPRITE(14, 2);
 const std::pair<int, int> MONSTER_LIGHT_SPRITE(0, 4);

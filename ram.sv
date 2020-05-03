@@ -39,7 +39,7 @@ module  spritesheetROM
 	parameter BIT_DEPTH = 4,
 	parameter PIXELS = 32768, //256x128
 	parameter ADDRESS_DEPTH = 15,
-	parameter FILE = "sprites/spritesheet.txt"
+	parameter FILE = "spritesheet.txt"
 )
 
 (
