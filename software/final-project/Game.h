@@ -18,21 +18,22 @@
 using std::vector;
 using std::pair;
 
-// Image IDs
-#define PLAYER_SPRITE 0
-#define MONSTER_SPRITE 4
-#define PLAYER_LIGHT_SPRITE 8
-#define SPIKES_SPRITE 12
-#define TILE_SPRITE 16
-#define WALL_SPRITE 20
-#define STAIRS_UP_SPRITE 24
-#define STAIRS_LEFT_SPRITE 28
+// Sprite locations
+const std::pair<int, int> TILE_SPRITE(4, 2);
+const std::pair<int, int> WALL_SPRITE(6, 2);
+const std::pair<int, int> SPIKES_SPRITE(8, 2);
+const std::pair<int, int> STAIRS_SPRITE(10, 2);
+const std::pair<int, int> PLAYER_LIGHT_SPRITE(12, 2);
+const std::pair<int, int> PLAYER_DARK_SPRITE(14, 2);
+const std::pair<int, int> MONSTER_LIGHT_SPRITE(0, 4);
+const std::pair<int, int> MONSTER_DARK_SPRITE(2, 4);
+const std::pair<int, int> MONSTER_DEAD_SPRITE(4, 4);
 
 enum Tile {
-	TILE = TILE_SPRITE,
-	SPIKES = SPIKES_SPRITE,
-	WALL = WALL_SPRITE,
-	STAIRS = STAIRS_UP_SPRITE
+	TILE,
+	SPIKES,
+	WALL,
+	STAIRS
 };
 
 class Game {
@@ -60,6 +61,7 @@ class Game {
 	bool canMove(Player player, int dest_x, int dest_y) const;
 	bool validPos(int x, int y) const;
 	bool validPos(pair<int, int> p) const;
+	std::pair<int, int> spriteFromTile(Tile tile);
 	void setupLevel();
 	std::pair<int, int> findPath(int x0, int y0, int dest_x, int dest_y) const;
 	std::pair<int, int> findPath(Monster m, Player p) const;

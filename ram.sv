@@ -34,6 +34,35 @@ module  imgROM
 
 endmodule
 
+module  spritesheetROM
+#(
+	parameter BIT_DEPTH = 4,
+	parameter PIXELS = 32768, //256x128
+	parameter ADDRESS_DEPTH = 15,
+	parameter FILE = "sprites/spritesheet.txt"
+)
+
+(
+		input [ADDRESS_DEPTH-1:0] address,
+		input Clk,
+
+		output logic [BIT_DEPTH-1:0] data
+);
+
+	logic [BIT_DEPTH-1:0] mem [0:PIXELS-1];
+
+	initial
+	begin
+		 $readmemh(FILE, mem);
+	end
+
+
+	always_ff @ (posedge Clk) begin
+		data <= mem[address];
+	end
+
+endmodule
+
 module  rowRAM
 #(
 	parameter BIT_DEPTH = 16, // 4 pixels
