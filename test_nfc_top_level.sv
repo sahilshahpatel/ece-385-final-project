@@ -2,7 +2,8 @@ module test_nfc_top_level(
 	input logic Clk, Reset, EN,
 	
 	// Software interface
-	input logic[2:0] img_id,
+	input logic [3:0] spritesheetX,
+	input logic [2:0] spritesheetY,
 	input logic [9:0] imgX, imgY,
 	input logic draw_start, clear_start,
 	output logic done,

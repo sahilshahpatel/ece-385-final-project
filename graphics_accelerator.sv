@@ -3,7 +3,8 @@ module graphics_accelerator
 	input logic Clk, Reset,
 	
 	// Software interface
-	input logic[31:0] img_id,
+	input logic [3:0] spritesheetX,
+	input logic [2:0] spritesheetY,
 	input logic [9:0] imgX, imgY,
 	input logic draw_start, clear_start,
 	output logic done,
@@ -88,9 +89,6 @@ module graphics_accelerator
 		.Reset(Reset),
 		.EN(nfc_en),
 		.even_frame,
-		.draw_start,
-		.clear_start,
-		.done,
 		.step_done(nfc_step_done),
 		.SRAM_OE_N(nfc_sram_oe_n),
 		.SRAM_WE_N(nfc_sram_we_n),
