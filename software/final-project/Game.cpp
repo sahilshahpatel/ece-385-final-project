@@ -22,7 +22,7 @@ using std::pair;
 #define ROWS 15 // 480 pix / TILE_SIZE
 
 Game::Game() :
-level(0), win(false), dead(false), next(false), prev_key(0), key(0)
+level(1), win(false), dead(false), next(false), prev_key(0), key(0), start(true)
 {
 	// Allocate board
 	board = new Tile*[COLS];
@@ -119,7 +119,9 @@ void Game::update(int keycodes){
 
 // Draws all sprites where they should be
 void Game::draw(){
-	if(dead == false && win == false && next == false){
+	if(dead == false && win == false && next == false && Gamestate == INGAME){
+			//when in level draw score 
+			drawString("Score:", 1, 1); //TODO add actual Score Component
 		// Draw tiles only if light is on
 		if(light){
 			// Draw tile player is on
@@ -138,7 +140,6 @@ void Game::draw(){
 					drawImg(MONSTER_LIGHT_SPRITE, m.x*TILE_SIZE, m.y*TILE_SIZE);
 				else
 					drawImg(MONSTER_DARK_SPRITE, m.x*TILE_SIZE, m.y*TILE_SIZE);
-
 			}
 			else if(m.alive == false){
 				// If dead, draw both monster and tile below
@@ -154,6 +155,9 @@ void Game::draw(){
 		else{
 			drawImg(PLAYER_DARK_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
 		}
+	}
+	else if(GameState == START){
+		//TODO Draw Start screen
 	}
 	//if player dies draw game over screen
 	else if(dead){
@@ -183,6 +187,10 @@ void Game::handleInput(int key){
 	case KEYCODE_SPACE: // Toggle light
 		if(dead == false && win == false && next == false){
 			light = !light;
+		}
+		else if(GameState == START){
+			GameState = INGAME;
+			setupLevel();
 		}
 		else if(next){
 			level++;
@@ -355,7 +363,7 @@ void Game::setupLevel(){
 
 	// Switch case for level
 	switch(level){
-	case 0:
+	case 1:
 		// Player is at 6, 13
 		board[6][13] = TILE;
 		player = Player(6, 13);
@@ -367,8 +375,9 @@ void Game::setupLevel(){
 		// Spikes at 6, 11
 		board[6][11] = SPIKES;
 
-		// Exit at 6, 7
-		board[6][7] = STAIRS;
+		// Exit at 5, 7
+		board[6][7] = TILE;
+		board[5][7] = STAIRS;
 
 		// Create rest of tile path
 		board[6][12] = TILE;
@@ -382,6 +391,33 @@ void Game::setupLevel(){
 		break;
 
 	case 1:
+		// Player is at 6, 13
+		board[6][13] = TILE;
+		player = Player(6, 13);
+
+		// Monster is at 6, 9
+		board[6][9] = TILE;
+		monsters.push_back(Monster(6, 9));
+
+		// Spikes at 6, 11
+		board[6][11] = SPIKES;
+
+		// Exit at 5, 7
+		board[6][7] = TILE;
+		board[5][7] = STAIRS;
+
+		// Create rest of tile path
+		board[6][12] = TILE;
+		board[7][12] = TILE;
+		board[8][12] = TILE;
+		board[8][11] = TILE;
+		board[8][10] = TILE;
+		board[7][10] = TILE;
+		board[6][10] = TILE;
+		board[6][8]  = TILE;
+		break;
+
+	case 2:
 		// player starts at 3,6
 		board[3][6] = TILE;
 		player = Player(3,6);
@@ -398,7 +434,9 @@ void Game::setupLevel(){
 		board[10][4] = SPIKES;
 
 		//EXIT at 13,2
-		board[13][2] = STAIRS;
+		board[13][2] = TILE;
+		board[13][1] = TILE;
+		board[12][1] = STAIRS;
 
 		//Create rest of tile path;
 		board[4][6] = TILE;
@@ -426,8 +464,9 @@ void Game::setupLevel(){
  		board[11][4] = TILE;
 		board[12][3] = TILE;
 		board[13][3] = TILE;
+
 		break;
-	case 2:
+	case 3:
 		// player starts at 9,9
 		board[9][9] = TILE;
 		player = Player(9,9);
@@ -442,8 +481,10 @@ void Game::setupLevel(){
 		monsters.push_back(Monster(13,6));
 		monsters.push_back(Monster(15,3));
 
-		//EXIT at 14,1
-		board[14][1] = STAIRS;
+		//EXIT at 13,1
+		board[14][1] = TILE;
+		board[13][1] = STAIRS;
+
 
 		//Create rest of tile path;
 		board[9][8] = TILE;
