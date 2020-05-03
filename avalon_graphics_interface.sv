@@ -34,25 +34,27 @@ module avalon_graphics_interface(
 	output logic [19:0] SRAM_ADDRESS
 );
 	
-	logic [31:0] registers [6];
+	logic [31:0] registers [7];
 
 	// Register map:
-	//		0: img_id
-	//		1: imgX	(9:0)
-	//		2: imgY	(9:0)
-	//		3: Draw Start (0)
-	//		4: Clear Start (0)
-	//		5: Done	(0)
+	//		0: spritesheetX	(3:0)
+	//		1: spritesheetY	(2:0)
+	//		2: imgX	(9:0)
+	//		3: imgY	(9:0)
+	//		4: Draw Start (0)
+	//		5: Clear Start (0)
+	//		6: Done	(0)
 	
 	logic done, frame_clk;
 	graphics_accelerator graphics (
 		.Clk,
 		.Reset(RESET),
-		.img_id(registers[0]),
-		.imgX(registers[1][9:0]),
-		.imgY(registers[2][9:0]),
-		.draw_start(registers[3][0]),
-		.clear_start(registers[4][0]),
+		.spritesheetX(registers[0][3:0]),
+		.spritesheetY(registers[1][2:0]),
+		.imgX(registers[2][9:0]),
+		.imgY(registers[3][9:0]),
+		.draw_start(registers[4][0]),
+		.clear_start(registers[5][0]),
 		.done(done),
 		.frame_clk,
 		.* // VGA and SRAM signals
@@ -79,7 +81,7 @@ module avalon_graphics_interface(
 			// Handle writes
 			if(AVL_CS && AVL_WRITE) begin
 				// Perform write on enabled bits
-				if(AVL_ADDR != 5) begin // register 5 is read only
+				if(AVL_ADDR != 6) begin // register 6 is read only
 					if(AVL_BYTE_EN[0])
 						registers[AVL_ADDR][7:0] <= AVL_WRITEDATA[7:0];
 					if(AVL_BYTE_EN[1])
@@ -88,7 +90,7 @@ module avalon_graphics_interface(
 			end
 			
 			// Read-only registers
-			registers[5] <= {31'b0, done}; // Load in done
+			registers[6] <= {31'b0, done}; // Load in done
 		end
 	end
 endmodule

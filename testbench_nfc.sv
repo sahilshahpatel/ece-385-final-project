@@ -8,7 +8,8 @@ logic Reset;
 logic EN = 1;
 
 // Software interface
-logic[2:0] img_id;
+logic [3:0] spritesheetX;
+logic [2:0] spritesheetY;
 logic [9:0] imgX, imgY;
 logic draw_start, clear_start;
 logic done;
@@ -42,7 +43,8 @@ initial begin: TESTVECTORS
 		#10 Clk = 1;
 	end
 	
-	img_id = 0;
+	spritesheetX = 0;
+	spritesheetY = 0;
 	imgX = 0;
 	imgY = 0;
 	draw_start = 1;

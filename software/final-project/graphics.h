@@ -10,9 +10,11 @@
 
 #include <string>
 
-void drawImg(int img_id, int imgX, int imgY);
-void drawSprite(int img_id, int imgX, int imgY);
+void drawImg(std::pair<int, int> sprite, int imgX, int imgY);
+void drawSprite(int spritesheetX, int spritesheetY, int imgX, int imgY);
+
 void drawString(std::string s, int x, int y);
+std::pair<int, int> getSpriteForChar(char c);
 
 void swapFrameBuffers();
 

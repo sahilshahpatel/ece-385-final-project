@@ -123,24 +123,27 @@ void Game::draw(){
 		// Draw tiles only if light is on
 		if(light){
 			// Draw tile player is on
-			drawImg(board[player.x][player.y], player.x*TILE_SIZE, player.y*TILE_SIZE);
+			drawImg(spriteFromTile(board[player.x][player.y]), player.x*TILE_SIZE, player.y*TILE_SIZE);
 
 			// Draw tile player is facing
 			if(validPos(player.facing_x, player.facing_y))
-				drawImg(board[player.facing_x][player.facing_y], player.facing_x*TILE_SIZE, player.facing_y*TILE_SIZE);
+				drawImg(spriteFromTile(board[player.facing_x][player.facing_y]), player.facing_x*TILE_SIZE, player.facing_y*TILE_SIZE);
 		}
 
 		// Draw monsters if applicable
 		for(uint i = 0; i < monsters.size(); i++){
 			Monster& m = monsters[i];
 			if(m.active){
-				// TODO: draw only monster eyes
-				drawImg(MONSTER_SPRITE, m.x*TILE_SIZE, m.y*TILE_SIZE);
+				if(light)
+					drawImg(MONSTER_LIGHT_SPRITE, m.x*TILE_SIZE, m.y*TILE_SIZE);
+				else
+					drawImg(MONSTER_DARK_SPRITE, m.x*TILE_SIZE, m.y*TILE_SIZE);
+
 			}
 			else if(m.alive == false){
 				// If dead, draw both monster and tile below
-				drawImg(board[m.x][m.y], m.x*TILE_SIZE, m.y*TILE_SIZE);
-				drawImg(MONSTER_SPRITE, m.x*TILE_SIZE, m.y*TILE_SIZE);
+				drawImg(spriteFromTile(board[m.x][m.y]), m.x*TILE_SIZE, m.y*TILE_SIZE);
+				drawImg(MONSTER_DEAD_SPRITE, m.x*TILE_SIZE, m.y*TILE_SIZE);
 			}
 		}
 
@@ -149,7 +152,7 @@ void Game::draw(){
 			drawImg(PLAYER_LIGHT_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
 		}
 		else{
-			drawImg(PLAYER_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
+			drawImg(PLAYER_DARK_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
 		}
 	}
 	//if player dies draw game over screen
@@ -307,6 +310,16 @@ pair<int, int> Game::findPath(int x0, int y0, int dest_x, int dest_y) const{
 
 	// If we reached here, a path doesn't exist. Return starting pos
 	return start;
+}
+
+std::pair<int, int> Game::spriteFromTile(Tile tile){
+	switch(tile){
+	case TILE: return TILE_SPRITE;
+	case WALL: return WALL_SPRITE;
+	case SPIKES: return SPIKES_SPRITE;
+	case STAIRS: return STAIRS_SPRITE;
+	default: return TILE_SPRITE;
+	}
 }
 
 // Key-down detector
