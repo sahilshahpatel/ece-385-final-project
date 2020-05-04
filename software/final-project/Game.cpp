@@ -6,6 +6,7 @@
  */
 #include "Game.h"
 
+#include "usb_hid_keys.h"
 #include "graphics.h"
 #include <stdio.h>
 #include <queue>
@@ -18,18 +19,21 @@ using std::pair;
 
 // Game board is 64x64 tiles where each tile is 16x16 pixels
 #define TILE_SIZE 32
-#define COLS 20 // 640 pix / TILE_SIZE
-#define ROWS 15 // 480 pix / TILE_SIZE
+#define COLS 20 // 640 pixels / TILE_SIZE
+#define ROWS 15 // 480 pixels / TILE_SIZE
 
 #define NUM_LEVELS 3
 
 Game::Game() :
 gameState(START),
+light(true),
 level(1),
 win(false),
 dead(false),
 next(false),
+deathCounter(0),
 levelStartTime(clock()),
+totalTime(0),
 prev_key(0),
 key(0)
 {
@@ -47,6 +51,14 @@ key(0)
 	drawScreen(TITLE_SCREEN_SPRITE);
 	drawString("Connecting Keyboard...", 9, 26);
 	swapFrameBuffers();
+
+}
+
+void Game::reset(){
+	playerName = "";
+	totalTime = 0;
+	level = 1;
+	deathCounter = 0;
 }
 
 Game::~Game(){
@@ -57,20 +69,18 @@ Game::~Game(){
 	delete[] board;
 }
 
-// Keycodes
-#define KEYCODE_W 26
-#define KEYCODE_A 4
-#define KEYCODE_S 22
-#define KEYCODE_D 7
-#define KEYCODE_SPACE 44
-
 // Game logic happens in update
 void Game::update(int keycodes){
 	clock_t time = clock();
 
 	updateKey(keycodes); // Update the current key (handles on-key-down behavior)
 
-	handleInput(key); // Toggles light, moves player, continues through menu
+	if(gameState == POST_GAME){
+		playerNameInput(key);
+	}
+	else{
+		handleInput(key); // Toggles light, moves player, continues through menu
+	}
 
 	if(gameState == IN_GAME){
 		if(dead || next || win) return; // Don't update if in menu screen
@@ -80,13 +90,15 @@ void Game::update(int keycodes){
 
 		// If player is on spikes, they die
 		if (board[player.x][player.y] == SPIKES){
+			totalTime += (float)(clock() - levelStartTime)/CLOCKS_PER_SEC;
 			dead = true;
 		}
 
 		// If player is on EXIT, they win the level
 		if (board[player.x][player.y] == STAIRS){
+			totalTime += (float)(clock() - levelStartTime)/CLOCKS_PER_SEC;
 			if(level == NUM_LEVELS){
-				win = true;
+				gameState = POST_GAME;
 			}
 			else{
 				next = true;
@@ -110,6 +122,7 @@ void Game::update(int keycodes){
 
 			// If player is on the same tile as a monster, they die
 			if (player.x == monsters[i].x && player.y == monsters[i].y){
+				totalTime += (float)(clock() - levelStartTime)/CLOCKS_PER_SEC;
 				dead = true;
 			}
 
@@ -136,8 +149,14 @@ void Game::draw(){
 	case START:
 		drawStart();
 		break;
+	case LEADERBOARD:
+		drawLeaderboard();
+		break;
 	case IN_GAME:
 		drawLevel();
+		break;
+	case POST_GAME:
+		drawPostGame();
 		break;
 	default:
 		drawStart();
@@ -148,8 +167,28 @@ void Game::draw(){
 
 void Game::drawStart(){
 	drawScreen(TITLE_SCREEN_SPRITE);
-	// TODO: Draw controls
-	drawString("Press SPACE to begin", 10, 26);
+	drawString("Press SPACE to begin", 10, 25);
+
+	// Draw movement controls
+	drawImg(MOVEMENT_CONTROLS_SPRITE_0, 5*TILE_SIZE, 13.5*TILE_SIZE);
+	drawImg(MOVEMENT_CONTROLS_SPRITE_1, 6*TILE_SIZE, 13.5*TILE_SIZE);
+
+	// Draw light controls
+	drawImg(LIGHT_CONTROLS_SPRITE_0, 13*TILE_SIZE, 13.5*TILE_SIZE);
+	drawImg(LIGHT_CONTROLS_SPRITE_1, 14*TILE_SIZE, 13.5*TILE_SIZE);
+}
+
+void Game::drawLeaderboard(){
+	// Create leaderboard string
+	std::stringstream ss;
+	ss.precision(1);
+	for(uint i = 0; i < leaderboard.size(); i++){
+		ss << leaderboard.at(i).first << "     " << std::fixed << leaderboard.at(i).second << std::endl;
+	}
+
+	// Draw leaderboard table
+	drawString("Name    Time", 14, 1); // Headings
+	drawString(ss.str(), 14, 3); // Values
 }
 
 // Draws all sprites where they should be
@@ -175,7 +214,7 @@ void Game::drawLevel(){
 		for(uint i = 0; i < monsters.size(); i++){
 			Monster& m = monsters[i];
 			if(m.active){
-				if(light)
+				if(light && player.facing_x == m.x && player.facing_y == m.y)
 					drawImg(MONSTER_LIGHT_SPRITE, m.x*TILE_SIZE, m.y*TILE_SIZE);
 				else
 					drawImg(MONSTER_DARK_SPRITE, m.x*TILE_SIZE, m.y*TILE_SIZE);
@@ -208,18 +247,20 @@ void Game::drawLevel(){
 		drawString(ss.str(), 12, 12);
 		drawString("Press SPACE to go on", 9, 17);
 	}
-	else if(win){
-		drawString("YOU ARE SO COOL", 12, 12);
-		drawString("CONGRATS WINNER", 12, 13);
-		drawString("Press SPACE to RESTART", 9, 17);
-	}
+}
+
+void Game::drawPostGame(){
+	drawString("YOU ARE SO COOL", 12, 12);
+	drawString("CONGRATS WINNER", 12, 13);
+	drawString("Your initials: " + playerName, 11, 16);
+	drawString("Press enter to continue", 8, 18);
 }
 
 /* Helper functions */
 
 void Game::handleInput(int key){
 	switch(key){
-	case KEYCODE_SPACE: // Toggle light
+	case KEY_SPACE: // Toggle light
 		if(gameState == START){
 			setupLevel();
 			gameState = IN_GAME;
@@ -234,40 +275,51 @@ void Game::handleInput(int key){
 			}
 			else if(win){
 				level = 1;
-				gameState = START;
+				gameState = POST_GAME;
 			}
-			else{
+			else if(dead){
+				deathCounter++;
 				setupLevel();
 			}
 		}
 		break;
-	case KEYCODE_W: // Move up
+	case KEY_W: // Move up
 		if(canMove(player, player.x, player.y - 1)){
 			player.y--;
 		}
 		player.facing_y = player.y - 1;
 		player.facing_x = player.x;
 		break;
-	case KEYCODE_S: // Move down
+	case KEY_S: // Move down
 		if(canMove(player, player.x, player.y + 1)){
 			player.y++;
 		}
 		player.facing_y = player.y + 1;
 		player.facing_x = player.x;
 		break;
-	case KEYCODE_A: // Move left
+	case KEY_A: // Move left
 		if(canMove(player, player.x - 1, player.y)){
 			player.x--;
 		}
 		player.facing_y = player.y;
 		player.facing_x = player.x - 1;
 		break;
-	case KEYCODE_D: // Move right
-		if(canMove(player, player.x + 1, player.y)){
-			player.x++;
+	case KEY_D: // Move right
+		if(gameState == IN_GAME){
+			if(canMove(player, player.x + 1, player.y)){
+				player.x++;
+			}
+			player.facing_y = player.y;
+			player.facing_x = player.x + 1;
 		}
-		player.facing_y = player.y;
-		player.facing_x = player.x + 1;
+		break;
+	case KEY_ESC:
+		if(gameState == START){
+			gameState = LEADERBOARD;
+		}
+		else if(gameState == LEADERBOARD){
+			gameState = START;
+		}
 		break;
 	}
 }
@@ -298,6 +350,109 @@ bool Game::validPos(int x, int y) const{
 
 bool Game::validPos(pair<int, int> p) const{
 	return validPos(p.first, p.second);
+}
+
+
+void Game::playerNameInput(int key){
+	switch(key){
+	case KEY_BACKSPACE:
+		// Delete last character of playerName
+		if(playerName.length() > 0)
+			playerName = playerName.substr(0, playerName.length() - 1);
+		break;
+	case KEY_ENTER:
+		// If they've entered 3 characters, move on
+		if(playerName.length() == 3){
+			leaderboard.push_back(pair<string, float>(playerName, totalTime));
+			reset();
+			gameState = LEADERBOARD;
+		}
+		break;
+	case KEY_A:
+		appendToPlayerName('A');
+		break;
+	case KEY_B:
+		appendToPlayerName('B');
+		break;
+	case KEY_C:
+		appendToPlayerName('C');
+		break;
+	case KEY_D:
+		appendToPlayerName('D');
+		break;
+	case KEY_E:
+		appendToPlayerName('E');
+		break;
+	case KEY_F:
+		appendToPlayerName('F');
+		break;
+	case KEY_G:
+		appendToPlayerName('G');
+		break;
+	case KEY_H:
+		appendToPlayerName('H');
+		break;
+	case KEY_I:
+		appendToPlayerName('I');
+		break;
+	case KEY_J:
+		appendToPlayerName('J');
+		break;
+	case KEY_K:
+		appendToPlayerName('K');
+		break;
+	case KEY_L:
+		appendToPlayerName('L');
+		break;
+	case KEY_M:
+		appendToPlayerName('M');
+		break;
+	case KEY_N:
+		appendToPlayerName('N');
+		break;
+	case KEY_O:
+		appendToPlayerName('O');
+		break;
+	case KEY_P:
+		appendToPlayerName('P');
+		break;
+	case KEY_Q:
+		appendToPlayerName('Q');
+		break;
+	case KEY_R:
+		appendToPlayerName('R');
+		break;
+	case KEY_S:
+		appendToPlayerName('S');
+		break;
+	case KEY_T:
+		appendToPlayerName('T');
+		break;
+	case KEY_U:
+		appendToPlayerName('U');
+		break;
+	case KEY_V:
+		appendToPlayerName('V');
+		break;
+	case KEY_W:
+		appendToPlayerName('W');
+		break;
+	case KEY_X:
+		appendToPlayerName('X');
+		break;
+	case KEY_Y:
+		appendToPlayerName('Y');
+		break;
+	case KEY_Z:
+		appendToPlayerName('Z');
+		break;
+	}
+}
+
+void Game::appendToPlayerName(char c){
+	if(playerName.length() < 3){
+		playerName += c;
+	}
 }
 
 /* Use BFS to find path */
