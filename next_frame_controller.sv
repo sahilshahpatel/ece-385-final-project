@@ -2,8 +2,8 @@ module next_frame_controller(
 	input logic Clk, Reset, EN,
 	
 	// Software interface
-	input logic[3:0] spritesheetX, // 256 cols = 16 sprites (16x16 each)
-	input logic [2:0] spritesheetY, // 128 rows = 8 sprites (16x16 each)
+	input logic[4:0] spritesheetX, // 512 cols = 32 sprites (16x16 each)
+	input logic [4:0] spritesheetY, // 512 rows = 32 sprites (16x16 each)
 	input logic [9:0] imgX, imgY, // TODO: As is, this controller snaps imgX to the nearest SRAM word (i.e. only has accuracy of 4 pixels in X direction)
 	input logic draw_start, clear_start,
 	output logic done,
@@ -20,10 +20,9 @@ module next_frame_controller(
 );
 
 	// Spritesheet ROM in on-chip memory	
-	// rom_address[14:8] is row of spritesheet
-	// rom_address[7:4] is column of sprite on sprite sheet
-	// rom_address[3:0] is which pixel within column
-	logic [14:0] rom_address, next_rom_address;
+	// rom_address[17:9] is row of spritesheet (in pixels)
+	// rom_address[8:0] is column of sprite sheet (in pixels)
+	logic [17:0] rom_address, next_rom_address;
 	logic [3:0] rom_data;
 	spritesheetROM #(.FILE("spritesheet.txt")) spritesheet
 	(
@@ -114,7 +113,7 @@ module next_frame_controller(
 			WAIT_READ: begin
 				SRAM_OE_N = 0;
 				next_state = WAIT_READ_2;
-				next_sram_address = {1'b0, ~even_frame, {(imgY + rom_address[8 +: 4]), (imgX[9:2] + rom_address[2 +: 2])}}; // Frame stored row-major
+				next_sram_address = {1'b0, ~even_frame, {(imgY + rom_address[9 +: 4]), (imgX[9:2] + rom_address[2 +: 2])}}; // Frame stored row-major
 			end
 			WAIT_READ_2: begin
 				SRAM_OE_N = 0;
@@ -162,16 +161,16 @@ module next_frame_controller(
 				SRAM_WE_N = 1; // Disable writing for next state (synchronized)
 				Data_to_SRAM = write_buffer;
 				
-				if(rom_address[8 +: 4] == 4'hf && rom_address[2 +: 2] == 2'b11) begin
+				if(rom_address[9 +: 4] == 4'hf && rom_address[2 +: 2] == 2'b11) begin
 					// This is the last write of sprite
 					next_state = DONE;
 				end
 				else begin
 					// We have more pixels to write
 					
-					if(rom_address[3:0] == 4'hf) begin
+					if(rom_address[0 +: 4] == 4'hf) begin
 						// Increment rom_address to next row and reset column
-						next_rom_address = {rom_address[8 +: 7] + 7'd1, {spritesheetX, 4'b0}};
+						next_rom_address = {rom_address[17:9] + 9'd1, {spritesheetX, 4'b0}};
 					end
 					else begin
 						// Move right to the next 4 pixels

@@ -10,8 +10,9 @@
 
 #include <string>
 
-void drawImg(std::pair<int, int> sprite, int imgX, int imgY);
 void drawSprite(int spritesheetX, int spritesheetY, int imgX, int imgY);
+void drawImg(std::pair<int, int> sprite, int imgX, int imgY);
+void drawScreen(std::pair<int, int> screen);
 
 void drawString(std::string s, int x, int y);
 std::pair<int, int> getSpriteForChar(char c);

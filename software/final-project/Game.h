@@ -28,6 +28,7 @@ const std::pair<int, int> PLAYER_DARK_SPRITE(14, 2);
 const std::pair<int, int> MONSTER_LIGHT_SPRITE(0, 4);
 const std::pair<int, int> MONSTER_DARK_SPRITE(2, 4);
 const std::pair<int, int> MONSTER_DEAD_SPRITE(4, 4);
+const std::pair<int, int> TITLE_SCREEN_SPRITE(0, 6);
 
 enum Tile {
 	TILE,
