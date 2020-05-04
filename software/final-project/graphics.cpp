@@ -42,9 +42,14 @@ void drawImg(std::pair<int, int> img, int imgX, int imgY){ //top left top right 
 }
 
 void drawScreen(std::pair<int, int> screen){
+	// Calculate offsets to center
+	int offsetX = SPRITE_COLS/2 - 10;
+	int offsetY = SPRITE_ROWS/2 - 8; // Draws slightly higher than centered
+
+	// Draw all 16x16 sprites which comprise the large screen
 	for(int x = 0; x < 20; x++){
 		for(int y = 0; y < 15; y++){
-			drawSprite(screen.first + x, screen.second + y, x*SPRITE_SIZE, y*SPRITE_SIZE);
+			drawSprite(screen.first + x, screen.second + y, (x+offsetX)*SPRITE_SIZE, (y+offsetY)*SPRITE_SIZE);
 		}
 	}
 }

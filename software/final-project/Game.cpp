@@ -21,8 +21,17 @@ using std::pair;
 #define COLS 20 // 640 pix / TILE_SIZE
 #define ROWS 15 // 480 pix / TILE_SIZE
 
+#define NUM_LEVELS 3
+
 Game::Game() :
-level(1), win(false), dead(false), next(false), prev_key(0), key(0), start(true)
+gameState(START),
+level(1),
+win(false),
+dead(false),
+next(false),
+levelStartTime(clock()),
+prev_key(0),
+key(0)
 {
 	// Allocate board
 	board = new Tile*[COLS];
@@ -33,8 +42,11 @@ level(1), win(false), dead(false), next(false), prev_key(0), key(0), start(true)
 		}
 	}
 
-	// Setup for level 0
-	setupLevel();
+	// Draw loading screen
+	swapFrameBuffers(); // Prevents some glitches when SRAM has old frame info on reset
+	drawScreen(TITLE_SCREEN_SPRITE);
+	drawString("Connecting Keyboard...", 9, 26);
+	swapFrameBuffers();
 }
 
 Game::~Game(){
@@ -60,68 +72,95 @@ void Game::update(int keycodes){
 
 	handleInput(key); // Toggles light, moves player, continues through menu
 
-	if(dead || next || win) return; // Don't update if in menu screen
+	if(gameState == IN_GAME){
+		if(dead || next || win) return; // Don't update if in menu screen
 
-	if(!validPos(player.x, player.y))
-		printf("Invalid player pos: %d, %d\n", player.x, player.y);
+		if(!validPos(player.x, player.y))
+			printf("Invalid player pos: %d, %d\n", player.x, player.y);
 
-	// If player is on spikes, they die
-	if (board[player.x][player.y] == SPIKES){
-		dead = true;
-	}
-
-	// If player is on EXIT, they win the level
-	if (board[player.x][player.y] == STAIRS){
-		if(level == 2){
-			win = true;
-		}
-		else{
-			next = true;
-		}
-	}
-
-
-	// Monster logic
-	for(uint i = 0; i < monsters.size(); i++){
-		if(!validPos(monsters[i].x, monsters[i].y))
-			printf("Invalid monster pos: %d, %d\n", monsters[i].x, monsters[i].y);
-
-		// Ignore dead monsters
-		if(monsters[i].alive == false) continue;
-
-		// If player sees a monster for the first time, it activates
-		if (monsters[i].active == false && player.facing_x == monsters[i].x && player.facing_y == monsters[i].y){
-			monsters[i].active = true;
-			monsters[i].last_move_time = time;
-		}
-
-		// If player is on the same tile as a monster, they die
-		if (player.x == monsters[i].x && player.y == monsters[i].y){
+		// If player is on spikes, they die
+		if (board[player.x][player.y] == SPIKES){
 			dead = true;
 		}
 
-		// Active monsters chase player if light is on
-		if(time - monsters[i].last_move_time > CLOCKS_PER_SEC && light && monsters[i].active){
-			pair<int, int> next_coord = findPath(monsters[i], player);
-			monsters[i].x = next_coord.first;
-			monsters[i].y = next_coord.second;
-			monsters[i].last_move_time = time;
+		// If player is on EXIT, they win the level
+		if (board[player.x][player.y] == STAIRS){
+			if(level == NUM_LEVELS){
+				win = true;
+			}
+			else{
+				next = true;
+			}
 		}
 
-		// If a monster is on spikes, it dies
-		if(board[monsters[i].x][monsters[i].y] == SPIKES){
-			monsters[i].alive = false;
-			monsters[i].active = false;
-			// TODO: increment score counter
+
+		// Monster logic
+		for(uint i = 0; i < monsters.size(); i++){
+			if(!validPos(monsters[i].x, monsters[i].y))
+				printf("Invalid monster pos: %d, %d\n", monsters[i].x, monsters[i].y);
+
+			// Ignore dead monsters
+			if(monsters[i].alive == false) continue;
+
+			// If player sees a monster for the first time, it activates
+			if (monsters[i].active == false && player.facing_x == monsters[i].x && player.facing_y == monsters[i].y){
+				monsters[i].active = true;
+				monsters[i].last_move_time = time;
+			}
+
+			// If player is on the same tile as a monster, they die
+			if (player.x == monsters[i].x && player.y == monsters[i].y){
+				dead = true;
+			}
+
+			// Active monsters chase player if light is on
+			if(time - monsters[i].last_move_time > CLOCKS_PER_SEC && light && monsters[i].active){
+				pair<int, int> next_coord = findPath(monsters[i], player);
+				monsters[i].x = next_coord.first;
+				monsters[i].y = next_coord.second;
+				monsters[i].last_move_time = time;
+			}
+
+			// If a monster is on spikes, it dies
+			if(board[monsters[i].x][monsters[i].y] == SPIKES){
+				monsters[i].alive = false;
+				monsters[i].active = false;
+				// TODO: increment score counter
+			}
 		}
 	}
 }
 
-// Draws all sprites where they should be
 void Game::draw(){
-	if(dead == false && win == false && next == false && Gamestate == INGAME){
-			//when in level draw score 
-			drawString("Score:", 1, 1); //TODO add actual Score Component
+	switch(gameState){
+	case START:
+		drawStart();
+		break;
+	case IN_GAME:
+		drawLevel();
+		break;
+	default:
+		drawStart();
+		break;
+	}
+	swapFrameBuffers(); // Graphics function
+}
+
+void Game::drawStart(){
+	drawScreen(TITLE_SCREEN_SPRITE);
+	// TODO: Draw controls
+	drawString("Press SPACE to begin", 10, 26);
+}
+
+// Draws all sprites where they should be
+void Game::drawLevel(){
+	if(dead == false && win == false && next == false){
+		// Draw current timer
+		std::stringstream ss;
+		ss.precision(1); // Draws one digit after the decimal
+		ss << "Time: " << std::fixed << (float)(clock() - levelStartTime)/CLOCKS_PER_SEC;
+		drawString(ss.str(), 1, 1);
+
 		// Draw tiles only if light is on
 		if(light){
 			// Draw tile player is on
@@ -156,9 +195,7 @@ void Game::draw(){
 			drawImg(PLAYER_DARK_SPRITE, player.x*TILE_SIZE, player.y*TILE_SIZE);
 		}
 	}
-	else if(GameState == START){
-		//TODO Draw Start screen
-	}
+
 	//if player dies draw game over screen
 	else if(dead){
 		drawString("GAME OVER", 15, 12);
@@ -176,8 +213,6 @@ void Game::draw(){
 		drawString("CONGRATS WINNER", 12, 13);
 		drawString("Press SPACE to RESTART", 9, 17);
 	}
-
-	swapFrameBuffers(); // Graphics function
 }
 
 /* Helper functions */
@@ -185,23 +220,25 @@ void Game::draw(){
 void Game::handleInput(int key){
 	switch(key){
 	case KEYCODE_SPACE: // Toggle light
-		if(dead == false && win == false && next == false){
-			light = !light;
-		}
-		else if(GameState == START){
-			GameState = INGAME;
+		if(gameState == START){
 			setupLevel();
+			gameState = IN_GAME;
 		}
-		else if(next){
-			level++;
-			setupLevel();
-		}
-		else if(win){
-			level = 0;
-			setupLevel();
-		}
-		else{
-			setupLevel();
+		else if(gameState == IN_GAME){
+			if(dead == false && win == false && next == false){
+				light = !light;
+			}
+			else if(next){
+				level++;
+				setupLevel();
+			}
+			else if(win){
+				level = 1;
+				gameState = START;
+			}
+			else{
+				setupLevel();
+			}
 		}
 		break;
 	case KEYCODE_W: // Move up
@@ -353,6 +390,7 @@ void Game::setupLevel(){
 	light = true;
 	next = false;
 	monsters.clear();
+	levelStartTime = clock();
 
 	// Set initial board to all walls
 	for(int x = 0; x < COLS; x++){
@@ -363,33 +401,6 @@ void Game::setupLevel(){
 
 	// Switch case for level
 	switch(level){
-	case 1:
-		// Player is at 6, 13
-		board[6][13] = TILE;
-		player = Player(6, 13);
-
-		// Monster is at 6, 9
-		board[6][9] = TILE;
-		monsters.push_back(Monster(6, 9));
-
-		// Spikes at 6, 11
-		board[6][11] = SPIKES;
-
-		// Exit at 5, 7
-		board[6][7] = TILE;
-		board[5][7] = STAIRS;
-
-		// Create rest of tile path
-		board[6][12] = TILE;
-		board[7][12] = TILE;
-		board[8][12] = TILE;
-		board[8][11] = TILE;
-		board[8][10] = TILE;
-		board[7][10] = TILE;
-		board[6][10] = TILE;
-		board[6][8]  = TILE;
-		break;
-
 	case 1:
 		// Player is at 6, 13
 		board[6][13] = TILE;
@@ -464,8 +475,8 @@ void Game::setupLevel(){
  		board[11][4] = TILE;
 		board[12][3] = TILE;
 		board[13][3] = TILE;
-
 		break;
+
 	case 3:
 		// player starts at 9,9
 		board[9][9] = TILE;

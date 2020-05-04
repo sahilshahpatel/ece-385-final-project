@@ -35,10 +35,12 @@ enum Tile {
 	SPIKES,
 	WALL,
 	STAIRS
+};
+
 enum GameState {
 	START,
-	INGAME, 
-}
+	IN_GAME,
+	POST_GAME
 };
 
 class Game {
@@ -48,6 +50,7 @@ class Game {
 	void update(int keycode);
 	void draw();
   private:
+	GameState gameState;
 	Player player;
 	vector<Monster> monsters;
 	Tile** board;
@@ -56,6 +59,8 @@ class Game {
 	bool win;
 	bool dead;
 	bool next;
+
+	clock_t levelStartTime;
 
 	// Variables to handle key presses
 	int prev_key;
@@ -70,6 +75,9 @@ class Game {
 	void setupLevel();
 	std::pair<int, int> findPath(int x0, int y0, int dest_x, int dest_y) const;
 	std::pair<int, int> findPath(Monster m, Player p) const;
+
+	void drawStart();
+	void drawLevel();
 };
 
 #endif /* GAME_H_ */
