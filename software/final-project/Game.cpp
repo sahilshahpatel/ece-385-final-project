@@ -9,9 +9,15 @@
 #include "usb_hid_keys.h"
 #include "graphics.h"
 #include <stdio.h>
+
+// For pathfinding
 #include <queue>
 #include <map>
 
+// For sorting leaderboard
+#include <algorithm>
+
+// Because to_string is broken
 #include <sstream>
 
 using std::priority_queue;
@@ -28,9 +34,9 @@ Game::Game() :
 gameState(START),
 light(true),
 level(1),
-win(false),
 dead(false),
 next(false),
+lastLightOffTime(clock()),
 deathCounter(0),
 levelStartTime(clock()),
 totalTime(0),
@@ -83,26 +89,21 @@ void Game::update(int keycodes){
 	}
 
 	if(gameState == IN_GAME){
-		if(dead || next || win) return; // Don't update if in menu screen
+		if(dead || next) return; // Don't update if in menu screen
 
 		if(!validPos(player.x, player.y))
 			printf("Invalid player pos: %d, %d\n", player.x, player.y);
 
 		// If player is on spikes, they die
 		if (board[player.x][player.y] == SPIKES){
-			totalTime += (float)(clock() - levelStartTime)/CLOCKS_PER_SEC;
+			totalTime += (float)(time - levelStartTime)/CLOCKS_PER_SEC;
 			dead = true;
 		}
 
 		// If player is on EXIT, they win the level
 		if (board[player.x][player.y] == STAIRS){
-			totalTime += (float)(clock() - levelStartTime)/CLOCKS_PER_SEC;
-			if(level == NUM_LEVELS){
-				gameState = POST_GAME;
-			}
-			else{
+			totalTime += (float)(time - levelStartTime)/CLOCKS_PER_SEC;
 				next = true;
-			}
 		}
 
 
@@ -122,7 +123,7 @@ void Game::update(int keycodes){
 
 			// If player is on the same tile as a monster, they die
 			if (player.x == monsters[i].x && player.y == monsters[i].y){
-				totalTime += (float)(clock() - levelStartTime)/CLOCKS_PER_SEC;
+				totalTime += (float)(time - levelStartTime)/CLOCKS_PER_SEC;
 				dead = true;
 			}
 
@@ -138,7 +139,6 @@ void Game::update(int keycodes){
 			if(board[monsters[i].x][monsters[i].y] == SPIKES){
 				monsters[i].alive = false;
 				monsters[i].active = false;
-				// TODO: increment score counter
 			}
 		}
 	}
@@ -158,14 +158,12 @@ void Game::draw(){
 	case POST_GAME:
 		drawPostGame();
 		break;
-	default:
-		drawStart();
-		break;
 	}
 	swapFrameBuffers(); // Graphics function
 }
 
 void Game::drawStart(){
+	drawString("Press ESC to view leaderboard", 6, 4);
 	drawScreen(TITLE_SCREEN_SPRITE);
 	drawString("Press SPACE to begin", 10, 25);
 
@@ -183,17 +181,18 @@ void Game::drawLeaderboard(){
 	std::stringstream ss;
 	ss.precision(1);
 	for(uint i = 0; i < leaderboard.size(); i++){
-		ss << leaderboard.at(i).first << "     " << std::fixed << leaderboard.at(i).second << std::endl;
+		ss << leaderboard.at(i).second << "     " << std::fixed << leaderboard.at(i).first << std::endl;
 	}
 
 	// Draw leaderboard table
-	drawString("Name    Time", 14, 1); // Headings
-	drawString(ss.str(), 14, 3); // Values
+	drawString("Press ESC to exit leaderboard", 6, 4);
+	drawString("Name    Time", 14, 10); // Headings
+	drawString(ss.str(), 14, 12); // Values
 }
 
 // Draws all sprites where they should be
 void Game::drawLevel(){
-	if(dead == false && win == false && next == false){
+	if(dead == false && next == false){
 		// Draw current timer
 		std::stringstream ss;
 		ss.precision(1); // Draws one digit after the decimal
@@ -237,15 +236,22 @@ void Game::drawLevel(){
 
 	//if player dies draw game over screen
 	else if(dead){
-		drawString("GAME OVER", 15, 12);
-		drawString("Press SPACE to RESTART", 9, 17);
+		drawString("Your light fades!", 11, 12);
+		drawString("Press SPACE to restart the level", 4, 17);
 	}
-	//if player draw next level //40x30 //TODO add Score
+	//if player draw next level //40x30
 	else if(next){
 		std::stringstream ss;
 		ss << "You beat level " << level;
 		drawString(ss.str(), 12, 12);
-		drawString("Press SPACE to go on", 9, 17);
+
+		drawImg(SKULL_SPRITE, 9*TILE_SIZE, 7*TILE_SIZE);
+
+		std::stringstream ss2;
+		ss2 << " " << deathCounter;
+		drawString(ss2.str(), 20, 14);
+
+		drawString("Press SPACE to go on", 10, 17);
 	}
 }
 
@@ -266,16 +272,28 @@ void Game::handleInput(int key){
 			gameState = IN_GAME;
 		}
 		else if(gameState == IN_GAME){
-			if(dead == false && win == false && next == false){
+			if(dead == false && next == false){
+				if(light){
+					// Record time when light was switched off
+					lastLightOffTime = clock();
+				}
+				else{
+					// Update monster lastMoveTimes to reflect time with light off
+					clock_t time = clock();
+					for(uint i = 0; i < monsters.size(); i++){
+						monsters[i].last_move_time += time - lastLightOffTime;
+					}
+				}
 				light = !light;
 			}
 			else if(next){
-				level++;
-				setupLevel();
-			}
-			else if(win){
-				level = 1;
-				gameState = POST_GAME;
+				if(level == NUM_LEVELS){
+					gameState = POST_GAME;
+				}
+				else {
+					level++;
+					setupLevel();
+				}
 			}
 			else if(dead){
 				deathCounter++;
@@ -327,7 +345,7 @@ void Game::handleInput(int key){
 // Validate movements
 bool Game::canMove(Player p, int dest_x, int dest_y) const{
 	//if player won or died, deny
-	if(win || dead || next) return false;
+	if(dead || next) return false;
 	// If moving out of bounds, deny
 	if(!validPos(dest_x, dest_y)) return false;
 
@@ -363,7 +381,8 @@ void Game::playerNameInput(int key){
 	case KEY_ENTER:
 		// If they've entered 3 characters, move on
 		if(playerName.length() == 3){
-			leaderboard.push_back(pair<string, float>(playerName, totalTime));
+			leaderboard.push_back(pair<float, string>(totalTime, playerName));
+			std::sort(leaderboard.begin(), leaderboard.end());
 			reset();
 			gameState = LEADERBOARD;
 		}
@@ -527,7 +546,8 @@ void Game::updateKey(int keycodes){
 	int key1 = keycodes & 0x0000ffff;
 	//int key2 = (keycodes & 0xffff0000) >> 16;
 	// Ignore key2 -- we only allow one button at a time
-	// TODO: When/if we do animations, it would be nice to allow
+
+	// TODO: If we do animations, it would be nice to allow
 	//	the user to hold down a key and have it activate every time
 	//	an animation finishes. To do this we can get rid of this
 	// "on-key-down" behavior and add a lockout time during animations!
@@ -541,7 +561,6 @@ void Game::updateKey(int keycodes){
 void Game::setupLevel(){
 	// Reset game state
 	dead = false;
-	win = false;
 	light = true;
 	next = false;
 	monsters.clear();

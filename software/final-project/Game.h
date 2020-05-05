@@ -34,6 +34,7 @@ const pair<int, int> MOVEMENT_CONTROLS_SPRITE_0(8, 4);
 const pair<int, int> MOVEMENT_CONTROLS_SPRITE_1(10, 4);
 const pair<int, int> LIGHT_CONTROLS_SPRITE_0(12, 4);
 const pair<int, int> LIGHT_CONTROLS_SPRITE_1(14, 4);
+const pair<int, int> SKULL_SPRITE(0, 6);
 
 enum Tile {
 	TILE,
@@ -62,9 +63,10 @@ class Game {
 	Tile** board;
 	bool light;
 	int level;
-	bool win;
 	bool dead;
 	bool next;
+
+	clock_t lastLightOffTime;
 
 	int deathCounter;
 	clock_t levelStartTime;
@@ -72,7 +74,7 @@ class Game {
 
 	float totalTime;
 	string playerName;
-	vector<pair<string, float> > leaderboard;
+	vector<pair<float, string> > leaderboard; // Float first so it's sorted by time
 
 	// Variables to handle key presses
 	int prev_key;
