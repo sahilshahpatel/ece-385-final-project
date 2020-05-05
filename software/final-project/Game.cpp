@@ -22,7 +22,7 @@ using std::pair;
 #define COLS 20 // 640 pixels / TILE_SIZE
 #define ROWS 15 // 480 pixels / TILE_SIZE
 
-#define NUM_LEVELS 3
+#define NUM_LEVELS 5
 
 Game::Game() :
 gameState(START),
@@ -583,7 +583,7 @@ void Game::setupLevel(){
 		board[6][8]  = TILE;
 		break;
 
-	case 2:
+	case 5:
 		// player starts at 3,6
 		board[3][6] = TILE;
 		player = Player(3,6);
@@ -666,5 +666,132 @@ void Game::setupLevel(){
 		board[14][3] = TILE;
 		board[14][2] = TILE;
 		break;
+
+		case 4:
+			// player starts at 9,6
+			board[9][6] = TILE;
+			player = Player(9,6);
+
+			//Monsters at 15,3 4,4 10,13
+			board[15][3] = TILE;
+			board[4][4] = TILE;
+			board[10][13] = TILE;
+
+			monsters.push_back(Monster(15,3));
+			monsters.push_back(Monster(4,4));
+			monsters.push_back(Monster(10,13));
+
+
+			//EXIT at 3,4
+			board[3][4] = STAIRS;
+
+			//Spikes at 8,5 10,5 8,7 10,7 5,7 12,3 8,8 8,9 7,10 7,11 7,12 8,13 9,12 10,7 10,8 10,9 11,10 11,11 11,12
+			board[8][5] = SPIKES;
+			board[10][5] = SPIKES;
+			board[8][7] = SPIKES;
+			board[10][7] = SPIKES;
+			board[5][7] = SPIKES;
+			board[12][3] = SPIKES;
+			board[8][8] = SPIKES;
+			board[8][9] = SPIKES;
+			board[7][10] = SPIKES;
+			board[7][11] = SPIKES;
+			board[7][12] = SPIKES;
+			board[8][13] = SPIKES;
+			board[9][12] = SPIKES;
+			board[10][7] = SPIKES;
+			board[10][8] = SPIKES;
+			board[10][9] = SPIKES;
+			board[11][10] = SPIKES;
+			board[11][11] = SPIKES;
+			board[11][12] = SPIKES;
+
+			//Create rest of tile path;
+			board[9][5] = TILE;
+			board[9][4] = TILE;
+			board[9][3] = TILE;
+			board[9][2] = TILE;
+			board[10][2] = TILE;
+			board[11][2] = TILE;
+			board[12][2] = TILE;
+			board[13][2] = TILE;
+			board[14][2] = TILE;
+			board[15][2] = TILE;
+			board[13][3] = TILE;
+			board[13][4] = TILE;
+			board[13][6] = TILE;
+			board[14][6] = TILE;
+			board[15][7] = TILE;
+			board[14][7] = TILE;
+			board[16][7] = TILE;
+			board[16][8] = TILE;
+			board[12][4] = TILE;
+			board[12][6] = TILE;
+			board[11][3] = TILE;
+			board[11][4] = TILE;
+			board[11][6] = TILE;
+			board[10][6] = TILE;
+			board[10][10] = TILE;
+			board[10][11] = TILE;
+			board[10][12] = TILE;
+			board[9][7] = TILE;
+			board[9][8] = TILE;
+			board[9][9] = TILE;
+			board[9][10] = TILE;
+			board[9][11] = TILE;
+			board[8][6] = TILE;
+			board[8][6] = TILE;
+			board[8][10] = TILE;
+			board[8][11] = TILE;
+			board[8][12] = TILE;
+			board[7][6] = TILE;
+			board[6][4] = TILE;
+			board[6][5] = TILE;
+			board[6][6] = TILE;
+			board[6][7] = TILE;
+			board[6][8] = TILE;
+			board[5][4] = TILE;
+			board[5][6] = TILE;
+			board[5][8] = TILE;
+			board[4][6] = TILE;
+			board[4][7] = TILE;
+			board[4][8] = TILE;
+			break;
+		case 2:
+		// player starts at 13,8
+		board[13][8] = TILE;
+		player = Player(13,8);
+
+		//Monster at 8,10
+		board[8][10] = TILE;
+		monsters.push_back(Monster(8,10));
+
+		//Spikes at 11,8
+		board[11][8] = SPIKES;
+
+		//EXIT at 5,10
+		board[5][10] = STAIRS;
+
+		//Create rest of tile path;
+		board[12][8] = TILE;
+		board[12][9] = TILE;
+		board[11][5] = TILE;
+		board[11][6] = TILE;
+		board[11][7] = TILE;
+		board[11][9] = TILE;
+		board[11][10] = TILE;
+		board[10][5] = TILE;
+		board[10][7] = TILE;
+		board[10][10] = TILE;
+		board[9][5] = TILE;
+		board[9][6] = TILE;
+		board[9][7] = TILE;
+		board[9][8] = TILE;
+		board[9][9] = TILE;
+		board[9][10] = TILE;
+		board[7][10] = TILE;
+		board[6][10] = TILE;
+		break;
+
 	}
 }
