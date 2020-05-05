@@ -37,8 +37,8 @@ endmodule
 module  spritesheetROM
 #(
 	parameter BIT_DEPTH = 4,
-	parameter PIXELS = 32768, //256x128
-	parameter ADDRESS_DEPTH = 15,
+	parameter PIXELS = 262144, //512x512
+	parameter ADDRESS_DEPTH = 18,
 	parameter FILE = "spritesheet.txt"
 )
 

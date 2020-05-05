@@ -37,8 +37,8 @@ module avalon_graphics_interface(
 	logic [31:0] registers [7];
 
 	// Register map:
-	//		0: spritesheetX	(3:0)
-	//		1: spritesheetY	(2:0)
+	//		0: spritesheetX	(4:0)
+	//		1: spritesheetY	(4:0)
 	//		2: imgX	(9:0)
 	//		3: imgY	(9:0)
 	//		4: Draw Start (0)
@@ -49,8 +49,8 @@ module avalon_graphics_interface(
 	graphics_accelerator graphics (
 		.Clk,
 		.Reset(RESET),
-		.spritesheetX(registers[0][3:0]),
-		.spritesheetY(registers[1][2:0]),
+		.spritesheetX(registers[0][4:0]),
+		.spritesheetY(registers[1][4:0]),
 		.imgX(registers[2][9:0]),
 		.imgY(registers[3][9:0]),
 		.draw_start(registers[4][0]),

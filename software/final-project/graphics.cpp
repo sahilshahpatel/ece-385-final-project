@@ -15,12 +15,6 @@
 volatile unsigned int * GRAPHICS_PTR = (unsigned int *) AVALON_GRAPHICS_INTERFACE_0_BASE;
 
 #define SPRITE_SIZE 16
-void drawImg(std::pair<int, int> img, int imgX, int imgY){ //top left top right bottom left bottom right
-		drawSprite(img.first, img.second , imgX , imgY);
-		drawSprite(img.first + 1, img.second, imgX + SPRITE_SIZE, imgY);
-		drawSprite(img.first, img.second + 1, imgX, imgY + SPRITE_SIZE);
-		drawSprite(img.first + 1, img.second + 1, imgX + SPRITE_SIZE, imgY + SPRITE_SIZE);
-}
 
 void drawSprite(int spritesheetX, int spritesheetY, int imgX, int imgY){
 	// Set spritesheetX, spritesheetY, imgX, and imgY
@@ -38,6 +32,26 @@ void drawSprite(int spritesheetX, int spritesheetY, int imgX, int imgY){
 
 	// Lower start flag
 	GRAPHICS_PTR[4] = 0;
+}
+
+void drawImg(std::pair<int, int> img, int imgX, int imgY){ //top left top right bottom left bottom right
+		drawSprite(img.first, img.second , imgX , imgY);
+		drawSprite(img.first + 1, img.second, imgX + SPRITE_SIZE, imgY);
+		drawSprite(img.first, img.second + 1, imgX, imgY + SPRITE_SIZE);
+		drawSprite(img.first + 1, img.second + 1, imgX + SPRITE_SIZE, imgY + SPRITE_SIZE);
+}
+
+void drawScreen(std::pair<int, int> screen){
+	// Calculate offsets to center
+	int offsetX = SPRITE_COLS/2 - 10;
+	int offsetY = SPRITE_ROWS/2 - 8; // Draws slightly higher than centered
+
+	// Draw all 16x16 sprites which comprise the large screen
+	for(int x = 0; x < 20; x++){
+		for(int y = 0; y < 15; y++){
+			drawSprite(screen.first + x, screen.second + y, (x+offsetX)*SPRITE_SIZE, (y+offsetY)*SPRITE_SIZE);
+		}
+	}
 }
 
 void drawString(std::string s, int x0, int y0){
