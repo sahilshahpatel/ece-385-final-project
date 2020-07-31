@@ -27,3 +27,6 @@ We then began developing Lurking in the Dark for the NIOS II. Lurking in the Dar
 10. Build all
 11. Set up the Run Configurations
 12. Run the program!
+
+### A note to current ECE 385 students
+Professor Cheng gave us permission to make this repository public, but there are definitely conditions about your use of this work. ECE 385 policy (at the time of writing this) allows you to use work you find online *with credit given*. However, this work is then not counted toward your final difficulty rating. Because of our approach to making a game on the NIOS II, our work is easily re-usable for other games with only software modifications necessary. For this reason, we recommend that you look at this repository only for inspiration. We are not responsible for any accusations of plagiarism leveled at any student who attempts to copy or use our code.
