@@ -6,6 +6,8 @@ incremental_db/
 nios_system/
 RemoteSystemsTempFiles/
 simulation/
+*.srf
+*.qdf
 *.sv.bak
 *.rpt
 *.summary
@@ -26,6 +28,7 @@ PLLJ_PLLSPE_INFO.txt
 tools/
 
 # Software files
+software/final-project/.vscode/
 software/final-project/obj/
 software/final-project/.settings/
 software/final-project_bsp/.settings

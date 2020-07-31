@@ -116,7 +116,8 @@ void Game::update(int keycodes){
 			if(monsters[i].alive == false) continue;
 
 			// If player sees a monster for the first time, it activates
-			if (monsters[i].active == false && player.facing_x == monsters[i].x && player.facing_y == monsters[i].y){
+			if (monsters[i].active == false && light
+				&& player.facing_x == monsters[i].x && player.facing_y == monsters[i].y){
 				monsters[i].active = true;
 				monsters[i].last_move_time = time;
 			}
